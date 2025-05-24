@@ -1,13 +1,13 @@
 """
 enrich.py  – Drive PDF ➜ Notion enrichment
-  • Summary (≈250 words) with o3
+  • Summary (≈250 words) with GPT-4.1
   • Classification with GPT-4.1 (tool call)
 
 ENV (.env)
   NOTION_TOKEN, NOTION_SOURCES_DB
   GOOGLE_APP_CREDENTIALS
   OPENAI_API_KEY
-  MODEL_SUMMARY=o3
+  MODEL_SUMMARY=gpt-4.1
   MODEL_CLASSIFIER=gpt-4.1
 """
 import os, io, json, time
