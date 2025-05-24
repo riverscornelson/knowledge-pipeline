@@ -33,6 +33,7 @@ The following variables are referenced by the scripts:
 | `MODEL_SUMMARY` | Model for summarisation (default `gpt-4.1`) |
 | `MODEL_CLASSIFIER` | Model for classification (default `gpt-4.1`) |
 | `DRIVE_FOLDER_ID` | Optional Google Drive folder ID for `ingest_drive.py` |
+| `VENDORS` | Comma-separated vendor names to tag pages (allowed `OpenAI`, `Google`, `Anthropic`, `Vanderbilt`) |
 
 ## Usage
 

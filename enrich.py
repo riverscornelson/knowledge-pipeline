@@ -9,6 +9,7 @@ ENV (.env)
   OPENAI_API_KEY
   MODEL_SUMMARY=gpt-4.1
   MODEL_CLASSIFIER=gpt-4.1
+  VENDORS=OpenAI,Google
 """
 import os, io, json, time
 from dotenv import load_dotenv
@@ -20,11 +21,22 @@ from pdfminer.high_level import extract_text
 from tenacity import retry, wait_exponential, stop_after_attempt
 from openai import OpenAI, APIError, RateLimitError
 
+# Allowed vendor tags for Notion
+ALLOWED_VENDORS = {"OpenAI", "Google", "Anthropic", "Vanderbilt"}
+
 # ── init ──────────────────────────────────────────────
 load_dotenv()
 NOTION_DB        = os.getenv("NOTION_SOURCES_DB")
 MODEL_SUMMARY    = os.getenv("MODEL_SUMMARY",    "gpt-4.1")
 MODEL_CLASSIFIER = os.getenv("MODEL_CLASSIFIER", "gpt-4.1")
+
+# Parse optional vendor list
+_vendors_env = os.getenv("VENDORS", "")
+_raw_vendors = [v.strip() for v in _vendors_env.split(",") if v.strip()]
+for v in list(_raw_vendors):
+    if v not in ALLOWED_VENDORS:
+        print("\u26a0\ufe0f Invalid vendor ->", v)
+VENDORS = [v for v in _raw_vendors if v in ALLOWED_VENDORS]
 
 notion = Notion(auth=os.getenv("NOTION_TOKEN"))
 oai    = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -148,7 +160,7 @@ def classify(text: str) -> tuple[str, str]:
 
     return args["content_type"], args["ai_primitive"]
 
-def notion_update(pid, status, summary=None, ctype=None, prim=None):
+def notion_update(pid, status, summary=None, ctype=None, prim=None, vendors=None):
     props = {"Status": {"select": {"name": status}}}
 
     if summary is not None:
@@ -160,6 +172,8 @@ def notion_update(pid, status, summary=None, ctype=None, prim=None):
         props["Content-Type"] = {"select": {"name": ctype}}
     if prim:
         props["AI-Primitive"] = {"multi_select": [{"name": prim}]}
+    if vendors:
+        props["Vendor"] = {"multi_select": [{"name": v} for v in vendors]}
 
     notion.pages.update(pid, properties=props)
 
@@ -194,12 +208,12 @@ def main():
             ctype, prim = classify(pdf_text)
             print(f"     ↳ {ctype}  /  {prim}")
 
-            notion_update(row["id"], "Enriched", summary, ctype, prim)
+            notion_update(row["id"], "Enriched", summary, ctype, prim, VENDORS)
             print("✅ Updated row → Enriched\n")
 
         except Exception as err:
             print("❌", err, "\n")
-            notion_update(row["id"], "Failed")
+            notion_update(row["id"], "Failed", vendors=VENDORS)
         time.sleep(0.3)
 
 if __name__ == "__main__":
