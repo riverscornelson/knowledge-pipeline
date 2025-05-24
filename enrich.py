@@ -97,14 +97,30 @@ def add_summary_block(page_id: str, summary: str):
     notion.blocks.children.append(page_id, children=[block])
 
 
-def inbox_rows():
-    return notion.databases.query(
-        database_id=NOTION_DB,
-        filter={"property": "Status", "select": {"equals": "Inbox"}}
-    )["results"]
+def query_all(**params) -> list[dict]:
+    """Return all pages matching the given Notion query params."""
+    results = []
+    resp = notion.databases.query(**params)
+    results.extend(resp["results"])
+    while resp.get("has_more"):
+        params["start_cursor"] = resp.get("next_cursor")
+        resp = notion.databases.query(**params)
+        results.extend(resp["results"])
+    return results
+
+
+def inbox_rows(extra_filter: dict | None = None) -> list[dict]:
+    """Return all Inbox rows, optionally filtered further."""
+    base = {"property": "Status", "select": {"equals": "Inbox"}}
+    filt = {"and": [base, extra_filter]} if extra_filter else base
+    return query_all(database_id=NOTION_DB, filter=filt)
 
 def drive_id(url: str) -> str:
-    return url.split("/d/")[1].split("/")[0]
+    """Extract the file ID from a Google Drive share URL."""
+    try:
+        return url.split("/d/")[1].split("/")[0]
+    except Exception:
+        raise ValueError(f"invalid Drive URL: {url}")
 
 def download_pdf(fid: str) -> bytes:
     buf = io.BytesIO()
@@ -224,7 +240,7 @@ def notion_update(pid, status, summary=None, ctype=None, prim=None):
 
 # ── main ────────────────────────────────────────────────
 def main():
-    rows = inbox_rows()
+    rows = inbox_rows({"property": "Drive URL", "url": {"is_not_empty": True}})
     if not rows:
         print("🚩 Nothing in Inbox."); return
     print(f"🔍 Found {len(rows)} row(s) to enrich\n")
@@ -233,8 +249,10 @@ def main():
         title = row["properties"]["Title"]["title"][0]["plain_text"]
         print(f"➡️  {title}")
 
+        url = row["properties"]["Drive URL"]["url"]
+
         try:
-            fid = drive_id(row["properties"]["Drive URL"]["url"])
+            fid = drive_id(url)
             print("   • Downloading …")
 
             pdf_text = extract_text(io.BytesIO(download_pdf(fid)))
