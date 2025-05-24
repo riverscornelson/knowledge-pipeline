@@ -104,7 +104,11 @@ def inbox_rows():
     )["results"]
 
 def drive_id(url: str) -> str:
-    return url.split("/d/")[1].split("/")[0]
+    """Extract the file ID from a Google Drive share URL."""
+    try:
+        return url.split("/d/")[1].split("/")[0]
+    except Exception:
+        raise ValueError(f"invalid Drive URL: {url}")
 
 def download_pdf(fid: str) -> bytes:
     buf = io.BytesIO()
@@ -233,8 +237,14 @@ def main():
         title = row["properties"]["Title"]["title"][0]["plain_text"]
         print(f"➡️  {title}")
 
+        drive_prop = row["properties"].get("Drive URL")
+        url = drive_prop.get("url") if drive_prop else None
+        if not url:
+            print("   ⚠️  No Drive URL – skipping\n")
+            continue
+
         try:
-            fid = drive_id(row["properties"]["Drive URL"]["url"])
+            fid = drive_id(url)
             print("   • Downloading …")
 
             pdf_text = extract_text(io.BytesIO(download_pdf(fid)))
