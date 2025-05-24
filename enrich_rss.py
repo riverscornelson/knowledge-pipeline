@@ -22,7 +22,7 @@ RSS_URL_PROP = os.getenv("RSS_URL_PROP", "Article URL")
 from enrich import (
     inbox_rows,
     add_fulltext_blocks,
-    summarise,
+    summarise_exec,
     classify,
     notion_update,
 )
@@ -75,9 +75,9 @@ def main():
             if not article_text.strip():
                 raise ValueError("empty text after extraction")
 
-            print("   • Summarising with GPT-4.1 …")
-            summary = summarise(article_text)
-            print("     ↳ summary chars:", len(summary))
+            print("   • Summarising with GPT-4.1 (exec) …")
+            summary = summarise_exec(article_text)
+            print("     ↳ exec summary chars:", len(summary))
 
             print("   • Classifying with GPT-4.1 …")
             ctype, prim = classify(article_text)
