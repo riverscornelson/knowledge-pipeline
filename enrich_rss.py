@@ -22,7 +22,9 @@ RSS_URL_PROP = os.getenv("RSS_URL_PROP", "Article URL")
 from enrich import (
     inbox_rows,
     add_fulltext_blocks,
+    add_summary_block,
     summarise_exec,
+    summarise,
     classify,
     notion_update,
 )
@@ -69,7 +71,13 @@ def main():
         try:
             print("   • Fetching article …")
             article_text = fetch_article_text(url)
+
+            print("   • Summarising with GPT-4.1 …")
+            detail = summarise(article_text)
+            add_summary_block(row["id"], detail)
+
             add_fulltext_blocks(row["id"], article_text)
+
             print("     ↳ extracted chars:", len(article_text))
 
             if not article_text.strip():
