@@ -58,6 +58,33 @@ def add_fulltext_blocks(page_id: str, full_text: str):
     notion.blocks.children.append(page_id, children=blocks)
 
 
+def add_summary_block(page_id: str, summary: str):
+    """Append a toggle block containing the provided summary."""
+    block = {
+        "object": "block",
+        "type": "toggle",
+        "toggle": {
+            "rich_text": [{"type": "text", "text": {"content": "Summary"}}],
+            "children": [
+                {
+                    "object": "block",
+                    "type": "paragraph",
+                    "paragraph": {
+                        "rich_text": [
+                            {
+                                "type": "text",
+                                "text": {"content": summary[:MAX_CHUNK]}
+                            }
+                        ]
+                    },
+                }
+            ],
+        },
+    }
+
+    notion.blocks.children.append(page_id, children=[block])
+
+
 def inbox_rows():
     return notion.databases.query(
         database_id=NOTION_DB,
@@ -199,6 +226,11 @@ def main():
             print("   • Downloading …")
 
             pdf_text = extract_text(io.BytesIO(download_pdf(fid)))
+
+            print("   • Summarising with GPT-4.1 …")
+            detail = summarise(pdf_text)
+            add_summary_block(row["id"], detail)
+
             add_fulltext_blocks(row["id"], pdf_text)
 
             print("     ↳ extracted chars:", len(pdf_text))
