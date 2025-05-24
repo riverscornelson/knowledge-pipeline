@@ -36,6 +36,9 @@ The following variables are referenced by the scripts:
 | `DRIVE_FOLDER_ID` | Optional Google Drive folder ID for `ingest_drive.py` |
 | `RSS_FEEDS` | Comma-separated list of RSS or Substack URLs for `capture_rss.py` |
 | `RSS_URL_PROP` | Name of the Notion property for the article URL (default `Article URL`) |
+| `CREATED_PROP` | Name of the Notion property for the created date (default `Created Date`) |
+
+The default assumes your database already contains a **Created Date** property.
 
 ## Usage
 

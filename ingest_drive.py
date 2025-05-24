@@ -6,6 +6,7 @@ ENV VARS REQUIRED  (set in .env or export):
   NOTION_SOURCES_DB       the DB ID printed by setup_notion.py
   GOOGLE_APP_CREDENTIALS  path to your service-account JSON key
   DRIVE_FOLDER_ID         (optional) if you didn’t name the folder “Knowledge-Base”
+  CREATED_PROP            (optional) property for created date (default "Created Date")
 
 pip install notion-client google-api-python-client python-dotenv
 """
@@ -23,6 +24,8 @@ NOTION_DB   = os.getenv("NOTION_SOURCES_DB")
 TOKEN       = os.getenv("NOTION_TOKEN")
 SA_PATH     = os.getenv("GOOGLE_APP_CREDENTIALS")
 FOLDER_ID   = os.getenv("DRIVE_FOLDER_ID")  # optional
+# property storing the created date in Notion
+CREATED_PROP = os.getenv("CREATED_PROP", "Created Date")
 # fallback: find folder called “Knowledge-Base”
 FOLDER_NAME = "Knowledge-Base"
 
@@ -70,15 +73,19 @@ def notion_page_exists(file_hash: str) -> bool:
     return len(q["results"]) > 0
 
 
-def create_notion_row(name, web_link, file_hash):
+def create_notion_row(name, web_link, file_hash, created_time):
+    props = {
+        "Title": {"title": [{"text": {"content": name}}]},
+        "Drive URL": {"url": web_link},
+        "Status": {"select": {"name": "Inbox"}},
+        "Hash": {"rich_text": [{"text": {"content": file_hash}}]},
+    }
+    if created_time:
+        props[CREATED_PROP] = {"date": {"start": created_time}}
+
     notion.pages.create(
         parent={"database_id": NOTION_DB},
-        properties={
-            "Title": {"title": [{"text": {"content": name}}]},
-            "Drive URL": {"url": web_link},
-            "Status": {"select": {"name": "Inbox"}},
-            "Hash": {"rich_text": [{"text": {"content": file_hash}}]},
-        },
+        properties=props,
     )
     print(f"Added ⇒ {name}")
 
@@ -107,7 +114,12 @@ def main():
         file_hash = sha256_of_drive_file(f["id"])
         if notion_page_exists(file_hash):
             continue  # already ingested
-        create_notion_row(f["name"], f["webViewLink"], file_hash)
+        create_notion_row(
+            f["name"],
+            f["webViewLink"],
+            file_hash,
+            f.get("createdTime")
+        )
         new_count += 1
         time.sleep(0.3)  # gentle on Notion rate-limit
 
