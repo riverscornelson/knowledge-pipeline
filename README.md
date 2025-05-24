@@ -35,6 +35,7 @@ The following variables are referenced by the scripts:
 | `MODEL_CLASSIFIER` | Model for classification (default `gpt-4.1`) |
 | `DRIVE_FOLDER_ID` | Optional Google Drive folder ID for `ingest_drive.py` |
 | `RSS_FEEDS` | Comma-separated list of RSS or Substack URLs for `capture_rss.py` |
+| `RSS_URL_PROP` | Name of the Notion property for the article URL (default `Article URL`) |
 
 ## Usage
 
@@ -64,6 +65,9 @@ python capture_rss.py
 
 If a feed URL points to a Substack newsletter homepage, the script will
 automatically append `/feed`.
+
+Use the `RSS_URL_PROP` variable if your Notion database uses a different
+property name than `Article URL` for storing article links.
 
 ---
 

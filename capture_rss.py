@@ -4,6 +4,7 @@ capture_rss.py – add new RSS items to the 📥 Sources database.
 ENV (.env)
   NOTION_TOKEN, NOTION_SOURCES_DB
   RSS_FEEDS      comma-separated list of feed URLs or Substack newsletter URLs
+  RSS_URL_PROP   property name for the article URL (default 'Article URL')
 """
 import os, hashlib, time, re
 from urllib.parse import urlparse
@@ -14,8 +15,9 @@ import feedparser
 
 load_dotenv()
 
-NOTION_DB  = os.getenv("NOTION_SOURCES_DB")
-RSS_FEEDS  = os.getenv("RSS_FEEDS", "")
+NOTION_DB     = os.getenv("NOTION_SOURCES_DB")
+RSS_FEEDS     = os.getenv("RSS_FEEDS", "")
+RSS_URL_PROP  = os.getenv("RSS_URL_PROP", "Article URL")
 
 notion = Notion(auth=os.getenv("NOTION_TOKEN"))
 
@@ -51,7 +53,7 @@ def create_row(title: str, link: str, h: str):
         parent={"database_id": NOTION_DB},
         properties={
             "Title": {"title": [{"text": {"content": title}}]},
-            "Article URL": {"url": link},
+            RSS_URL_PROP: {"url": link},
             "Status": {"select": {"name": "Inbox"}},
             "Hash": {"rich_text": [{"text": {"content": h}}]},
         },

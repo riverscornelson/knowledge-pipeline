@@ -8,9 +8,16 @@ ENV (.env)
   OPENAI_API_KEY
   MODEL_SUMMARY=gpt-4.1
   MODEL_CLASSIFIER=gpt-4.1
+  RSS_URL_PROP=Article URL
 """
-import re, html, time, urllib.request
+import os, re, html, time, urllib.request
 from urllib.error import URLError
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+RSS_URL_PROP = os.getenv("RSS_URL_PROP", "Article URL")
 
 from enrich import (
     inbox_rows,
@@ -42,7 +49,7 @@ def main():
     print(f"🔍 Found {len(rows)} row(s) to enrich\n")
 
     for row in rows:
-        art = row["properties"].get("Article URL")
+        art = row["properties"].get(RSS_URL_PROP)
         if not art or not art.get("url"):
             continue
         title = row["properties"]["Title"]["title"][0]["plain_text"]
