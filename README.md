@@ -6,7 +6,8 @@ This repository holds small utilities for capturing information from external so
 
 - `ingest_drive.py` – scans a Google Drive folder and creates rows in the Notion **Sources** database for any new files.
 - `enrich.py` – downloads PDFs referenced in the database, extracts text, generates a summary, performs a simple classification and updates the Notion page.
-- `capture_rss.py` – placeholder script for future RSS ingestion.
+- `enrich_rss.py` – summarises and classifies RSS articles already stored in Notion.
+- `capture_rss.py` – parses configured feeds and adds new items to the database.
 - `requirements.txt` – Python dependencies for the utilities.
 
 ## Installation
@@ -33,6 +34,7 @@ The following variables are referenced by the scripts:
 | `MODEL_SUMMARY` | Model for summarisation (default `gpt-4.1`) |
 | `MODEL_CLASSIFIER` | Model for classification (default `gpt-4.1`) |
 | `DRIVE_FOLDER_ID` | Optional Google Drive folder ID for `ingest_drive.py` |
+| `RSS_FEEDS` | Comma-separated list of RSS or Substack URLs for `capture_rss.py` |
 
 ## Usage
 
@@ -48,7 +50,20 @@ Then run the enrichment script to summarise and classify rows whose status is `I
 python enrich.py
 ```
 
-`capture_rss.py` currently contains no implementation.
+For RSS articles already recorded in the database, run:
+
+```bash
+python enrich_rss.py
+```
+
+To pull new entries from configured feeds:
+
+```bash
+python capture_rss.py
+```
+
+If a feed URL points to a Substack newsletter homepage, the script will
+automatically append `/feed`.
 
 ---
 
