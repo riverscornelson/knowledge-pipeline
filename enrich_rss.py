@@ -55,15 +55,13 @@ def fetch_article_text(url: str) -> str:
 
 
 def main():
-    rows = inbox_rows()
+    rows = inbox_rows(require_url=RSS_URL_PROP)
     if not rows:
         print("🚩 Nothing in Inbox."); return
     print(f"🔍 Found {len(rows)} row(s) to enrich\n")
 
     for row in rows:
         art = row["properties"].get(RSS_URL_PROP)
-        if not art or not art.get("url"):
-            continue
         title = row["properties"]["Title"]["title"][0]["plain_text"]
         url = art["url"]
         print(f"➡️  {title}")

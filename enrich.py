@@ -97,11 +97,25 @@ def add_summary_block(page_id: str, summary: str):
     notion.blocks.children.append(page_id, children=[block])
 
 
-def inbox_rows():
-    return notion.databases.query(
-        database_id=NOTION_DB,
-        filter={"property": "Status", "select": {"equals": "Inbox"}}
-    )["results"]
+def inbox_rows(require_url: str | None = None):
+    """Return all rows in the Inbox, optionally ensuring a URL property is set."""
+    base_filter = {"property": "Status", "select": {"equals": "Inbox"}}
+    if require_url:
+        filter_ = {"and": [base_filter,
+                              {"property": require_url,
+                               "url": {"is_not_empty": True}}]}
+    else:
+        filter_ = base_filter
+
+    results = []
+    kwargs = dict(database_id=NOTION_DB, filter=filter_, page_size=100)
+    while True:
+        resp = notion.databases.query(**kwargs)
+        results.extend(resp["results"])
+        if not resp.get("has_more"):
+            break
+        kwargs["start_cursor"] = resp["next_cursor"]
+    return results
 
 def drive_id(url: str) -> str:
     """Extract the file ID from a Google Drive share URL."""
@@ -228,7 +242,7 @@ def notion_update(pid, status, summary=None, ctype=None, prim=None):
 
 # ── main ────────────────────────────────────────────────
 def main():
-    rows = inbox_rows()
+    rows = inbox_rows(require_url="Drive URL")
     if not rows:
         print("🚩 Nothing in Inbox."); return
     print(f"🔍 Found {len(rows)} row(s) to enrich\n")
@@ -239,9 +253,6 @@ def main():
 
         drive_prop = row["properties"].get("Drive URL")
         url = drive_prop.get("url") if drive_prop else None
-        if not url:
-            print("   ⚠️  No Drive URL – skipping\n")
-            continue
 
         try:
             fid = drive_id(url)
