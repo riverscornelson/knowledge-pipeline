@@ -5,10 +5,15 @@ This repository holds small utilities for capturing information from external so
 ## Contents
 
 - `ingest_drive.py` – scans a Google Drive folder and creates rows in the Notion **Sources** database for any new files.
-- `enrich.py` – downloads PDFs referenced in the database, extracts text, generates a summary, performs a simple classification and updates the Notion page.
+- `enrich.py` – downloads PDFs referenced in the database, extracts text, generates summaries, performs a simple classification and updates the Notion page.
 - `enrich_rss.py` – summarises and classifies RSS articles already stored in Notion.
 - `capture_rss.py` – parses configured feeds and adds new items to the database.
 - `requirements.txt` – Python dependencies for the utilities.
+
+The `Summary` property in the database now holds a concise five-sentence
+executive summary. Each Notion page also includes collapsible sections: one
+named **Summary** containing the full ~175‑word version and another called
+**Raw** with the extracted text.
 
 ## Installation
 
