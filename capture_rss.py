@@ -5,9 +5,11 @@ ENV (.env)
   NOTION_TOKEN, NOTION_SOURCES_DB
   RSS_FEEDS      comma-separated list of feed URLs or Substack newsletter URLs
   RSS_URL_PROP   property name for the article URL (default 'Article URL')
+  CREATED_PROP   (optional) property for created date (default "Created Date")
 """
 import os, hashlib, time, re
 from urllib.parse import urlparse
+from email.utils import parsedate_to_datetime
 
 from dotenv import load_dotenv
 from notion_client import Client as Notion
@@ -18,6 +20,7 @@ load_dotenv()
 NOTION_DB     = os.getenv("NOTION_SOURCES_DB")
 RSS_FEEDS     = os.getenv("RSS_FEEDS", "")
 RSS_URL_PROP  = os.getenv("RSS_URL_PROP", "Article URL")
+CREATED_PROP  = os.getenv("CREATED_PROP", "Created Date")
 
 notion = Notion(auth=os.getenv("NOTION_TOKEN"))
 
@@ -40,6 +43,16 @@ def entry_hash(link: str) -> str:
     return hashlib.sha256(link.encode("utf-8")).hexdigest()
 
 
+def entry_date(entry) -> str | None:
+    date_str = entry.get("published") or entry.get("updated")
+    if not date_str:
+        return None
+    try:
+        return parsedate_to_datetime(date_str).isoformat()
+    except Exception:
+        return None
+
+
 def notion_page_exists(h: str) -> bool:
     q = notion.databases.query(
         database_id=NOTION_DB,
@@ -48,15 +61,19 @@ def notion_page_exists(h: str) -> bool:
     return len(q["results"]) > 0
 
 
-def create_row(title: str, link: str, h: str):
+def create_row(title: str, link: str, h: str, created_time: str | None):
+    props = {
+        "Title": {"title": [{"text": {"content": title}}]},
+        RSS_URL_PROP: {"url": link},
+        "Status": {"select": {"name": "Inbox"}},
+        "Hash": {"rich_text": [{"text": {"content": h}}]},
+    }
+    if created_time:
+        props[CREATED_PROP] = {"date": {"start": created_time}}
+
     notion.pages.create(
         parent={"database_id": NOTION_DB},
-        properties={
-            "Title": {"title": [{"text": {"content": title}}]},
-            RSS_URL_PROP: {"url": link},
-            "Status": {"select": {"name": "Inbox"}},
-            "Hash": {"rich_text": [{"text": {"content": h}}]},
-        },
+        properties=props,
     )
     print(f"Added ⇒ {title}")
 
@@ -81,7 +98,8 @@ def main():
             if notion_page_exists(h):
                 continue
             title = entry.get("title", link)
-            create_row(title, link, h)
+            created = entry_date(entry)
+            create_row(title, link, h, created)
             time.sleep(0.3)
 
 
