@@ -30,8 +30,18 @@ from enrich import (
 
 def fetch_article_text(url: str) -> str:
     """Download the article and return crude plain text."""
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120 Safari/537.36"
+            )
+        },
+    )
     try:
-        with urllib.request.urlopen(url) as resp:
+        with urllib.request.urlopen(req) as resp:
             data = resp.read().decode("utf-8", "ignore")
     except URLError as exc:
         raise RuntimeError(f"failed to fetch {url}: {exc}")
