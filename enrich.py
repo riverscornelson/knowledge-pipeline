@@ -89,6 +89,25 @@ def summarise(text: str) -> str:
 
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
+def summarise_exec(text: str) -> str:
+    """Return a five-sentence executive summary of the provided text."""
+    text = text[:10000000000]
+    resp = oai.chat.completions.create(
+        model=MODEL_SUMMARY,
+        messages=[
+            {"role": "system",
+             "content": (
+                 "Summarise the following document in five sentences for an "
+                 "executive audience. Focus on relevant takeaways for AI use in business." 
+             )},
+            {"role": "user", "content": text}
+        ],
+        max_completion_tokens=1000
+    )
+    return resp.choices[0].message.content.strip()
+
+@retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
+       retry=lambda e: isinstance(e, (APIError, RateLimitError)))
 def classify(text: str) -> tuple[str, str]:
     schema = {
         "name": "classify",
@@ -149,6 +168,7 @@ def classify(text: str) -> tuple[str, str]:
     return args["content_type"], args["ai_primitive"]
 
 def notion_update(pid, status, summary=None, ctype=None, prim=None):
+    """Update a Notion page status and optional five-sentence summary."""
     props = {"Status": {"select": {"name": status}}}
 
     if summary is not None:
@@ -186,9 +206,9 @@ def main():
             if not pdf_text.strip():
                 raise ValueError("empty text after extraction")
 
-            print("   • Summarising with GPT-4.1 …")
-            summary = summarise(pdf_text)
-            print("     ↳ summary chars:", len(summary))
+            print("   • Summarising with GPT-4.1 (exec) …")
+            summary = summarise_exec(pdf_text)
+            print("     ↳ exec summary chars:", len(summary))
 
             print("   • Classifying with GPT-4.1 …")
             ctype, prim = classify(pdf_text)
