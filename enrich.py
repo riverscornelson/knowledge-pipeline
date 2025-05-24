@@ -40,22 +40,34 @@ drive = build(
 MAX_CHUNK = 1900                    # Notion limit per text object
 
 def add_fulltext_blocks(page_id: str, full_text: str):
-    """Append the extracted PDF text to the page body in 2 000-char chunks."""
+    """Append the extracted text as a toggle block containing paragraph chunks."""
     chunks = [full_text[i:i+MAX_CHUNK] for i in range(0, len(full_text), MAX_CHUNK)]
     # limit to first 25 chunks (≈50k) – adjust as you wish
     chunks = chunks[:25]
 
-    blocks = [{
-        "object": "block",
-        "type": "paragraph",
-        "paragraph": {
-            "rich_text": [
-                {"type": "text", "text": {"content": chunk}}
-            ]
+    children = [
+        {
+            "object": "block",
+            "type": "paragraph",
+            "paragraph": {
+                "rich_text": [
+                    {"type": "text", "text": {"content": chunk}}
+                ]
+            },
         }
-    } for chunk in chunks]
+        for chunk in chunks
+    ]
 
-    notion.blocks.children.append(page_id, children=blocks)
+    block = {
+        "object": "block",
+        "type": "toggle",
+        "toggle": {
+            "rich_text": [{"type": "text", "text": {"content": "Raw"}}],
+            "children": children,
+        },
+    }
+
+    notion.blocks.children.append(page_id, children=[block])
 
 
 def add_summary_block(page_id: str, summary: str):
