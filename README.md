@@ -15,6 +15,7 @@ The Responses API is preferred across the pipeline for all OpenAI calls.
 | `enrich_rss.py` | Summarise and classify RSS articles already stored in Notion. |
 | `postprocess.py` | Apply additional enrichment prompts. Used by `enrich.py` and `enrich_rss.py`. |
 | `infer_vendor.py` | Infer and set the Vendor field on existing pages. |
+| `infer_created_date.py` | Populate missing Created Date using article text. |
 
 ## Setup
 
@@ -106,6 +107,12 @@ If a feed URL points to a Substack homepage, `capture_rss.py` automatically appe
 
 ```bash
 python infer_vendor.py
+```
+
+6. Backfill missing Created Dates:
+
+```bash
+python infer_created_date.py
 ```
 
 Items older than `RSS_WINDOW_DAYS` are ignored when capturing RSS feeds.

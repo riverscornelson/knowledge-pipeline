@@ -12,12 +12,14 @@ ENV (.env)
 """
 import os, re, html, time, urllib.request
 from urllib.error import URLError
+from datetime import datetime
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
-RSS_URL_PROP = os.getenv("RSS_URL_PROP", "Article URL")
+RSS_URL_PROP  = os.getenv("RSS_URL_PROP", "Article URL")
+CREATED_PROP  = os.getenv("CREATED_PROP", "Created Date")
 
 from enrich import (
     inbox_rows,
@@ -27,6 +29,7 @@ from enrich import (
     summarise,
     classify,
     notion_update,
+    notion,
 )
 from postprocess import post_process_page
 from infer_vendor import infer_vendor_name
@@ -56,6 +59,32 @@ def fetch_article_text(url: str) -> str:
     return " ".join(text.split())
 
 
+DATE_PATTERNS = [
+    r"\b(?:Jan|January|Feb|February|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Oct|October|Nov|November|Dec|December)\s+\d{1,2},\s+\d{4}\b",
+    r"\b\d{1,2}\s+(?:Jan|January|Feb|February|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Oct|October|Nov|November|Dec|December)\s+\d{4}\b",
+    r"\b\d{4}-\d{2}-\d{2}\b",
+]
+
+DATE_FORMATS = ["%B %d, %Y", "%b %d, %Y", "%d %B %Y", "%Y-%m-%d"]
+
+
+def extract_date_from_text(text: str) -> str | None:
+    """Return an ISO date string if a known date pattern is found."""
+    sample = text[:400]
+    for pat in DATE_PATTERNS:
+        m = re.search(pat, sample)
+        if not m:
+            continue
+        date_str = m.group(0)
+        for fmt in DATE_FORMATS:
+            try:
+                dt = datetime.strptime(date_str, fmt)
+                return dt.date().isoformat()
+            except ValueError:
+                continue
+    return None
+
+
 def main():
     rows = inbox_rows(require_url=RSS_URL_PROP)
     if not rows:
@@ -71,6 +100,17 @@ def main():
         try:
             print("   • Fetching article …")
             article_text = fetch_article_text(url)
+
+            # assign created date from article text if missing
+            created_prop = row["properties"].get(CREATED_PROP, {})
+            date_val = created_prop.get("date", {})
+            if not date_val or not date_val.get("start"):
+                found = extract_date_from_text(article_text)
+                if found:
+                    notion.pages.update(row["id"], properties={
+                        CREATED_PROP: {"date": {"start": found}}
+                    })
+                    print(f"     ↳ set Created Date: {found}")
 
             print("   • Summarising with GPT-4.1 …")
             detail = summarise(article_text)
