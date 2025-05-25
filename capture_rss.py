@@ -10,6 +10,7 @@ ENV (.env)
 import os, hashlib, time, re
 from urllib.parse import urlparse
 from email.utils import parsedate_to_datetime
+from tenacity import retry, wait_exponential, stop_after_attempt
 
 from dotenv import load_dotenv
 from notion_client import Client as Notion
@@ -61,7 +62,12 @@ def notion_page_exists(h: str) -> bool:
     return len(q["results"]) > 0
 
 
-def create_row(title: str, link: str, h: str, created_time: str | None):
+@retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5))
+def _create_page(props: dict):
+    notion.pages.create(parent={"database_id": NOTION_DB}, properties=props)
+
+
+def create_row(title: str, link: str, h: str, created_time: str | None) -> None:
     props = {
         "Title": {"title": [{"text": {"content": title}}]},
         RSS_URL_PROP: {"url": link},
@@ -70,12 +76,11 @@ def create_row(title: str, link: str, h: str, created_time: str | None):
     }
     if created_time:
         props[CREATED_PROP] = {"date": {"start": created_time}}
-
-    notion.pages.create(
-        parent={"database_id": NOTION_DB},
-        properties=props,
-    )
-    print(f"Added ⇒ {title}")
+    try:
+        _create_page(props)
+        print(f"Added ⇒ {title}")
+    except Exception as exc:
+        print(f"   ⚠️  failed to add {title}: {exc}")
 
 
 def main():
@@ -95,7 +100,11 @@ def main():
             if not link:
                 continue
             h = entry_hash(link)
-            if notion_page_exists(h):
+            try:
+                if notion_page_exists(h):
+                    continue
+            except Exception as exc:
+                print(f"   ⚠️  error checking existing pages: {exc}")
                 continue
             title = entry.get("title", link)
             created = entry_date(entry)

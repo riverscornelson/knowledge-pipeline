@@ -16,6 +16,7 @@ from notion_client import Client as Notion
 from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 from googleapiclient.http import MediaIoBaseDownload
+from tenacity import retry, wait_exponential, stop_after_attempt
 
 load_dotenv()
 
@@ -38,6 +39,7 @@ drive  = build(
 )
 
 # ── Helpers ───────────────────────────────────────────────────
+@retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5))
 def get_folder_id_by_name(name: str):
     resp = (
         drive.files()
@@ -50,6 +52,7 @@ def get_folder_id_by_name(name: str):
     return resp["files"][0]["id"] if resp["files"] else None
 
 
+@retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5))
 def sha256_of_drive_file(fid: str) -> str:
     request = drive.files().get_media(fileId=fid)
     buf = io.BytesIO()
@@ -60,6 +63,7 @@ def sha256_of_drive_file(fid: str) -> str:
     return hashlib.sha256(buf.getvalue()).hexdigest()
 
 
+@retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5))
 def notion_page_exists(file_hash: str) -> bool:
     q = notion.databases.query(
         **{
@@ -81,6 +85,7 @@ def drive_id(url: str) -> str:
         return ""
 
 
+@retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5))
 def known_drive_files() -> tuple[set[str], set[str]]:
     """Return sets of Drive file IDs and SHA256 hashes already in Notion."""
     filt = {"property": "Drive URL", "url": {"is_not_empty": True}}
@@ -106,6 +111,11 @@ def known_drive_files() -> tuple[set[str], set[str]]:
     return ids, hashes
 
 
+@retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5))
+def _create_page(props: dict):
+    notion.pages.create(parent={"database_id": NOTION_DB}, properties=props)
+
+
 def create_notion_row(name, web_link, file_hash, created_time):
     props = {
         "Title": {"title": [{"text": {"content": name}}]},
@@ -116,11 +126,11 @@ def create_notion_row(name, web_link, file_hash, created_time):
     if created_time:
         props[CREATED_PROP] = {"date": {"start": created_time}}
 
-    notion.pages.create(
-        parent={"database_id": NOTION_DB},
-        properties=props,
-    )
-    print(f"Added ⇒ {name}")
+    try:
+        _create_page(props)
+        print(f"Added ⇒ {name}")
+    except Exception as exc:
+        print(f"   ⚠️  failed to add {name}: {exc}")
 
 
 # ── Main flow ─────────────────────────────────────────────────
@@ -150,7 +160,11 @@ def main():
     for f in files:
         if f["id"] in known_ids:
             continue
-        file_hash = sha256_of_drive_file(f["id"])
+        try:
+            file_hash = sha256_of_drive_file(f["id"])
+        except Exception as exc:
+            print(f"   ⚠️  failed to download {f['name']}: {exc}")
+            continue
         if file_hash in known_hashes:
             continue
         create_notion_row(
