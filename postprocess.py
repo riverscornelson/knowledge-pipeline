@@ -2,6 +2,7 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI, APIError, RateLimitError
+import openai
 from notion_client import Client as Notion
 from tenacity import retry, wait_exponential, stop_after_attempt
 
@@ -9,6 +10,14 @@ load_dotenv()
 MODEL_POSTPROCESS = os.getenv("MODEL_POSTPROCESS", "gpt-4.1")
 notion = Notion(auth=os.getenv("NOTION_TOKEN"))
 oai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+HAS_RESPONSES = hasattr(oai, "responses")
+
+def _chat_create(**kwargs):
+    if hasattr(oai, "chat"):
+        return oai.chat.completions.create(**kwargs)
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    return openai.ChatCompletion.create(**kwargs)
 
 MAX_CHUNK = 1900
 
@@ -33,14 +42,23 @@ POST_PROMPTS = [
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
 def _ask(prompt: str, text: str) -> str:
-    resp = oai.responses.create(
-        model=MODEL_POSTPROCESS,
-        instructions=prompt,
-        input=text,
-        max_output_tokens=1000,
-    )
-    out = resp.output[0]
-    return out.content[0].text.strip()
+    if HAS_RESPONSES:
+        resp = oai.responses.create(
+            model=MODEL_POSTPROCESS,
+            instructions=prompt,
+            input=text,
+            max_output_tokens=1000,
+        )
+        out = resp.output[0]
+        return out.content[0].text.strip()
+    else:
+        resp = _chat_create(
+            model=MODEL_POSTPROCESS,
+            messages=[{"role": "system", "content": prompt},
+                      {"role": "user", "content": text}],
+            max_tokens=1000,
+        )
+        return resp.choices[0].message.content.strip()
 
 def _append_toggle(page_id: str, title: str, content: str):
     block = {

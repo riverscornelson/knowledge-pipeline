@@ -1,6 +1,8 @@
 # Knowledge Pipeline
 
 Small utilities for capturing PDFs and RSS articles and storing them in a Notion database. The scripts can summarise and classify content using OpenAI models via the Responses API.
+They automatically fall back to Chat Completions if the installed OpenAI client
+doesn't yet support the Responses API (version < 1.3).
 
 ## Utilities
 
