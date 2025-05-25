@@ -3,13 +3,15 @@ capture_rss.py – add new RSS items to the 📥 Sources database.
 
 ENV (.env)
   NOTION_TOKEN, NOTION_SOURCES_DB
-  RSS_FEEDS      comma-separated list of feed URLs or Substack newsletter URLs
-  RSS_URL_PROP   property name for the article URL (default 'Article URL')
-  CREATED_PROP   (optional) property for created date (default "Created Date")
+  RSS_FEEDS       comma-separated list of feed URLs or Substack newsletter URLs
+  RSS_URL_PROP    property name for the article URL (default 'Article URL')
+  CREATED_PROP    (optional) property for created date (default "Created Date")
+  RSS_WINDOW_DAYS recency window for entries (default 90)
 """
 import os, hashlib, time, re
 from urllib.parse import urlparse
 from email.utils import parsedate_to_datetime
+from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
 from notion_client import Client as Notion
@@ -21,6 +23,7 @@ NOTION_DB     = os.getenv("NOTION_SOURCES_DB")
 RSS_FEEDS     = os.getenv("RSS_FEEDS", "")
 RSS_URL_PROP  = os.getenv("RSS_URL_PROP", "Article URL")
 CREATED_PROP  = os.getenv("CREATED_PROP", "Created Date")
+WINDOW_DAYS   = int(os.getenv("RSS_WINDOW_DAYS", "90"))
 
 notion = Notion(auth=os.getenv("NOTION_TOKEN"))
 
@@ -83,6 +86,8 @@ def main():
     if not feeds:
         raise SystemExit("❌ RSS_FEEDS not provided")
 
+    cutoff = datetime.utcnow() - timedelta(days=WINDOW_DAYS)
+
     for url in feeds:
         print(f"📡 {url}")
         parsed = feedparser.parse(url)
@@ -93,6 +98,14 @@ def main():
         for entry in parsed.entries:
             link = entry.get("link")
             if not link:
+                continue
+            entry_time = None
+            if entry_date(entry):
+                try:
+                    entry_time = datetime.fromisoformat(entry_date(entry))
+                except Exception:
+                    entry_time = None
+            if entry_time and entry_time < cutoff:
                 continue
             h = entry_hash(link)
             if notion_page_exists(h):
