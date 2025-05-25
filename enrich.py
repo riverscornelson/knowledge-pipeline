@@ -19,6 +19,7 @@ from googleapiclient.http import MediaIoBaseDownload
 from pdfminer.high_level import extract_text
 from tenacity import retry, wait_exponential, stop_after_attempt
 from openai import OpenAI, APIError, RateLimitError
+from postprocess import post_process_page
 
 # ── init ──────────────────────────────────────────────
 load_dotenv()
@@ -278,6 +279,9 @@ def main():
             print("   • Classifying with GPT-4.1 …")
             ctype, prim = classify(pdf_text)
             print(f"     ↳ {ctype}  /  {prim}")
+
+            print("   • Post-processing …")
+            post_process_page(row["id"], pdf_text)
 
             notion_update(row["id"], "Enriched", summary, ctype, prim)
             print("✅ Updated row → Enriched\n")

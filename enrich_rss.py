@@ -28,6 +28,7 @@ from enrich import (
     classify,
     notion_update,
 )
+from postprocess import post_process_page
 
 
 def fetch_article_text(url: str) -> str:
@@ -88,6 +89,9 @@ def main():
             print("   • Classifying with GPT-4.1 …")
             ctype, prim = classify(article_text)
             print(f"     ↳ {ctype}  /  {prim}")
+
+            print("   • Post-processing …")
+            post_process_page(row["id"], article_text)
 
             notion_update(row["id"], "Enriched", summary, ctype, prim)
             print("✅ Updated row → Enriched\n")
