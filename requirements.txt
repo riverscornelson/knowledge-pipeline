@@ -4,3 +4,5 @@ notion-client
 feedparser
 python-dotenv
 openai
+pdfminer.six
+tenacity
