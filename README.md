@@ -6,7 +6,7 @@ Small utilities for capturing PDFs and RSS articles and storing them in a Notion
 
 | Script | Description |
 |--------|-------------|
-| `ingest_drive.py` | Scan a Google Drive folder for new PDFs and create pages in the **Sources** database. |
+| `ingest_drive.py` | Scan a Google Drive folder for new PDFs and create pages in the **Sources** database. Existing files are skipped without re-downloading. |
 | `enrich.py` | Download PDFs referenced in the database, extract text, generate summaries, classify topics and update each page. |
 | `capture_rss.py` | Pull new entries from RSS feeds or Substack newsletters and add them to the database. |
 | `enrich_rss.py` | Summarise and classify RSS articles already stored in Notion. |

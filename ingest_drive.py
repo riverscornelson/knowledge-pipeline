@@ -73,6 +73,39 @@ def notion_page_exists(file_hash: str) -> bool:
     return len(q["results"]) > 0
 
 
+def drive_id(url: str) -> str:
+    """Extract the file ID from a Google Drive share URL."""
+    try:
+        return url.split("/d/")[1].split("/")[0]
+    except Exception:
+        return ""
+
+
+def known_drive_files() -> tuple[set[str], set[str]]:
+    """Return sets of Drive file IDs and SHA256 hashes already in Notion."""
+    filt = {"property": "Drive URL", "url": {"is_not_empty": True}}
+    kwargs = dict(database_id=NOTION_DB, filter=filt, page_size=100)
+    ids: set[str] = set()
+    hashes: set[str] = set()
+    while True:
+        resp = notion.databases.query(**kwargs)
+        for page in resp["results"]:
+            url = page["properties"].get("Drive URL", {}).get("url")
+            if url:
+                fid = drive_id(url)
+                if fid:
+                    ids.add(fid)
+            hprop = page["properties"].get("Hash", {}).get("rich_text", [])
+            if hprop:
+                text = hprop[0].get("plain_text")
+                if text:
+                    hashes.add(text)
+        if not resp.get("has_more"):
+            break
+        kwargs["start_cursor"] = resp["next_cursor"]
+    return ids, hashes
+
+
 def create_notion_row(name, web_link, file_hash, created_time):
     props = {
         "Title": {"title": [{"text": {"content": name}}]},
@@ -98,6 +131,10 @@ def main():
         if not FOLDER_ID:
             raise SystemExit("❌  Could not locate Drive folder.")
 
+    known_ids, known_hashes = known_drive_files()
+    if known_ids:
+        print(f"Skipping {len(known_ids)} file(s) already linked in Notion")
+
     files = (
         drive.files()
         .list(
@@ -111,9 +148,11 @@ def main():
 
     new_count = 0
     for f in files:
+        if f["id"] in known_ids:
+            continue
         file_hash = sha256_of_drive_file(f["id"])
-        if notion_page_exists(file_hash):
-            continue  # already ingested
+        if file_hash in known_hashes:
+            continue
         create_notion_row(
             f["name"],
             f["webViewLink"],
