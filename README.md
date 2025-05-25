@@ -1,6 +1,6 @@
 # Knowledge Pipeline
 
-Small utilities for capturing PDFs and RSS articles and storing them in a Notion database. The scripts can summarise and classify content using OpenAI models.
+Small utilities for capturing PDFs and RSS articles and storing them in a Notion database. The scripts can summarise and classify content using OpenAI models via the Responses API.
 
 ## Utilities
 

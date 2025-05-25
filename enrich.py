@@ -133,36 +133,36 @@ def download_pdf(fid: str) -> bytes:
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
 def summarise(text: str) -> str:
+    """Summarise text using the Responses API."""
     text = text[:10000000000]
-    resp = oai.chat.completions.create(
+    resp = oai.responses.create(
         model=MODEL_SUMMARY,
-        messages=[
-            {"role": "system",
-             "content": "Summarise the following document in no more than 175 words, markdown. Focus on relevant takeaways for AI use in business."},
-            {"role": "user", "content": text}
-        ],
-        max_completion_tokens=1000
+        instructions=(
+            "Summarise the following document in no more than 175 words, markdown. "
+            "Focus on relevant takeaways for AI use in business."
+        ),
+        input=text,
+        max_output_tokens=1000,
     )
-    return resp.choices[0].message.content.strip()
+    out = resp.output[0]
+    return out.content[0].text.strip()
 
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
 def summarise_exec(text: str) -> str:
-    """Return a five-sentence executive summary of the provided text."""
+    """Return a five-sentence executive summary using the Responses API."""
     text = text[:10000000000]
-    resp = oai.chat.completions.create(
+    resp = oai.responses.create(
         model=MODEL_SUMMARY,
-        messages=[
-            {"role": "system",
-             "content": (
-                 "Summarise the following document in five sentences for an "
-                 "executive audience. Focus on relevant takeaways for AI use in business." 
-             )},
-            {"role": "user", "content": text}
-        ],
-        max_completion_tokens=1000
+        instructions=(
+            "Summarise the following document in five sentences for an "
+            "executive audience. Focus on relevant takeaways for AI use in business."
+        ),
+        input=text,
+        max_output_tokens=1000,
     )
-    return resp.choices[0].message.content.strip()
+    out = resp.output[0]
+    return out.content[0].text.strip()
 
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
@@ -191,20 +191,19 @@ def classify(text: str) -> tuple[str, str]:
         }
     }
 
-    resp = oai.chat.completions.create(
+    resp = oai.responses.create(
         model=MODEL_CLASSIFIER,
         tools=[{"type": "function", "function": schema}],
         tool_choice={"type": "function", "function": {"name": "classify"}},
-        messages=[
-            {"role": "system",
-             "content": ("Classify the document using ONLY the enum values. "
-                         "If unsure pick the closest match.")},
-            {"role": "user", "content": text[:600000]}
-        ],
-        max_completion_tokens=60
+        instructions=(
+            "Classify the document using ONLY the enum values. If unsure pick the closest match."
+        ),
+        input=text[:600000],
+        max_output_tokens=60,
     )
 
-    tc = resp.choices[0].message.tool_calls
+    out = resp.output[0]
+    tc = getattr(out, "tool_calls", None)
     if not tc:
         raise ValueError("GPT-4.1 did not return a tool call")
 
