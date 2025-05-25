@@ -2,3 +2,4 @@
 .env
 *.json
 __pycache__/
+.idea/
