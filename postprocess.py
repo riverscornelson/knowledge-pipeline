@@ -61,20 +61,32 @@ def _ask(prompt: str, text: str) -> str:
         return resp.choices[0].message.content.strip()
 
 def _append_toggle(page_id: str, title: str, content: str):
+    """Append a toggle containing the provided content.
+
+    The Notion API limits each rich text object to around ``MAX_CHUNK``
+    characters.  Previously only the first chunk was sent which truncated
+    longer responses.  This splits the text into multiple paragraph blocks
+    so the full result is preserved.
+    """
+
+    chunks = [content[i:i + MAX_CHUNK] for i in range(0, len(content), MAX_CHUNK)]
+    children = [
+        {
+            "object": "block",
+            "type": "paragraph",
+            "paragraph": {
+                "rich_text": [{"type": "text", "text": {"content": chunk}}]
+            },
+        }
+        for chunk in chunks
+    ]
+
     block = {
         "object": "block",
         "type": "toggle",
         "toggle": {
             "rich_text": [{"type": "text", "text": {"content": title}}],
-            "children": [
-                {
-                    "object": "block",
-                    "type": "paragraph",
-                    "paragraph": {
-                        "rich_text": [{"type": "text", "text": {"content": content[:MAX_CHUNK]}}]
-                    },
-                }
-            ],
+            "children": children,
         },
     }
     notion.blocks.children.append(page_id, children=[block])
