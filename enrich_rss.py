@@ -10,7 +10,7 @@ ENV (.env)
   MODEL_CLASSIFIER=gpt-4.1
   RSS_URL_PROP=Article URL
 """
-import os, re, html, time, urllib.request
+import os, re, html, time, urllib.request, traceback
 from urllib.error import URLError
 
 from dotenv import load_dotenv
@@ -93,7 +93,8 @@ def main():
             print("✅ Updated row → Enriched\n")
 
         except Exception as err:
-            print("❌", err, "\n")
+            print("❌", err)
+            traceback.print_exc()
             notion_update(row["id"], "Failed")
         time.sleep(0.3)
 

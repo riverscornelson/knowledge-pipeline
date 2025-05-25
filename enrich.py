@@ -10,7 +10,7 @@ ENV (.env)
   MODEL_SUMMARY=gpt-4.1
   MODEL_CLASSIFIER=gpt-4.1
 """
-import os, io, json, time
+import os, io, json, time, traceback
 from dotenv import load_dotenv
 from notion_client import Client as Notion
 from googleapiclient.discovery import build
@@ -283,7 +283,8 @@ def main():
             print("✅ Updated row → Enriched\n")
 
         except Exception as err:
-            print("❌", err, "\n")
+            print("❌", err)
+            traceback.print_exc()
             notion_update(row["id"], "Failed")
         time.sleep(0.3)
 
