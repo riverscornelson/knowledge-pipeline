@@ -33,15 +33,14 @@ POST_PROMPTS = [
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
 def _ask(prompt: str, text: str) -> str:
-    resp = oai.chat.completions.create(
+    resp = oai.responses.create(
         model=MODEL_POSTPROCESS,
-        messages=[
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": text}
-        ],
-        max_completion_tokens=1000
+        instructions=prompt,
+        input=text,
+        max_output_tokens=1000,
     )
-    return resp.choices[0].message.content.strip()
+    out = resp.output[0]
+    return out.content[0].text.strip()
 
 def _append_toggle(page_id: str, title: str, content: str):
     block = {
