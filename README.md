@@ -38,6 +38,7 @@ pip install -r requirements.txt
 | `RSS_FEEDS` | Comma-separated RSS or Substack URLs for `capture_rss.py` |
 | `RSS_URL_PROP` | Property name for the article URL (default `Article URL`) |
 | `CREATED_PROP` | Property name for the created date (default `Created Date`) |
+| `RSS_WINDOW_DAYS` | Days of recency for RSS items (default `90`) |
 
 Ensure your database includes a **Created Date** property.
 
@@ -71,6 +72,7 @@ python capture_rss.py
 ```
 
 If a feed URL points to a Substack homepage, `capture_rss.py` automatically appends `/feed`. Use `RSS_URL_PROP` if your database stores article URLs under a different property name.
+Items older than `RSS_WINDOW_DAYS` are ignored when capturing RSS feeds.
 
 ---
 
