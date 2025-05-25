@@ -11,7 +11,7 @@ ENV (.env)
 import os, hashlib, time, re
 from urllib.parse import urlparse
 from email.utils import parsedate_to_datetime
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
 from notion_client import Client as Notion
@@ -86,7 +86,7 @@ def main():
     if not feeds:
         raise SystemExit("❌ RSS_FEEDS not provided")
 
-    cutoff = datetime.utcnow() - timedelta(days=WINDOW_DAYS)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=WINDOW_DAYS)
 
     for url in feeds:
         print(f"📡 {url}")
@@ -103,6 +103,8 @@ def main():
             if entry_date(entry):
                 try:
                     entry_time = datetime.fromisoformat(entry_date(entry))
+                    if entry_time.tzinfo is None:
+                        entry_time = entry_time.replace(tzinfo=timezone.utc)
                 except Exception:
                     entry_time = None
             if entry_time and entry_time < cutoff:
