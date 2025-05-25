@@ -10,6 +10,7 @@ Small utilities for capturing PDFs and RSS articles and storing them in a Notion
 | `enrich.py` | Download PDFs referenced in the database, extract text, generate summaries, classify topics and update each page. |
 | `capture_rss.py` | Pull new entries from RSS feeds or Substack newsletters and add them to the database. |
 | `enrich_rss.py` | Summarise and classify RSS articles already stored in Notion. |
+| `postprocess.py` | Apply additional enrichment prompts. Used by `enrich.py` and `enrich_rss.py`. |
 
 ## Setup
 
@@ -32,6 +33,7 @@ pip install -r requirements.txt
 | `OPENAI_API_KEY` | OpenAI API key |
 | `MODEL_SUMMARY` | Model used for summary generation (default `gpt-4.1`) |
 | `MODEL_CLASSIFIER` | Model for classification (default `gpt-4.1`) |
+| `MODEL_POSTPROCESS` | Model for additional prompts (default `gpt-4.1`) |
 | `DRIVE_FOLDER_ID` | Google Drive folder ID for `ingest_drive.py` (optional) |
 | `RSS_FEEDS` | Comma-separated RSS or Substack URLs for `capture_rss.py` |
 | `RSS_URL_PROP` | Property name for the article URL (default `Article URL`) |
@@ -58,6 +60,9 @@ python enrich.py
 ```bash
 python enrich_rss.py
 ```
+
+Both enrichment scripts automatically call `postprocess.py` to add extra
+analysis blocks after the initial summary and classification.
 
 4. Capture new items from RSS feeds:
 
