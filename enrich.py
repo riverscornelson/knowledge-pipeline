@@ -19,6 +19,7 @@ from googleapiclient.http import MediaIoBaseDownload
 from pdfminer.high_level import extract_text
 from tenacity import retry, wait_exponential, stop_after_attempt
 from openai import OpenAI, APIError, RateLimitError
+import openai
 from postprocess import post_process_page
 
 # ── init ──────────────────────────────────────────────
@@ -29,6 +30,16 @@ MODEL_CLASSIFIER = os.getenv("MODEL_CLASSIFIER", "gpt-4.1")
 
 notion = Notion(auth=os.getenv("NOTION_TOKEN"))
 oai    = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+HAS_RESPONSES = hasattr(oai, "responses")
+
+def _chat_create(**kwargs):
+    """Compatibility wrapper for ChatCompletion calls."""
+    if hasattr(oai, "chat"):
+        return oai.chat.completions.create(**kwargs)
+    # Fallback for very old openai versions
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    return openai.ChatCompletion.create(**kwargs)
 
 drive = build(
     "drive", "v3",
@@ -135,34 +146,54 @@ def download_pdf(fid: str) -> bytes:
 def summarise(text: str) -> str:
     """Summarise text using the Responses API."""
     text = text[:10000000000]
-    resp = oai.responses.create(
-        model=MODEL_SUMMARY,
-        instructions=(
-            "Summarise the following document in no more than 175 words, markdown. "
-            "Focus on relevant takeaways for AI use in business."
-        ),
-        input=text,
-        max_output_tokens=1000,
+    instructions = (
+        "Summarise the following document in no more than 175 words, markdown. "
+        "Focus on relevant takeaways for AI use in business."
     )
-    out = resp.output[0]
-    return out.content[0].text.strip()
+    if HAS_RESPONSES:
+        resp = oai.responses.create(
+            model=MODEL_SUMMARY,
+            instructions=instructions,
+            input=text,
+            max_output_tokens=1000,
+        )
+        out = resp.output[0]
+        return out.content[0].text.strip()
+    else:
+        resp = _chat_create(
+            model=MODEL_SUMMARY,
+            messages=[{"role": "system", "content": instructions},
+                      {"role": "user", "content": text}],
+            max_tokens=1000,
+        )
+        return resp.choices[0].message.content.strip()
 
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
 def summarise_exec(text: str) -> str:
     """Return a five-sentence executive summary using the Responses API."""
     text = text[:10000000000]
-    resp = oai.responses.create(
-        model=MODEL_SUMMARY,
-        instructions=(
-            "Summarise the following document in five sentences for an "
-            "executive audience. Focus on relevant takeaways for AI use in business."
-        ),
-        input=text,
-        max_output_tokens=1000,
+    instructions = (
+        "Summarise the following document in five sentences for an "
+        "executive audience. Focus on relevant takeaways for AI use in business."
     )
-    out = resp.output[0]
-    return out.content[0].text.strip()
+    if HAS_RESPONSES:
+        resp = oai.responses.create(
+            model=MODEL_SUMMARY,
+            instructions=instructions,
+            input=text,
+            max_output_tokens=1000,
+        )
+        out = resp.output[0]
+        return out.content[0].text.strip()
+    else:
+        resp = _chat_create(
+            model=MODEL_SUMMARY,
+            messages=[{"role": "system", "content": instructions},
+                      {"role": "user", "content": text}],
+            max_tokens=1000,
+        )
+        return resp.choices[0].message.content.strip()
 
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
@@ -190,20 +221,30 @@ def classify(text: str) -> tuple[str, str]:
             "required": ["content_type", "ai_primitive"]
         }
     }
-
-    resp = oai.responses.create(
-        model=MODEL_CLASSIFIER,
-        tools=[{"type": "function", "function": schema}],
-        tool_choice={"type": "function", "function": {"name": "classify"}},
-        instructions=(
-            "Classify the document using ONLY the enum values. If unsure pick the closest match."
-        ),
-        input=text[:600000],
-        max_output_tokens=60,
+    instructions = (
+        "Classify the document using ONLY the enum values. If unsure pick the closest match."
     )
-
-    out = resp.output[0]
-    tc = getattr(out, "tool_calls", None)
+    if HAS_RESPONSES:
+        resp = oai.responses.create(
+            model=MODEL_CLASSIFIER,
+            tools=[{"type": "function", "function": schema}],
+            tool_choice={"type": "function", "function": {"name": "classify"}},
+            instructions=instructions,
+            input=text[:600000],
+            max_output_tokens=60,
+        )
+        out = resp.output[0]
+        tc = getattr(out, "tool_calls", None)
+    else:
+        resp = _chat_create(
+            model=MODEL_CLASSIFIER,
+            messages=[{"role": "system", "content": instructions},
+                      {"role": "user", "content": text[:600000]}],
+            tools=[{"type": "function", "function": schema}],
+            tool_choice={"type": "function", "function": {"name": "classify"}},
+            max_tokens=60,
+        )
+        tc = resp.choices[0].message.tool_calls
     if not tc:
         raise ValueError("GPT-4.1 did not return a tool call")
 
