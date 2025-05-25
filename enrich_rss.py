@@ -29,6 +29,7 @@ from enrich import (
     notion_update,
 )
 from postprocess import post_process_page
+from infer_vendor import infer_vendor_name
 
 
 def fetch_article_text(url: str) -> str:
@@ -90,10 +91,24 @@ def main():
             ctype, prim = classify(article_text)
             print(f"     ↳ {ctype}  /  {prim}")
 
+            vendor = None
+            vend_prop = row["properties"].get("Vendor", {})
+            if not vend_prop.get("select"):
+                print("   • Inferring vendor …")
+                try:
+                    vendor = infer_vendor_name(summary or article_text)
+                    if vendor == "Unknown":
+                        print("     ↳ Vendor: Unknown")
+                        vendor = None
+                    else:
+                        print(f"     ↳ Vendor: {vendor}")
+                except Exception as exc:
+                    print(f"     ⚠️ Vendor inference error: {exc}")
+
             print("   • Post-processing …")
             post_process_page(row["id"], article_text)
 
-            notion_update(row["id"], "Enriched", summary, ctype, prim)
+            notion_update(row["id"], "Enriched", summary, ctype, prim, vendor)
             print("✅ Updated row → Enriched\n")
 
         except Exception as err:

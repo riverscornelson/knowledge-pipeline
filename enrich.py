@@ -21,6 +21,7 @@ from tenacity import retry, wait_exponential, stop_after_attempt
 from openai import OpenAI, APIError, RateLimitError
 import openai
 from postprocess import post_process_page
+from infer_vendor import infer_vendor_name
 
 # ── init ──────────────────────────────────────────────
 load_dotenv()
@@ -265,7 +266,7 @@ def classify(text: str) -> tuple[str, str]:
 
     return args["content_type"], args["ai_primitive"]
 
-def notion_update(pid, status, summary=None, ctype=None, prim=None):
+def notion_update(pid, status, summary=None, ctype=None, prim=None, vendor=None):
     """Update a Notion page status and optional five-sentence summary."""
     props = {"Status": {"select": {"name": status}}}
 
@@ -278,6 +279,8 @@ def notion_update(pid, status, summary=None, ctype=None, prim=None):
         props["Content-Type"] = {"select": {"name": ctype}}
     if prim:
         props["AI-Primitive"] = {"multi_select": [{"name": prim}]}
+    if vendor:
+        props["Vendor"] = {"select": {"name": vendor}}
 
     notion.pages.update(pid, properties=props)
 
@@ -320,10 +323,24 @@ def main():
             ctype, prim = classify(pdf_text)
             print(f"     ↳ {ctype}  /  {prim}")
 
+            vendor = None
+            vend_prop = row["properties"].get("Vendor", {})
+            if not vend_prop.get("select"):
+                print("   • Inferring vendor …")
+                try:
+                    vendor = infer_vendor_name(summary or pdf_text)
+                    if vendor == "Unknown":
+                        print("     ↳ Vendor: Unknown")
+                        vendor = None
+                    else:
+                        print(f"     ↳ Vendor: {vendor}")
+                except Exception as exc:
+                    print(f"     ⚠️ Vendor inference error: {exc}")
+
             print("   • Post-processing …")
             post_process_page(row["id"], pdf_text)
 
-            notion_update(row["id"], "Enriched", summary, ctype, prim)
+            notion_update(row["id"], "Enriched", summary, ctype, prim, vendor)
             print("✅ Updated row → Enriched\n")
 
         except Exception as err:
