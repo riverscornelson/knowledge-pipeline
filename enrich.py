@@ -239,7 +239,7 @@ def classify(text: str) -> tuple[str, str]:
         resp = oai.responses.create(
             model=MODEL_CLASSIFIER,
             tools=[tool],
-            tool_choice={"name": "classify"},
+            tool_choice={"type": "function", "function": {"name": "classify"}},
             instructions=instructions,
             input=text[:600000],
             max_output_tokens=60,
