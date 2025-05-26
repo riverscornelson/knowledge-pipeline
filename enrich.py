@@ -227,10 +227,19 @@ def classify(text: str) -> tuple[str, str]:
         "Classify the document using ONLY the enum values. If unsure pick the closest match."
     )
     if HAS_RESPONSES:
+        # The Responses API expects the tool name at the top level rather than
+        # nested inside the ``function`` object.  Older client versions throw
+        # a ``tools[0].name`` error if this field is missing.
+        tool = {
+            "name": schema["name"],
+            "type": "function",
+            "description": schema["description"],
+            "parameters": schema["parameters"],
+        }
         resp = oai.responses.create(
             model=MODEL_CLASSIFIER,
-            tools=[{"type": "function", "function": schema}],
-            tool_choice={"type": "function", "function": {"name": "classify"}},
+            tools=[tool],
+            tool_choice={"name": "classify"},
             instructions=instructions,
             input=text[:600000],
             max_output_tokens=60,
