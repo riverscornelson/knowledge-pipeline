@@ -227,14 +227,13 @@ def classify(text: str) -> tuple[str, str]:
         "Classify the document using ONLY the enum values. If unsure pick the closest match."
     )
     if HAS_RESPONSES:
-        # The Responses API expects the tool name at the top level rather than
-        # nested inside the ``function`` object.  Older client versions throw
-        # a ``tools[0].name`` error if this field is missing.
+        # Newer OpenAI clients expect tools to wrap the function schema under
+        # a ``function`` key.  Passing the old flattened structure results in
+        # ``tool_choice`` errors from the API.  Build the tool definition using
+        # the modern format for compatibility.
         tool = {
-            "name": schema["name"],
             "type": "function",
-            "description": schema["description"],
-            "parameters": schema["parameters"],
+            "function": schema,
         }
         resp = oai.responses.create(
             model=MODEL_CLASSIFIER,
@@ -246,6 +245,9 @@ def classify(text: str) -> tuple[str, str]:
         )
         out = resp.output[0]
         tc = getattr(out, "tool_calls", None)
+        if not tc:
+            raise ValueError("GPT-4.1 did not return a tool call")
+        args = json.loads(tc[0].function.arguments)
     else:
         if hasattr(oai, "chat"):
             resp = _chat_create(
