@@ -201,6 +201,7 @@ def summarise_exec(text: str) -> str:
 def classify(text: str) -> tuple[str, str]:
     schema = {
         "name": "classify",
+        "description": "Return the content_type and ai_primitive for the text.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -237,19 +238,32 @@ def classify(text: str) -> tuple[str, str]:
         out = resp.output[0]
         tc = getattr(out, "tool_calls", None)
     else:
-        resp = _chat_create(
-            model=MODEL_CLASSIFIER,
-            messages=[{"role": "system", "content": instructions},
-                      {"role": "user", "content": text[:600000]}],
-            tools=[{"type": "function", "function": schema}],
-            tool_choice={"type": "function", "function": {"name": "classify"}},
-            max_tokens=60,
-        )
-        tc = resp.choices[0].message.tool_calls
-    if not tc:
-        raise ValueError("GPT-4.1 did not return a tool call")
-
-    args = json.loads(tc[0].function.arguments)
+        if hasattr(oai, "chat"):
+            resp = _chat_create(
+                model=MODEL_CLASSIFIER,
+                messages=[{"role": "system", "content": instructions},
+                          {"role": "user", "content": text[:600000]}],
+                tools=[{"type": "function", "function": schema}],
+                tool_choice={"type": "function", "function": {"name": "classify"}},
+                max_tokens=60,
+            )
+            tc = resp.choices[0].message.tool_calls
+            if not tc:
+                raise ValueError("GPT-4.1 did not return a tool call")
+            args = json.loads(tc[0].function.arguments)
+        else:
+            resp = _chat_create(
+                model=MODEL_CLASSIFIER,
+                messages=[{"role": "system", "content": instructions},
+                          {"role": "user", "content": text[:600000]}],
+                functions=[schema],
+                function_call={"name": "classify"},
+                max_tokens=60,
+            )
+            fc = resp["choices"][0]["message"].get("function_call")
+            if not fc:
+                raise ValueError("GPT-4.1 did not return a function call")
+            args = json.loads(fc["arguments"])
 
     # ─ enum validation / coercion
     allowed_ct = {"Market News","Thought Leadership","Personal Note",
