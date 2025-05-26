@@ -1,7 +1,7 @@
 """
 enrich.py  – Drive PDF ➜ Notion enrichment
   • Summary (≈250 words) with GPT-4.1
-  • Classification with GPT-4.1 (tool call)
+  • Classification with GPT-4.1
 
 ENV (.env)
   NOTION_TOKEN, NOTION_SOURCES_DB
@@ -10,7 +10,7 @@ ENV (.env)
   MODEL_SUMMARY=gpt-4.1
   MODEL_CLASSIFIER=gpt-4.1
 """
-import os, io, json, time
+import os, io, json, re, time
 from dotenv import load_dotenv
 from notion_client import Client as Notion
 from googleapiclient.discovery import build
@@ -199,94 +199,63 @@ def summarise_exec(text: str) -> str:
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
 def classify(text: str) -> tuple[str, str]:
-    schema = {
-        "name": "classify",
-        "description": "Return the content_type and ai_primitive for the text.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "content_type": {
-                    "type": "string",
-                    "enum": [
-                        "Market News", "Thought Leadership", "Personal Note",
-                        "Vendor Capability", "Client Deliverable"
-                    ]
-                },
-                "ai_primitive": {
-                    "type": "string",
-                    "enum": [
-                        "Content Creation", "Research", "Coding",
-                        "Data Analysis", "Ideation/Strategy", "Automation"
-                    ]
-                }
-            },
-            "required": ["content_type", "ai_primitive"]
-        }
+    """Return a (content_type, ai_primitive) tuple from the text."""
+
+    allowed_ct = {
+        "Market News",
+        "Thought Leadership",
+        "Personal Note",
+        "Vendor Capability",
+        "Client Deliverable",
     }
-    instructions = (
-        "Classify the document using ONLY the enum values. If unsure pick the closest match."
+
+    allowed_ap = {
+        "Content Creation",
+        "Research",
+        "Coding",
+        "Data Analysis",
+        "Ideation/Strategy",
+        "Automation",
+    }
+
+    instr = (
+        "Classify the document and respond with JSON in the format\n"
+        "{\n  \"content_type\": <one of: %s>,\n  \"ai_primitive\": <one of: %s>\n}"
+        % (", ".join(sorted(allowed_ct)), ", ".join(sorted(allowed_ap)))
+        + ". If unsure, choose the closest match."
     )
+
+    txt = text[:600000]
     if HAS_RESPONSES:
-        # Newer OpenAI clients expect tools to wrap the function schema under
-        # a ``function`` key.  Passing the old flattened structure results in
-        # ``tool_choice`` errors from the API.  Build the tool definition using
-        # the modern format for compatibility.
-        tool = {
-            "type": "function",
-            "function": schema,
-        }
         resp = oai.responses.create(
             model=MODEL_CLASSIFIER,
-            tools=[tool],
-            tool_choice={"type": "function", "function": {"name": "classify"}},
-            instructions=instructions,
-            input=text[:600000],
+            instructions=instr,
+            input=txt,
             max_output_tokens=60,
         )
-        out = resp.output[0]
-        tc = getattr(out, "tool_calls", None)
-        if not tc:
-            raise ValueError("GPT-4.1 did not return a tool call")
-        args = json.loads(tc[0].function.arguments)
+        out = resp.output[0].content[0].text.strip()
     else:
-        if hasattr(oai, "chat"):
-            resp = _chat_create(
-                model=MODEL_CLASSIFIER,
-                messages=[{"role": "system", "content": instructions},
-                          {"role": "user", "content": text[:600000]}],
-                tools=[{"type": "function", "function": schema}],
-                tool_choice={"type": "function", "function": {"name": "classify"}},
-                max_tokens=60,
-            )
-            tc = resp.choices[0].message.tool_calls
-            if not tc:
-                raise ValueError("GPT-4.1 did not return a tool call")
-            args = json.loads(tc[0].function.arguments)
-        else:
-            resp = _chat_create(
-                model=MODEL_CLASSIFIER,
-                messages=[{"role": "system", "content": instructions},
-                          {"role": "user", "content": text[:600000]}],
-                functions=[schema],
-                function_call={"name": "classify"},
-                max_tokens=60,
-            )
-            fc = resp["choices"][0]["message"].get("function_call")
-            if not fc:
-                raise ValueError("GPT-4.1 did not return a function call")
-            args = json.loads(fc["arguments"])
+        resp = _chat_create(
+            model=MODEL_CLASSIFIER,
+            messages=[{"role": "system", "content": instr},
+                      {"role": "user", "content": txt}],
+            max_tokens=60,
+        )
+        out = resp.choices[0].message.content.strip()
 
-    # ─ enum validation / coercion
-    allowed_ct = {"Market News","Thought Leadership","Personal Note",
-                  "Vendor Capability","Client Deliverable"}
-    allowed_ap = {"Content Creation","Research","Coding",
-                  "Data Analysis","Ideation/Strategy","Automation"}
+    m = re.search(r"\{.*\}", out, re.S)
+    if not m:
+        raise ValueError("GPT-4.1 did not return JSON")
+    try:
+        args = json.loads(m.group(0))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"invalid JSON: {exc}")
 
-    if args["content_type"] not in allowed_ct:
-        print("   ⚠️  Invalid content_type ->", args["content_type"])
+    if args.get("content_type") not in allowed_ct:
+        print("   ⚠️  Invalid content_type ->", args.get("content_type"))
         args["content_type"] = "Thought Leadership"
-    if args["ai_primitive"] not in allowed_ap:
-        print("   ⚠️  Invalid ai_primitive ->", args["ai_primitive"])
+    if args.get("ai_primitive") not in allowed_ap:
+        print("   ⚠️  Invalid ai_primitive ->", args.get("ai_primitive"))
         args["ai_primitive"] = "Research"
 
     return args["content_type"], args["ai_primitive"]

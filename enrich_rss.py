@@ -1,7 +1,7 @@
 """
 enrich_rss.py  – RSS article ➜ Notion enrichment
   • Summary (≈250 words) using the Responses API with GPT-4.1
-  • Classification with GPT-4.1 (tool call)
+  • Classification with GPT-4.1
 
 ENV (.env)
   NOTION_TOKEN, NOTION_SOURCES_DB
