@@ -201,6 +201,7 @@ def summarise_exec(text: str) -> str:
 def classify(text: str) -> tuple[str, str]:
     schema = {
         "name": "classify",
+        "description": "Return the content_type and ai_primitive for the text.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -225,18 +226,18 @@ def classify(text: str) -> tuple[str, str]:
     instructions = (
         "Classify the document using ONLY the enum values. If unsure pick the closest match."
     )
-    if HAS_RESPONSES:
-        resp = oai.responses.create(
-            model=MODEL_CLASSIFIER,
-            tools=[{"type": "function", "function": schema}],
-            tool_choice={"type": "function", "function": {"name": "classify"}},
-            instructions=instructions,
-            input=text[:600000],
-            max_output_tokens=60,
-        )
-        out = resp.output[0]
-        tc = getattr(out, "tool_calls", None)
-    else:
+    def call_with_tools():
+        if HAS_RESPONSES:
+            resp = oai.responses.create(
+                model=MODEL_CLASSIFIER,
+                tools=[{"type": "function", "function": schema}],
+                tool_choice={"type": "function", "function": {"name": "classify"}},
+                instructions=instructions,
+                input=text[:600000],
+                max_output_tokens=60,
+            )
+            out = resp.output[0]
+            return getattr(out, "tool_calls", None)
         resp = _chat_create(
             model=MODEL_CLASSIFIER,
             messages=[{"role": "system", "content": instructions},
@@ -245,11 +246,44 @@ def classify(text: str) -> tuple[str, str]:
             tool_choice={"type": "function", "function": {"name": "classify"}},
             max_tokens=60,
         )
-        tc = resp.choices[0].message.tool_calls
-    if not tc:
-        raise ValueError("GPT-4.1 did not return a tool call")
+        return resp.choices[0].message.tool_calls
 
-    args = json.loads(tc[0].function.arguments)
+    def call_with_functions():
+        if HAS_RESPONSES:
+            resp = oai.responses.create(
+                model=MODEL_CLASSIFIER,
+                functions=[schema],
+                function_call={"name": "classify"},
+                instructions=instructions,
+                input=text[:600000],
+                max_output_tokens=60,
+            )
+            out = resp.output[0]
+            fc = getattr(out, "function_call", None)
+            return fc
+        resp = _chat_create(
+            model=MODEL_CLASSIFIER,
+            messages=[{"role": "system", "content": instructions},
+                      {"role": "user", "content": text[:600000]}],
+            functions=[schema],
+            function_call={"name": "classify"},
+            max_tokens=60,
+        )
+        return resp["choices"][0]["message"].get("function_call")
+
+    try:
+        tc = call_with_tools()
+        if tc:
+            args = json.loads(tc[0].function.arguments)
+        else:
+            raise ValueError("GPT-4.1 did not return a tool call")
+    except APIError as exc:
+        if "tools[0].name" not in str(exc):
+            raise
+        fc = call_with_functions()
+        if not fc:
+            raise ValueError("GPT-4.1 did not return a function call")
+        args = json.loads(fc["arguments"])
 
     # ─ enum validation / coercion
     allowed_ct = {"Market News","Thought Leadership","Personal Note",
