@@ -138,8 +138,13 @@ def drive_id(url: str) -> str:
         raise ValueError(f"invalid Drive URL: {url}")
 
 def download_pdf(fid: str) -> bytes:
+    """Return the full binary contents of the Drive file."""
+    request = drive.files().get_media(fileId=fid)
     buf = io.BytesIO()
-    MediaIoBaseDownload(buf, drive.files().get_media(fileId=fid)).next_chunk()
+    downloader = MediaIoBaseDownload(buf, request)
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
     return buf.getvalue()
 
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
