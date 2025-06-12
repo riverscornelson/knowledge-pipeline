@@ -56,8 +56,12 @@ def drive_id(url: str) -> str:
 
 
 def download_pdf(drive, fid: str) -> bytes:
+    """Return the full binary contents of a Drive file."""
     buf = io.BytesIO()
-    MediaIoBaseDownload(buf, drive.files().get_media(fileId=fid)).next_chunk()
+    downloader = MediaIoBaseDownload(buf, drive.files().get_media(fileId=fid))
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
     return buf.getvalue()
 
 
