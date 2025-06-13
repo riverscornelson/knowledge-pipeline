@@ -34,6 +34,35 @@ oai    = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 HAS_RESPONSES = hasattr(oai, "responses")
 
+# Classification taxonomy loaded from Notion at startup. Falls back to
+# default sets if the schema can't be retrieved.
+def _fetch_taxonomy():
+    try:
+        schema = notion.databases.retrieve(NOTION_DB)
+        ct = [o["name"] for o in schema["properties"]["Content-Type"]["select"]["options"]]
+        ap = [o["name"] for o in schema["properties"]["AI-Primitive"]["multi_select"]["options"]]
+        return set(ct), set(ap)
+    except Exception as exc:
+        print(f"\u26a0\ufe0f  Failed to fetch taxonomy: {exc}")
+        fallback_ct = {
+            "Market News",
+            "Thought Leadership",
+            "Personal Note",
+            "Vendor Capability",
+            "Client Deliverable",
+        }
+        fallback_ap = {
+            "Content Creation",
+            "Research",
+            "Coding",
+            "Data Analysis",
+            "Ideation/Strategy",
+            "Automation",
+        }
+        return fallback_ct, fallback_ap
+
+ALLOWED_CT, ALLOWED_AP = _fetch_taxonomy()
+
 def _chat_create(**kwargs):
     """Compatibility wrapper for ChatCompletion calls."""
     if hasattr(oai, "chat"):
@@ -206,22 +235,8 @@ def summarise_exec(text: str) -> str:
 def classify(text: str) -> tuple[str, str]:
     """Return a (content_type, ai_primitive) tuple from the text."""
 
-    allowed_ct = {
-        "Market News",
-        "Thought Leadership",
-        "Personal Note",
-        "Vendor Capability",
-        "Client Deliverable",
-    }
-
-    allowed_ap = {
-        "Content Creation",
-        "Research",
-        "Coding",
-        "Data Analysis",
-        "Ideation/Strategy",
-        "Automation",
-    }
+    allowed_ct = ALLOWED_CT
+    allowed_ap = ALLOWED_AP
 
     instr = (
         "Classify the document and respond with JSON in the format\n"
@@ -258,10 +273,10 @@ def classify(text: str) -> tuple[str, str]:
 
     if args.get("content_type") not in allowed_ct:
         print("   ⚠️  Invalid content_type ->", args.get("content_type"))
-        args["content_type"] = "Thought Leadership"
+        args["content_type"] = sorted(allowed_ct)[0]
     if args.get("ai_primitive") not in allowed_ap:
         print("   ⚠️  Invalid ai_primitive ->", args.get("ai_primitive"))
-        args["ai_primitive"] = "Research"
+        args["ai_primitive"] = sorted(allowed_ap)[0]
 
     return args["content_type"], args["ai_primitive"]
 
