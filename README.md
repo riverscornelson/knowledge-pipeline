@@ -68,6 +68,10 @@ enrich the content:
 | **Vendor** | Select | Vendor or organisation name if applicable. |
 | **Created Date** | Date | Original publication or file creation time. |
 
+The values for **AI-Primitive** and **Content-Type** are fetched from the
+database schema each time the scripts run. Updating the select options in
+Notion automatically changes the classification taxonomy.
+
 For each page, the enrichment process also appends toggle blocks containing a
 detailed summary, the raw extracted text and outputs from additional analysis
 prompts. These blocks live in the page body so that readers can expand them in
