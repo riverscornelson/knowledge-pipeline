@@ -120,3 +120,7 @@ Items older than `RSS_WINDOW_DAYS` are ignored when capturing RSS feeds.
 ---
 
 These utilities rely on `python-dotenv`, `google-api-python-client`, `notion-client` and the OpenAI API. Any `.idea/` directory can be ignored.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
