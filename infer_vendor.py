@@ -101,7 +101,7 @@ def infer_vendor_name(text: str) -> str:
             model=MODEL_VENDOR,
             instructions=prompt,
             input=text,
-            max_output_tokens=10,
+            max_output_tokens=60,
         )
         out = resp.output[0]
         answer = out.content[0].text.strip()
@@ -110,7 +110,7 @@ def infer_vendor_name(text: str) -> str:
             model=MODEL_VENDOR,
             messages=[{"role": "system", "content": prompt},
                       {"role": "user", "content": text}],
-            max_tokens=10,
+            max_tokens=60,
         )
         answer = resp.choices[0].message.content.strip()
 
