@@ -20,7 +20,7 @@ from pdfminer.high_level import extract_text
 from tenacity import retry, wait_exponential, stop_after_attempt
 from openai import OpenAI, APIError, RateLimitError
 import openai
-from postprocess import post_process_page
+from postprocess import post_process_page, _append_toggle
 from infer_vendor import infer_vendor_name
 
 # ── init ──────────────────────────────────────────────
@@ -113,30 +113,13 @@ def add_fulltext_blocks(page_id: str, full_text: str):
 
 
 def add_summary_block(page_id: str, summary: str):
-    """Append a toggle block containing the provided summary."""
-    block = {
-        "object": "block",
-        "type": "toggle",
-        "toggle": {
-            "rich_text": [{"type": "text", "text": {"content": "Summary"}}],
-            "children": [
-                {
-                    "object": "block",
-                    "type": "paragraph",
-                    "paragraph": {
-                        "rich_text": [
-                            {
-                                "type": "text",
-                                "text": {"content": summary[:MAX_CHUNK]}
-                            }
-                        ]
-                    },
-                }
-            ],
-        },
-    }
+    """Append a toggle block with the provided summary, split into chunks."""
+    _append_toggle(page_id, "Summary", summary)
 
-    notion.blocks.children.append(page_id, children=[block])
+
+def add_exec_summary_block(page_id: str, summary: str):
+    """Append a toggle block with the executive summary."""
+    _append_toggle(page_id, "Executive Summary", summary)
 
 
 def inbox_rows(require_url: str | None = None):
@@ -331,6 +314,7 @@ def main():
 
             print("   • Summarising with GPT-4.1 (exec) …")
             summary = summarise_exec(pdf_text)
+            add_exec_summary_block(row["id"], summary)
             print("     ↳ exec summary chars:", len(summary))
 
             print("   • Classifying with GPT-4.1 …")
