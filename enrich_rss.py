@@ -25,6 +25,7 @@ from enrich import (
     inbox_rows,
     add_fulltext_blocks,
     add_summary_block,
+    add_exec_summary_block,
     summarise_exec,
     summarise,
     classify,
@@ -125,6 +126,7 @@ def main():
 
             print("   • Summarising with GPT-4.1 (exec) …")
             summary = summarise_exec(article_text)
+            add_exec_summary_block(row["id"], summary)
             print("     ↳ exec summary chars:", len(summary))
 
             print("   • Classifying with GPT-4.1 …")
