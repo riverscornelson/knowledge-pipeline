@@ -29,6 +29,17 @@ oai    = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 HAS_RESPONSES = hasattr(oai, "responses")
 
+# Vendor names that may be assigned to a page. Any other value returned by
+# the model will be treated as "Unknown".
+ALLOWED_VENDORS = {
+    "openai": "OpenAI",
+    "anthropic": "Anthropic",
+    "google": "Google",
+    "meta": "Meta",
+    "x ai": "X AI",
+    "deepseek": "DeepSeek",
+}
+
 
 def _chat_create(**kwargs):
     if hasattr(oai, "chat"):
@@ -90,10 +101,10 @@ def fetch_article_text(url: str) -> str:
 @retry(wait=wait_exponential(2, 30), stop=stop_after_attempt(5),
        retry=lambda e: isinstance(e, (APIError, RateLimitError)))
 def infer_vendor_name(text: str) -> str:
-    """Infer a vendor, company or publisher from the given text."""
+    """Infer a vendor from text, limited to a predefined set of names."""
     prompt = (
         "Based on the following text, what is the most relevant vendor, company, or publisher mentioned? "
-        "Return only the name. If unclear, return 'Unknown'."
+        "Choose from OpenAI, Anthropic, Google, Meta, X AI, DeepSeek. If none or unclear, return 'Unknown'."
     )
     text = text[:6000]
     if HAS_RESPONSES:
@@ -117,7 +128,8 @@ def infer_vendor_name(text: str) -> str:
     if not answer or answer.lower().startswith("unknown"):
         return "Unknown"
     answer = answer.splitlines()[0].strip().strip("'\"").rstrip(".")
-    return answer
+    key = re.sub(r"\s+", " ", answer).lower()
+    return ALLOWED_VENDORS.get(key, "Unknown")
 
 
 def query_pages():

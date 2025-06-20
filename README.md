@@ -112,6 +112,8 @@ If a feed URL points to a Substack homepage, `capture_rss.py` automatically appe
 ```bash
 python infer_vendor.py
 ```
+Vendor inference is restricted to one of the following names: OpenAI, Anthropic,
+Google, Meta, X AI or DeepSeek. Anything else is left blank.
 
 6. Backfill missing Created Dates:
 
