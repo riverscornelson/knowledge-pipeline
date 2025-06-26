@@ -1,4 +1,4 @@
-# Gmail Email Intake Feature
+2# Gmail Email Intake Feature
 
 ## Overview
 Implement Gmail API integration to capture newsletter and content emails directly from Gmail inbox into the knowledge pipeline.
@@ -26,11 +26,11 @@ Implement Gmail API integration to capture newsletter and content emails directl
 - [ ] **PENDING** - Add email attachment processing for PDFs/documents
 
 ### Phase 4: Pipeline Integration
-- [ ] **IN-PROGRESS** - Fix archived page handling in enrichment process
-- [ ] **PENDING** - Integrate email capture into `pipeline.sh` automation
-- [ ] **PENDING** - Add error handling and retry logic for Gmail API calls
-- [ ] **PENDING** - Create configuration documentation and setup guide
-- [ ] **PENDING** - Test end-to-end email→enrichment→Notion workflow
+- [x] **COMPLETED** - Fix archived page handling in enrichment process
+- [x] **COMPLETED** - Integrate email capture into `pipeline.sh` automation
+- [x] **COMPLETED** - Add error handling and retry logic for Gmail API calls
+- [x] **COMPLETED** - Create configuration documentation and setup guide
+- [x] **COMPLETED** - Test end-to-end email→enrichment→Notion workflow
 
 ### Phase 5: Advanced Features (Optional)
 - [ ] **PENDING** - Add Gmail label-based organization and filtering

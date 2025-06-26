@@ -4,7 +4,7 @@ cd "$(dirname "$0")"         # repo root (directory of this script)
 
 source .venv/bin/activate    # adjust if your venv lives elsewhere
 
-for step in ingest_drive capture_rss capture_websites enrich enrich_rss
+for step in ingest_drive capture_rss capture_websites capture_emails enrich enrich_rss
 do
   echo "▶ Running $step.py"
   python "$step.py"

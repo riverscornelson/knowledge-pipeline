@@ -27,6 +27,7 @@ from googleapiclient.errors import HttpError
 
 from gmail_auth import GmailAuthenticator
 from email_filters import EmailFilter
+from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 
 load_dotenv()
 
@@ -309,8 +310,14 @@ def create_email_row(subject: str, content: str, h: str, metadata: dict):
         print(f"   ❌ Error creating Notion page: {exc}")
 
 
+@retry(
+    retry=retry_if_exception_type(HttpError),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    stop=stop_after_attempt(3),
+    reraise=True
+)
 def search_gmail_messages(service, query: str, max_results: int = 50) -> list:
-    """Search Gmail for messages matching the query."""
+    """Search Gmail for messages matching the query with retry logic."""
     try:
         # Calculate date filter for recent messages
         cutoff_date = datetime.now(timezone.utc) - timedelta(days=GMAIL_WINDOW_DAYS)
@@ -332,7 +339,38 @@ def search_gmail_messages(service, query: str, max_results: int = 50) -> list:
         
     except HttpError as error:
         print(f"❌ Gmail search error: {error}")
+        if error.resp.status in [429, 500, 502, 503, 504]:  # Retryable errors
+            print(f"   🔄 Retrying Gmail search (retryable error: {error.resp.status})")
+            raise  # Let tenacity handle the retry
+        else:
+            print(f"   ❌ Non-retryable Gmail error: {error.resp.status}")
+            return []
+    except Exception as error:
+        print(f"❌ Unexpected error during Gmail search: {error}")
         return []
+
+
+@retry(
+    retry=retry_if_exception_type(HttpError),
+    wait=wait_exponential(multiplier=1, min=2, max=8),
+    stop=stop_after_attempt(3),
+    reraise=True
+)
+def get_gmail_message_with_retry(service, message_id: str):
+    """Get Gmail message with retry logic for rate limiting."""
+    try:
+        return service.users().messages().get(
+            userId='me',
+            id=message_id,
+            format='full'
+        ).execute()
+    except HttpError as error:
+        if error.resp.status in [429, 500, 502, 503, 504]:  # Retryable errors
+            print(f"   🔄 Retrying message fetch (rate limited: {error.resp.status})")
+            raise  # Let tenacity handle the retry
+        else:
+            print(f"   ❌ Non-retryable error fetching message: {error.resp.status}")
+            raise
 
 
 def main():
@@ -371,12 +409,8 @@ def main():
     
     for message in messages:
         try:
-            # Get full message data
-            msg = service.users().messages().get(
-                userId='me',
-                id=message['id'],
-                format='full'
-            ).execute()
+            # Get full message data with retry logic
+            msg = get_gmail_message_with_retry(service, message['id'])
             
             # Extract content and metadata
             subject, content = extract_email_content(msg)
@@ -414,6 +448,14 @@ def main():
             # Rate limiting
             time.sleep(0.5)
             
+        except HttpError as exc:
+            if exc.resp.status == 429:  # Rate limit exceeded
+                print(f"   ⏳ Rate limit exceeded, waiting 60 seconds...")
+                time.sleep(60)
+                continue
+            else:
+                print(f"   ❌ Gmail API error processing message {message['id']}: {exc}")
+                continue
         except Exception as exc:
             print(f"   ❌ Error processing message {message['id']}: {exc}")
             continue
