@@ -11,3 +11,4 @@ tenacity
 firecrawl-py
 aiohttp>=3.8.0
 asyncio
+markdown>=3.4.0
