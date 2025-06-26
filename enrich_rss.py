@@ -1,5 +1,5 @@
 """
-enrich_rss.py  – RSS article ➜ Notion enrichment
+enrich_rss.py  – RSS article & Website content ➜ Notion enrichment
   • Summary (≈250 words) using the Responses API with GPT-4.1
   • Classification with GPT-4.1
 
@@ -86,6 +86,28 @@ def extract_date_from_text(text: str) -> str | None:
     return None
 
 
+def get_content_from_website_source(row):
+    """Extract content from website sources that already have scraped content."""
+    # Check if this is a website source with existing content
+    blocks = notion.blocks.children.list(block_id=row["id"])
+    for block in blocks.get("results", []):
+        if (block.get("type") == "toggle" and 
+            block.get("toggle", {}).get("rich_text", [{}])[0].get("text", {}).get("content", "").startswith("📄")):
+            # Found scraped content block, need to get children separately due to nesting
+            toggle_id = block["id"]
+            toggle_children = notion.blocks.children.list(block_id=toggle_id)
+            
+            content = ""
+            for child in toggle_children.get("results", []):
+                if child.get("type") == "paragraph":
+                    for text_obj in child.get("paragraph", {}).get("rich_text", []):
+                        content += text_obj.get("text", {}).get("content", "")
+            
+            if content:
+                return content
+    return None
+
+
 def main():
     rows = inbox_rows(require_url=RSS_URL_PROP)
     if not rows:
@@ -99,8 +121,14 @@ def main():
         print(f"➡️  {title}")
 
         try:
-            print("   • Fetching article …")
-            article_text = fetch_article_text(url)
+            # Check if this is a website source with existing scraped content
+            article_text = get_content_from_website_source(row)
+            
+            if article_text:
+                print("   • Using existing scraped content …")
+            else:
+                print("   • Fetching article …")
+                article_text = fetch_article_text(url)
 
             # assign created date from article text if missing
             created_prop = row["properties"].get(CREATED_PROP, {})

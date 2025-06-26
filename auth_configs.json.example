@@ -1,0 +1,14 @@
+{
+  "example.substack.com": {
+    "type": "cookies",
+    "cookies": "session=abc123def456; auth_token=xyz789; _substack_session=uvw012"
+  },
+  "premium-site.com": {
+    "type": "bearer",
+    "token": "your_bearer_token_here"
+  },
+  "basic-auth-site.com": {
+    "type": "basic",
+    "credentials": "base64_encoded_username_password"
+  }
+}

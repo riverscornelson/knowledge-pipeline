@@ -6,3 +6,4 @@ python-dotenv
 openai
 pdfminer.six
 tenacity
+firecrawl-py
