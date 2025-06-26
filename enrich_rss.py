@@ -36,6 +36,16 @@ from postprocess import post_process_page
 from infer_vendor import infer_vendor_name
 
 
+def is_page_archived(page_id: str) -> bool:
+    """Check if a Notion page is archived."""
+    try:
+        page = notion.pages.retrieve(page_id)
+        return page.get('archived', False)
+    except Exception as exc:
+        print(f"   ⚠️  Error checking page archive status: {exc}")
+        return True  # Assume archived if we can't check
+
+
 def fetch_article_text(url: str) -> str:
     """Download the article and return crude plain text."""
     req = urllib.request.Request(
@@ -114,11 +124,20 @@ def main():
         print("🚩 Nothing in Inbox."); return
     print(f"🔍 Found {len(rows)} row(s) to enrich\n")
 
+    processed_count = 0
+    archived_count = 0
+
     for row in rows:
         art = row["properties"].get(RSS_URL_PROP)
         title = row["properties"]["Title"]["title"][0]["plain_text"]
         url = art["url"]
         print(f"➡️  {title}")
+
+        # Check if page is archived before processing
+        if is_page_archived(row["id"]):
+            print("   📦 Skipping archived page")
+            archived_count += 1
+            continue
 
         try:
             # Check if this is a website source with existing scraped content
@@ -180,11 +199,22 @@ def main():
 
             notion_update(row["id"], "Enriched", summary, ctype, prim, vendor)
             print("✅ Updated row → Enriched\n")
+            processed_count += 1
 
         except Exception as err:
             print("❌", err, "\n")
-            notion_update(row["id"], "Failed")
+            try:
+                notion_update(row["id"], "Failed")
+            except Exception as update_err:
+                print(f"   ⚠️  Could not update status to Failed (likely archived): {update_err}")
         time.sleep(0.3)
+    
+    # Print summary
+    print(f"\n📊 Enrichment Summary:")
+    print(f"   Total pages found: {len(rows)}")
+    print(f"   ✅ Successfully enriched: {processed_count}")
+    print(f"   📦 Skipped (archived): {archived_count}")
+    print(f"   ❌ Failed: {len(rows) - processed_count - archived_count}")
 
 
 if __name__ == "__main__":

@@ -3,3 +3,4 @@
 *.json
 __pycache__/
 .idea/
+gmail_credentials/*.json

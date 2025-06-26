@@ -13,7 +13,8 @@ The Responses API is preferred across the pipeline for all OpenAI calls.
 | `enrich.py` | Download PDFs referenced in the database, extract text, generate summaries, classify topics and update each page. |
 | `capture_rss.py` | Pull new entries from RSS feeds or Substack newsletters and add them to the database. |
 | `capture_websites.py` | **NEW**: Scrape websites using Firecrawl API with authentication support for paid content. |
-| `enrich_rss.py` | Summarise and classify RSS articles and website content already stored in Notion. |
+| `capture_emails.py` | **NEW**: Capture newsletter emails from Gmail using Gmail API with OAuth2 authentication. |
+| `enrich_rss.py` | Summarise and classify RSS articles, website content, and emails already stored in Notion. |
 | `postprocess.py` | Apply additional enrichment prompts. Used by `enrich.py` and `enrich_rss.py`. |
 | `infer_vendor.py` | Infer and set the Vendor field on existing pages. |
 | `infer_created_date.py` | Populate missing Created Date using article text. |
@@ -52,6 +53,11 @@ pip install -r requirements.txt
 | `WEBSITE_SOURCES` | **NEW**: Comma-separated URLs to scrape |
 | `WEBSITE_AUTH_CONFIGS` | **NEW**: Path to auth config JSON file (optional) |
 | `WEBSITE_WINDOW_DAYS` | **NEW**: Days of recency for website content (default `30`) |
+| **Email Integration** | |
+| `GMAIL_CREDENTIALS_PATH` | **NEW**: Path to Gmail OAuth2 credentials JSON (default `gmail_credentials/credentials.json`) |
+| `GMAIL_TOKEN_PATH` | **NEW**: Path to stored Gmail token (default `gmail_credentials/token.json`) |
+| `GMAIL_SEARCH_QUERY` | **NEW**: Gmail search query (default `from:newsletter OR from:substack`) |
+| `GMAIL_WINDOW_DAYS` | **NEW**: Days to look back for emails (default `7`) |
 
 Ensure your database includes a **Created Date** property.
 
