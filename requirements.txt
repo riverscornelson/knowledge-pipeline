@@ -9,3 +9,5 @@ openai
 pdfminer.six
 tenacity
 firecrawl-py
+aiohttp>=3.8.0
+asyncio
