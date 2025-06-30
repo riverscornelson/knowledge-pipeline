@@ -479,7 +479,9 @@ class ConsolidatedEnricher:
         blocks_to_add = []
         
         # 1. Raw content toggle (chunked into paragraphs for Notion)
-        raw_preview = raw_content[:3000] + "..." if len(raw_content) > 3000 else raw_content
+        # Allow much more content but prevent extremely large documents from breaking the API
+        max_raw_content = 50000  # ~50KB should be sufficient for most documents
+        raw_preview = raw_content[:max_raw_content] + "..." if len(raw_content) > max_raw_content else raw_content
         raw_chunks = self._chunk_text_for_notion(raw_preview)
         raw_children = [
             {
