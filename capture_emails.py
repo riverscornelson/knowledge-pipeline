@@ -239,17 +239,24 @@ def clean_email_content(content: str) -> str:
 
 def create_email_row(subject: str, content: str, h: str, metadata: dict):
     """Create a new email entry in the Notion database."""
-    # Create synthetic URL from sender domain for consistency 
-    sender = metadata.get('sender', 'unknown@email.com')
-    sender_domain = sender.split('@')[-1].replace('>', '')
-    synthetic_url = f"mailto:{sender}"
+    # Create Gmail deep-link URL for direct access to email
+    message_id = metadata.get('message_id', '')
+    if message_id:
+        # Clean message ID (remove < > brackets if present)
+        clean_message_id = message_id.strip('<>')
+        gmail_url = f"https://mail.google.com/mail/u/0/#search/rfc822msgid:{clean_message_id}"
+    else:
+        # Fallback to sender-based link if no message ID
+        sender = metadata.get('sender', 'unknown@email.com')
+        gmail_url = f"https://mail.google.com/mail/u/0/#search/from:{sender.split('@')[0]}"
     
     props = {
         "Title": {"title": [{"text": {"content": subject or "Untitled Email"}}]},
-        EMAIL_URL_PROP: {"url": synthetic_url},
+        EMAIL_URL_PROP: {"url": gmail_url},
         "Status": {"select": {"name": "Inbox"}},
         "Hash": {"rich_text": [{"text": {"content": h}}]},
         CREATED_PROP: {"date": {"start": metadata['date'].isoformat()}},
+        "Source Type": {"select": {"name": "Email"}},
     }
     
     # Create the page

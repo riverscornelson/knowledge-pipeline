@@ -231,13 +231,28 @@ class ConsolidatedEnricher:
     def _extract_web_content(self, item: Dict, article_url: str) -> Tuple[str, Optional[datetime]]:
         """Extract content from web article or existing scraped content"""
         try:
-            # First try to get existing scraped content from page blocks
+            # Check if this is a Gmail email (should read from page blocks only)
+            source_type = item.get('properties', {}).get('Source Type', {}).get('select', {}).get('name', '')
+            is_gmail_email = (article_url.startswith('https://mail.google.com/') or 
+                            source_type == 'Email')
+            
+            if is_gmail_email:
+                self.logger.info(f"Detected Gmail email (source_type: {source_type}), reading content from page blocks")
+            
+            # Try to get existing scraped content from page blocks
             existing_content = self._get_existing_scraped_content(item["id"])
             if existing_content:
+                self.logger.info(f"Found existing content: {len(existing_content)} characters")
                 pub_date = self._extract_date_from_text(existing_content)
                 return existing_content, pub_date
+            
+            # For Gmail emails, don't try to fetch - content should be in blocks
+            if is_gmail_email:
+                self.logger.warning(f"Gmail email but no content found in page blocks")
+                return "", None
                 
-            # Fallback: fetch content directly from URL
+            # Fallback: fetch content directly from URL (for web articles)
+            self.logger.info(f"Fetching content from URL: {article_url}")
             text_content = self._fetch_article_text(article_url)
             pub_date = self._extract_date_from_text(text_content)
             
@@ -259,11 +274,18 @@ class ConsolidatedEnricher:
                         block["toggle"]["rich_text"]
                     )
                     
-                    # Look for raw content toggle
-                    if "raw" in toggle_title.lower():
+                    # Look for content toggles (raw content or email content)
+                    if any(keyword in toggle_title.lower() for keyword in ["raw", "email content", "content"]):
                         children = block["toggle"].get("children", [])
-                        content_parts = []
+                        if not children:
+                            # If no children, try to get children from API
+                            try:
+                                child_blocks = self.resilient_ops.list_blocks(block["id"])
+                                children = child_blocks.get("results", [])
+                            except Exception:
+                                children = []
                         
+                        content_parts = []
                         for child in children:
                             if child["type"] == "paragraph":
                                 text = self._extract_text_from_rich_text(
@@ -271,7 +293,8 @@ class ConsolidatedEnricher:
                                 )
                                 content_parts.append(text)
                                 
-                        return "\n".join(content_parts)
+                        if content_parts:
+                            return "\n".join(content_parts)
                         
             return ""
             

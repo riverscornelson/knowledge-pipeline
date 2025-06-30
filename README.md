@@ -1,23 +1,29 @@
 # Knowledge Pipeline
 
-Small utilities for capturing PDFs and RSS articles and storing them in a Notion database. The scripts can summarise and classify content using OpenAI models via the Responses API.
-They automatically fall back to Chat Completions if the installed OpenAI client
-doesn't yet support the Responses API (version < 1.3).
-The Responses API is preferred across the pipeline for all OpenAI calls.
+Production knowledge pipeline that captures content from multiple sources (PDFs, websites, Gmail) and enriches it with AI-generated summaries and classifications. The system uses OpenAI models via the Responses API with automatic fallback to Chat Completions.
+
+Includes an AI-powered daily newsletter system that generates cross-analysis of enriched content.
 
 ## Utilities
 
 | Script | Description |
 |--------|-------------|
-| `ingest_drive.py` | Scan a Google Drive folder for new PDFs and create pages in the **Sources** database. Existing files are skipped without re-downloading. |
-| `enrich.py` | Download PDFs referenced in the database, extract text, generate summaries, classify topics and update each page. |
-| `capture_rss.py` | Pull new entries from RSS feeds or Substack newsletters and add them to the database. |
-| `capture_websites.py` | **NEW**: Scrape websites using Firecrawl API with authentication support for paid content. |
-| `capture_emails.py` | **NEW**: Capture newsletter emails from Gmail using Gmail API with OAuth2 authentication. |
-| `enrich_rss.py` | Summarise and classify RSS articles, website content, and emails already stored in Notion. |
-| `postprocess.py` | Apply additional enrichment prompts. Used by `enrich.py` and `enrich_rss.py`. |
-| `infer_vendor.py` | Infer and set the Vendor field on existing pages. |
-| `infer_created_date.py` | Populate missing Created Date using article text. |
+| **🚀 PRODUCTION PIPELINE** |
+| `pipeline_consolidated.sh` | **Main pipeline**: Runs ingest → capture → enrich with 75% performance improvement |
+| **📥 CONTENT INGESTION** |
+| `ingest_drive.py` | Scan Google Drive folder for new PDFs and create pages in Sources database |
+| `capture_websites.py` | Scrape websites using Firecrawl API with authentication support |
+| `capture_emails.py` | Capture newsletter emails from Gmail using OAuth2 (⚠️ has Source Type bug) |
+| **🧠 AI ENRICHMENT** |
+| `enrich_consolidated.py` | **Unified enrichment**: Replaces 7 legacy scripts with streamlined AI analysis |
+| **📰 NEWSLETTER SYSTEM** |
+| `daily_newsletter.py` | Generate and send AI-powered daily newsletter with cross-analysis |
+| `test_newsletter.py` | Test newsletter generation with mock data |
+| `test_email_content.py` | Test email content formatting |
+| **🔧 UTILITIES** |
+| `infer_vendor.py` | Backfill vendor fields on existing pages |
+| `infer_created_date.py` | Populate missing Created Date using article text |
+| `migration_v2.py` | Database migration and backup tools |
 
 ## Setup
 
@@ -47,17 +53,19 @@ pip install -r requirements.txt
 | `RSS_FEEDS` | Comma-separated RSS or Substack URLs for `capture_rss.py` |
 | `RSS_URL_PROP` | Property name for the article URL (default `Article URL`) |
 | `CREATED_PROP` | Property name for the created date (default `Created Date`) |
-| `RSS_WINDOW_DAYS` | Days of recency for RSS items (default `90`) |
 | **Website Scraping** | |
-| `FIRECRAWL_API_KEY` | **NEW**: Firecrawl API key for website scraping |
-| `WEBSITE_SOURCES` | **NEW**: Comma-separated URLs to scrape |
-| `WEBSITE_AUTH_CONFIGS` | **NEW**: Path to auth config JSON file (optional) |
-| `WEBSITE_WINDOW_DAYS` | **NEW**: Days of recency for website content (default `30`) |
+| `FIRECRAWL_API_KEY` | Firecrawl API key for website scraping |
+| `WEBSITE_SOURCES` | Comma-separated URLs to scrape |
+| `WEBSITE_AUTH_CONFIGS` | Path to auth config JSON file (optional) |
+| `WEBSITE_WINDOW_DAYS` | Days of recency for website content (default `30`) |
 | **Email Integration** | |
-| `GMAIL_CREDENTIALS_PATH` | **NEW**: Path to Gmail OAuth2 credentials JSON (default `gmail_credentials/credentials.json`) |
-| `GMAIL_TOKEN_PATH` | **NEW**: Path to stored Gmail token (default `gmail_credentials/token.json`) |
-| `GMAIL_SEARCH_QUERY` | **NEW**: Gmail search query (default `from:newsletter OR from:substack`) |
-| `GMAIL_WINDOW_DAYS` | **NEW**: Days to look back for emails (default `7`) |
+| `GMAIL_CREDENTIALS_PATH` | Path to Gmail OAuth2 credentials JSON (default `gmail_credentials/credentials.json`) |
+| `GMAIL_TOKEN_PATH` | Path to stored Gmail token (default `gmail_credentials/token.json`) |
+| `GMAIL_SEARCH_QUERY` | Gmail search query (default `from:newsletter OR from:substack`) |
+| `GMAIL_WINDOW_DAYS` | Days to look back for emails (default `7`) |
+| **Daily Newsletter** | |
+| `NEWSLETTER_RECIPIENTS` | Comma-separated email addresses for newsletter delivery |
+| `NEWSLETTER_SENDER_NAME` | Display name for newsletter sender (default "Knowledge Pipeline") |
 
 Ensure your database includes a **Created Date** property.
 
@@ -80,7 +88,7 @@ enrich the content:
 | **Summary** | Text | Short executive summary generated by the enrichment step. |
 | **Vendor** | Select | Vendor or organisation name if applicable. |
 | **Created Date** | Date | Original publication or file creation time. |
-| **Source Type** | Select | **NEW**: Type of source (`RSS`, `PDF`, `Website`). |
+| **Source Type** | Select | ⚠️ **ISSUE**: Referenced in documentation but missing from database. |
 
 The values for **AI-Primitive** and **Content-Type** are fetched from the
 database schema each time the scripts run. Updating the select options in
@@ -93,56 +101,50 @@ Notion for a deeper dive into the content.
 
 ## Usage
 
-1. Ingest new PDFs from Drive:
+### 🚀 Production Pipeline (Recommended)
+
+Run the complete consolidated pipeline:
 
 ```bash
-python ingest_drive.py
+# Main pipeline (75% faster than legacy approach)
+./pipeline_consolidated.sh
+
+# Optional: Generate daily newsletter after pipeline completes
+python daily_newsletter.py
 ```
 
-2. Summarise and classify them:
+The consolidated pipeline automatically runs:
+1. PDF ingestion from Google Drive
+2. Website scraping with Firecrawl
+3. Gmail newsletter capture
+4. Unified AI enrichment (3 calls vs 20+ in legacy)
+
+### 📊 Individual Scripts (Advanced)
+
+For debugging or selective processing:
 
 ```bash
-python enrich.py
+# Content ingestion
+python ingest_drive.py        # PDFs from Google Drive
+python capture_websites.py   # Websites via Firecrawl
+python capture_emails.py     # Gmail newsletters (⚠️ has bug)
+
+# AI enrichment (replaces 7 legacy scripts)
+python enrich_consolidated.py
+
+# Newsletter system
+python daily_newsletter.py   # Generate and send newsletter
+python test_newsletter.py    # Test with mock data
+
+# Utilities
+python infer_vendor.py        # Backfill vendor fields
+python infer_created_date.py  # Backfill creation dates
 ```
 
-3. Summarise existing RSS articles:
+### ⚠️ Known Issues
 
-```bash
-python enrich_rss.py
-```
-
-Both enrichment scripts automatically call `postprocess.py` to add extra
-analysis blocks after the initial summary and classification.
-
-4. Capture new items from RSS feeds:
-
-```bash
-python capture_rss.py
-```
-
-If a feed URL points to a Substack homepage, `capture_rss.py` automatically appends `/feed`. Use `RSS_URL_PROP` if your database stores article URLs under a different property name.
-
-5. **NEW**: Scrape websites with Firecrawl:
-
-```bash
-python capture_websites.py
-```
-
-This supports authenticated scraping for paid Substacks and other premium content using the auth config file.
-
-6. Populate missing Vendor fields:
-
-```bash
-python infer_vendor.py
-```
-
-7. Backfill missing Created Dates:
-
-```bash
-python infer_created_date.py
-```
-
-Items older than `RSS_WINDOW_DAYS` are ignored when capturing RSS feeds.
+- **Email capture**: `capture_emails.py` fails due to missing "Source Type" property in Notion database
+- **The Verge scraping**: Occasional timeouts when scraping theverge.com
 
 ---
 

@@ -2,18 +2,25 @@
 gmail_auth.py - Gmail API authentication and service setup
 
 Handles OAuth2 flow for Gmail API access with token persistence.
+Supports both reading messages and sending emails.
 """
 import os
 import json
+import base64
 from pathlib import Path
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-# Gmail API scopes - read-only access to messages
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+# Gmail API scopes - read access to messages, send access for newsletters
+SCOPES = [
+    'https://www.googleapis.com/auth/gmail.readonly',
+    'https://www.googleapis.com/auth/gmail.send'
+]
 
 # Default paths for credentials
 DEFAULT_CREDENTIALS_PATH = 'gmail_credentials/credentials.json'
@@ -89,6 +96,62 @@ class GmailAuthenticator:
         except Exception as error:
             print(f"❌ Gmail connection test failed: {error}")
             return False
+    
+    def send_email(self, to_email: str, subject: str, html_content: str, text_content: str = None):
+        """
+        Send an email via Gmail API.
+        
+        Args:
+            to_email: Recipient email address
+            subject: Email subject line
+            html_content: HTML email content
+            text_content: Plain text version (optional, will be generated from HTML if not provided)
+            
+        Returns:
+            Message ID if successful, None if failed
+        """
+        try:
+            service = self.get_service()
+            
+            # Create message
+            message = MIMEMultipart('alternative')
+            message['to'] = to_email
+            message['subject'] = subject
+            
+            # Get sender email from profile
+            profile = service.users().getProfile(userId='me').execute()
+            sender_email = profile.get('emailAddress')
+            if sender_email:
+                message['from'] = sender_email
+            
+            # Add text content (plain text version)
+            if text_content:
+                text_part = MIMEText(text_content, 'plain')
+                message.attach(text_part)
+            
+            # Add HTML content
+            html_part = MIMEText(html_content, 'html')
+            message.attach(html_part)
+            
+            # Encode message
+            raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+            
+            # Send message
+            send_message = service.users().messages().send(
+                userId='me',
+                body={'raw': raw_message}
+            ).execute()
+            
+            message_id = send_message.get('id')
+            print(f"✅ Email sent successfully! Message ID: {message_id}")
+            return message_id
+            
+        except HttpError as error:
+            print(f"❌ Gmail API error sending email: {error}")
+            return None
+        except Exception as error:
+            print(f"❌ Error sending email: {error}")
+            return None
 
 
 def create_gmail_service(credentials_path=None, token_path=None):
