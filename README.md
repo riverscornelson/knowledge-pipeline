@@ -59,12 +59,11 @@ python scripts/run_pipeline.py --skip-enrichment
 ```
 knowledge-pipeline/
 ├── src/                    # Source code (properly packaged)
-│   ├── core/              # Core functionality
+│   ├── core/              # Core functionality  
 │   ├── drive/             # PRIMARY: Drive ingestion
 │   ├── enrichment/        # AI processing
 │   ├── secondary_sources/ # Gmail, RSS, Firecrawl (lower priority)
-│   ├── utils/             # Shared utilities
-│   └── deprecated/        # Newsletter (to be removed)
+│   └── utils/             # Shared utilities
 ├── scripts/               # Executable scripts
 ├── tests/                 # Organized test suite
 ├── config/                # Configuration files
