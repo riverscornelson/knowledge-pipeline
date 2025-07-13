@@ -1,6 +1,84 @@
-.venv/
-.env
-*.json
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
 .idea/
-gmail_credentials/*.json
+.vscode/
+*.swp
+*.swo
+*~
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Credentials
+gmail_credentials/token.json
+gmail_credentials/credentials.json
+auth_configs.json
+
+# Temporary files
+*.tmp
+*.bak
+.DS_Store
+
+# Project specific
+archive_legacy_*/
+backups/
+newsletter_test_*.html
+enrichment_run.log
+pipeline.log
+*.cd
+
+# Development
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride

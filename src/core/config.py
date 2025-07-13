@@ -1,0 +1,102 @@
+"""
+Centralized configuration management for the knowledge pipeline.
+"""
+import os
+from dataclasses import dataclass
+from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+
+@dataclass
+class NotionConfig:
+    """Notion API configuration."""
+    token: str
+    sources_db_id: str
+    created_date_prop: str = "Created Date"
+    
+    @classmethod
+    def from_env(cls) -> "NotionConfig":
+        """Create config from environment variables."""
+        token = os.getenv("NOTION_TOKEN")
+        if not token:
+            raise ValueError("NOTION_TOKEN environment variable is required")
+        
+        db_id = os.getenv("NOTION_SOURCES_DB")
+        if not db_id:
+            raise ValueError("NOTION_SOURCES_DB environment variable is required")
+        
+        return cls(
+            token=token,
+            sources_db_id=db_id,
+            created_date_prop=os.getenv("CREATED_PROP", "Created Date")
+        )
+
+
+@dataclass
+class GoogleDriveConfig:
+    """Google Drive API configuration."""
+    service_account_path: str
+    folder_id: Optional[str] = None
+    folder_name: str = "Knowledge-Base"
+    
+    @classmethod
+    def from_env(cls) -> "GoogleDriveConfig":
+        """Create config from environment variables."""
+        sa_path = os.getenv("GOOGLE_APP_CREDENTIALS")
+        if not sa_path:
+            raise ValueError("GOOGLE_APP_CREDENTIALS environment variable is required")
+        
+        return cls(
+            service_account_path=sa_path,
+            folder_id=os.getenv("DRIVE_FOLDER_ID"),
+            folder_name=os.getenv("DRIVE_FOLDER_NAME", "Knowledge-Base")
+        )
+
+
+@dataclass
+class OpenAIConfig:
+    """OpenAI API configuration."""
+    api_key: str
+    model_summary: str = "gpt-4o"
+    model_classifier: str = "gpt-4o-mini"
+    model_insights: str = "gpt-4o"
+    
+    @classmethod
+    def from_env(cls) -> "OpenAIConfig":
+        """Create config from environment variables."""
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is required")
+        
+        return cls(
+            api_key=api_key,
+            model_summary=os.getenv("MODEL_SUMMARY", "gpt-4o"),
+            model_classifier=os.getenv("MODEL_CLASSIFIER", "gpt-4o-mini"),
+            model_insights=os.getenv("MODEL_INSIGHTS", "gpt-4o")
+        )
+
+
+@dataclass
+class PipelineConfig:
+    """Main pipeline configuration."""
+    notion: NotionConfig
+    google_drive: GoogleDriveConfig
+    openai: OpenAIConfig
+    
+    # Processing settings
+    batch_size: int = 10
+    rate_limit_delay: float = 0.3
+    
+    @classmethod
+    def from_env(cls) -> "PipelineConfig":
+        """Create complete config from environment variables."""
+        return cls(
+            notion=NotionConfig.from_env(),
+            google_drive=GoogleDriveConfig.from_env(),
+            openai=OpenAIConfig.from_env(),
+            batch_size=int(os.getenv("BATCH_SIZE", "10")),
+            rate_limit_delay=float(os.getenv("RATE_LIMIT_DELAY", "0.3"))
+        )

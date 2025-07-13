@@ -1,151 +1,82 @@
-# Knowledge Pipeline
+# Knowledge Pipeline v2.0
 
-Production knowledge pipeline that captures content from multiple sources (PDFs, websites, Gmail) and enriches it with AI-generated summaries and classifications. The system uses OpenAI models via the Responses API with automatic fallback to Chat Completions.
+A modular, priority-based content ingestion and enrichment system with Google Drive as the primary source.
 
-Includes an AI-powered daily newsletter system that generates cross-analysis of enriched content.
-
-## Utilities
-
-| Script | Description |
-|--------|-------------|
-| **🚀 PRODUCTION PIPELINE** |
-| `pipeline_consolidated.sh` | **Main pipeline**: Runs ingest → capture → enrich with 75% performance improvement |
-| **📥 CONTENT INGESTION** |
-| `ingest_drive.py` | Scan Google Drive folder for new PDFs and create pages in Sources database |
-| `capture_websites.py` | Scrape websites using Firecrawl API with authentication support |
-| `capture_emails.py` | Capture newsletter emails from Gmail using OAuth2 (⚠️ has Source Type bug) |
-| **🧠 AI ENRICHMENT** |
-| `enrich_consolidated.py` | **Unified enrichment**: Replaces 7 legacy scripts with streamlined AI analysis |
-| **📰 NEWSLETTER SYSTEM** |
-| `daily_newsletter.py` | Generate and send AI-powered daily newsletter with cross-analysis |
-| `test_newsletter.py` | Test newsletter generation with mock data |
-| `test_email_content.py` | Test email content formatting |
-| **🔧 UTILITIES** |
-| `infer_vendor.py` | Backfill vendor fields on existing pages |
-| `infer_created_date.py` | Populate missing Created Date using article text |
-| `migration_v2.py` | Database migration and backup tools |
-
-## Setup
-
-1. *(Optional)* Create and activate a virtual environment.
-2. Install dependencies:
+## 🚀 Quick Start
 
 ```bash
-pip install -r requirements.txt
+# Install
+pip install -e .
+
+# Configure (copy and edit .env.example)
+cp .env.example .env
+
+# Run pipeline
+python scripts/run_pipeline.py
 ```
 
-3. Provide configuration via environment variables or a `.env` file.
-4. *(Optional)* For website scraping with authentication, copy `auth_configs.json.example` to `auth_configs.json` and configure your credentials.
+## 📁 New Structure
 
-### Environment variables
-
-| Variable | Purpose |
-|----------|---------|
-| `NOTION_TOKEN` | Notion integration token |
-| `NOTION_SOURCES_DB` | ID of the target Notion database |
-| `GOOGLE_APP_CREDENTIALS` | Path to a Google service-account JSON key |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `MODEL_SUMMARY` | Model used for summary generation (default `gpt-4.1`) |
-| `MODEL_CLASSIFIER` | Model for classification (default `gpt-4.1`) |
-| `MODEL_POSTPROCESS` | Model for additional prompts (default `gpt-4.1`) |
-| `MODEL_VENDOR` | Model for vendor inference (default `gpt-4.1`) |
-| `DRIVE_FOLDER_ID` | Google Drive folder ID for `ingest_drive.py` (optional) |
-| `RSS_FEEDS` | Comma-separated RSS or Substack URLs for `capture_rss.py` |
-| `RSS_URL_PROP` | Property name for the article URL (default `Article URL`) |
-| `CREATED_PROP` | Property name for the created date (default `Created Date`) |
-| **Website Scraping** | |
-| `FIRECRAWL_API_KEY` | Firecrawl API key for website scraping |
-| `WEBSITE_SOURCES` | Comma-separated URLs to scrape |
-| `WEBSITE_AUTH_CONFIGS` | Path to auth config JSON file (optional) |
-| `WEBSITE_WINDOW_DAYS` | Days of recency for website content (default `30`) |
-| **Email Integration** | |
-| `GMAIL_CREDENTIALS_PATH` | Path to Gmail OAuth2 credentials JSON (default `gmail_credentials/credentials.json`) |
-| `GMAIL_TOKEN_PATH` | Path to stored Gmail token (default `gmail_credentials/token.json`) |
-| `GMAIL_SEARCH_QUERY` | Gmail search query (default `from:newsletter OR from:substack`) |
-| `GMAIL_WINDOW_DAYS` | Days to look back for emails (default `7`) |
-| **Daily Newsletter** | |
-| `NEWSLETTER_RECIPIENTS` | Comma-separated email addresses for newsletter delivery |
-| `NEWSLETTER_SENDER_NAME` | Display name for newsletter sender (default "Knowledge Pipeline") |
-
-Ensure your database includes a **Created Date** property.
-
-## Sources Database
-
-All scripts operate on a Notion table named **Sources**. Each entry
-represents either a PDF from Drive, an online article captured from an RSS
-feed, or website content scraped with Firecrawl. The table requires a number of properties so the utilities can track and
-enrich the content:
-
-| Property | Type | Purpose |
-|----------|------|---------|
-| **Title** | Title | Primary title of the document or article. Set when the entry is created. |
-| **AI-Primitive** | Multi-select | Category of AI capability inferred during enrichment. |
-| **Content-Type** | Select | Overall type of content (e.g. Market News, Vendor Capability). |
-| **Drive URL** | URL | Link to the PDF on Google Drive. Present only for PDF sources. |
-| **Article URL** | URL | Link to the web article for RSS entries and website sources. |
-| **Hash** | Text | SHA‑256 hash used to detect duplicates. |
-| **Status** | Select | Workflow state (`Inbox`, `Enriched`, `Failed`). |
-| **Summary** | Text | Short executive summary generated by the enrichment step. |
-| **Vendor** | Select | Vendor or organisation name if applicable. |
-| **Created Date** | Date | Original publication or file creation time. |
-| **Source Type** | Select | ⚠️ **ISSUE**: Referenced in documentation but missing from database. |
-
-The values for **AI-Primitive** and **Content-Type** are fetched from the
-database schema each time the scripts run. Updating the select options in
-Notion automatically changes the classification taxonomy.
-
-For each page, the enrichment process also appends toggle blocks containing a
-detailed summary, the raw extracted text and outputs from additional analysis
-prompts. These blocks live in the page body so that readers can expand them in
-Notion for a deeper dive into the content.
-
-## Usage
-
-### 🚀 Production Pipeline (Recommended)
-
-Run the complete consolidated pipeline:
-
-```bash
-# Main pipeline (75% faster than legacy approach)
-./pipeline_consolidated.sh
-
-# Optional: Generate daily newsletter after pipeline completes
-python daily_newsletter.py
+```
+knowledge-pipeline/
+├── src/                    # Source code (properly packaged)
+│   ├── core/              # Core functionality
+│   ├── drive/             # PRIMARY: Drive ingestion
+│   ├── enrichment/        # AI processing
+│   ├── secondary_sources/ # Gmail, RSS, Firecrawl (lower priority)
+│   ├── utils/             # Shared utilities
+│   └── deprecated/        # Newsletter (to be removed)
+├── scripts/               # Executable scripts
+├── tests/                 # Organized test suite
+├── config/                # Configuration files
+├── docs/                  # Documentation
+└── pyproject.toml         # Modern Python packaging
 ```
 
-The consolidated pipeline automatically runs:
-1. PDF ingestion from Google Drive
-2. Website scraping with Firecrawl
-3. Gmail newsletter capture
-4. Unified AI enrichment (3 calls vs 20+ in legacy)
+## 🎯 Key Improvements
 
-### 📊 Individual Scripts (Advanced)
+1. **Drive-First Architecture**: Google Drive is now the primary content source with dedicated modules
+2. **Proper Python Package**: Install with `pip install -e .` for better dependency management
+3. **Modular Design**: Clear separation between ingestion, enrichment, and storage
+4. **Professional Testing**: Organized test structure with pytest
+5. **Centralized Config**: All configuration in `src/core/config.py`
+6. **Newsletter Deprecated**: Moved to `deprecated/` folder for removal
 
-For debugging or selective processing:
+## 🔧 Configuration
 
-```bash
-# Content ingestion
-python ingest_drive.py        # PDFs from Google Drive
-python capture_websites.py   # Websites via Firecrawl
-python capture_emails.py     # Gmail newsletters (⚠️ has bug)
+Same environment variables as before, now centrally managed:
 
-# AI enrichment (replaces 7 legacy scripts)
-python enrich_consolidated.py
-
-# Newsletter system
-python daily_newsletter.py   # Generate and send newsletter
-python test_newsletter.py    # Test with mock data
-
-# Utilities
-python infer_vendor.py        # Backfill vendor fields
-python infer_created_date.py  # Backfill creation dates
+```python
+from src.core.config import PipelineConfig
+config = PipelineConfig.from_env()
 ```
 
-### ⚠️ Known Issues
+## 📚 Documentation
 
-- **Email capture**: `capture_emails.py` fails due to missing "Source Type" property in Notion database
-- **The Verge scraping**: Occasional timeouts when scraping theverge.com
+- [Architecture Overview](docs/architecture.md)
+- [Migration Guide](docs/migration_guide.md)
+- [API Reference](docs/api_reference.md)
 
----
+## 🚦 Migration Status
 
-These utilities rely on `python-dotenv`, `google-api-python-client`, `notion-client` and the OpenAI API. Any `.idea/` directory can be ignored.
+- ✅ Directory structure created
+- ✅ Python packaging setup
+- ✅ Drive ingestion migrated
+- ✅ Configuration management
+- ✅ Documentation updated
+- ⏳ Enrichment module migration
+- ⏳ Secondary sources migration
+- ⏳ Newsletter deprecation
+
+## 🔄 Compared to v1
+
+| Feature | v1 (Current) | v2 (New) |
+|---------|--------------|----------|
+| Structure | Flat, all files in root | Modular packages under `src/` |
+| Priority | All sources equal | Drive primary, others secondary |
+| Config | Scattered in each file | Centralized `PipelineConfig` |
+| Testing | Manual test scripts | Organized pytest suite |
+| Newsletter | Part of main pipeline | Deprecated, to be removed |
+| Installation | Run scripts directly | `pip install -e .` |
+
+The new structure makes Drive the clear priority while maintaining a clean, professional codebase ready for long-term maintenance and extension.
