@@ -60,9 +60,9 @@ class GoogleDriveConfig:
 class OpenAIConfig:
     """OpenAI API configuration."""
     api_key: str
-    model_summary: str = "gpt-4o"
-    model_classifier: str = "gpt-4o-mini"
-    model_insights: str = "gpt-4o"
+    model_summary: str = "gpt-4.1"
+    model_classifier: str = "gpt-4.1-mini"
+    model_insights: str = "gpt-4.1"
     
     @classmethod
     def from_env(cls) -> "OpenAIConfig":
@@ -73,9 +73,9 @@ class OpenAIConfig:
         
         return cls(
             api_key=api_key,
-            model_summary=os.getenv("MODEL_SUMMARY", "gpt-4o"),
-            model_classifier=os.getenv("MODEL_CLASSIFIER", "gpt-4o-mini"),
-            model_insights=os.getenv("MODEL_INSIGHTS", "gpt-4o")
+            model_summary=os.getenv("MODEL_SUMMARY", "gpt-4.1"),
+            model_classifier=os.getenv("MODEL_CLASSIFIER", "gpt-4.1-mini"),
+            model_insights=os.getenv("MODEL_INSIGHTS", "gpt-4.1")
         )
 
 

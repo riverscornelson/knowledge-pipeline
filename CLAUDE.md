@@ -44,7 +44,7 @@ All AI processing uses a **dual API approach**:
 1. **Preferred**: OpenAI Responses API (if available in client version ≥1.3)
 2. **Fallback**: Chat Completions API for older clients
 
-Models configurable via environment variables (`MODEL_SUMMARY`, `MODEL_CLASSIFIER`, etc.) with `gpt-4o` as default.
+Models configurable via environment variables (`MODEL_SUMMARY`, `MODEL_CLASSIFIER`, etc.) with `gpt-4.1` as default.
 
 ## Key Environment Variables
 

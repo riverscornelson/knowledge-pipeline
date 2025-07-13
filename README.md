@@ -38,7 +38,7 @@ python scripts/run_pipeline.py --skip-enrichment
 
 ### Intelligent Content Processing
 - **Multi-Source Ingestion**: Google Drive PDFs, Gmail newsletters, and web content
-- **AI-Powered Enrichment**: Automated summarization, classification, and insight extraction using GPT-4o
+- **AI-Powered Enrichment**: Automated summarization, classification, and insight extraction using GPT-4.1
 - **Smart Deduplication**: SHA-256 hashing prevents duplicate content
 - **Structured Storage**: Rich Notion database with metadata and formatted content blocks
 
@@ -74,7 +74,7 @@ knowledge-pipeline/
 ## 💻 Technology Stack
 
 - **Language**: Python 3.8+ (3.11+ recommended)
-- **AI**: OpenAI GPT-4o (configurable models)
+- **AI**: OpenAI GPT-4.1 (configurable models)
 - **Storage**: Notion API v2
 - **Authentication**: OAuth2 (Gmail), Service Account (Google Drive)
 - **Web Scraping**: Firecrawl API

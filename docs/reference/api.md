@@ -66,9 +66,9 @@ class GoogleDriveConfig:
 @dataclass
 class OpenAIConfig:
     api_key: str  # OpenAI API key
-    model_summary: str  # Model for summarization (default: gpt-4o)
-    model_classifier: str  # Model for classification (default: gpt-4o-mini)
-    model_insights: str  # Model for insights (default: gpt-4o)
+    model_summary: str  # Model for summarization (default: gpt-4.1)
+    model_classifier: str  # Model for classification (default: gpt-4.1-mini)
+    model_insights: str  # Model for insights (default: gpt-4.1)
 ```
 
 ### Notion Client
