@@ -7,9 +7,22 @@ name = "knowledge-pipeline"
 version = "2.0.0"
 description = "AI-powered knowledge pipeline for content ingestion and enrichment"
 readme = "README.md"
+license = {text = "MIT"}
 requires-python = ">=3.8"
 authors = [
-    {name = "Rivers Cornelson", email = "rivers.cornelson@crowe.com"}
+    {name = "Rivers Cornelson", email = "rivers@cornelson.com"}
+]
+keywords = [
+    "knowledge-management",
+    "ai",
+    "openai",
+    "gpt-4",
+    "notion",
+    "google-drive",
+    "content-pipeline",
+    "automation",
+    "document-processing",
+    "enrichment"
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -20,6 +33,12 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
+
+[project.urls]
+Homepage = "https://riverscornelson.com/knowledge-pipeline"
+Repository = "https://github.com/riverscornelson/knowledge-pipeline"
+Issues = "https://github.com/riverscornelson/knowledge-pipeline/issues"
+Documentation = "https://github.com/riverscornelson/knowledge-pipeline/tree/main/docs"
 
 dependencies = [
     "notion-client>=2.0.0",
