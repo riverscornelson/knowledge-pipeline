@@ -67,9 +67,9 @@ python scripts/run_pipeline.py --source firecrawl
 
 ## 📚 Need Help?
 
-- **Full Documentation**: See `README.md`
-- **Architecture**: See `docs/architecture.md`
-- **Configuration**: See `.env.example`
+- **Full Documentation**: See [docs navigation](../README.md)
+- **Architecture**: See [Architecture Overview](../reference/architecture.md)
+- **Configuration**: See `.env.example` in project root
 
 ---
 

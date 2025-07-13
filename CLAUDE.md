@@ -11,21 +11,16 @@ This is a **knowledge pipeline** that ingests content from multiple sources (Goo
 1. **Ingestion**: Multiple capture scripts add content to Notion "Sources" database with Status="Inbox"
 2. **Enrichment**: AI processing scripts generate summaries, classifications, and analysis
 3. **Storage**: Results stored as Notion page properties + toggle blocks with detailed analysis
-4. **Newsletter**: Optional daily newsletter generation from enriched content (separate from main pipeline)
 
-### Production Pipeline
+### Production Pipeline (v2.0)
 
-**🚀 Consolidated Pipeline** (`pipeline_consolidated.sh`) - **PRODUCTION**:
-- **75% faster processing** with streamlined AI analysis (3 calls vs 20+)
-- **80% content reduction** with focused, readable insights
-- **Proper Notion formatting** with markdown-to-blocks conversion
-- Unified processing for all content types (PDF, websites, emails)
-- Runs: `ingest_drive.py` → `capture_websites.py` → `capture_emails.py` → `enrich_consolidated.py`
+**🚀 Knowledge Pipeline v2.0** (`scripts/run_pipeline.py`) - **PRODUCTION**:
+- **Modular architecture** with organized package structure under `src/`
+- **Priority-based processing** with Google Drive as primary source
+- **75% faster processing** with streamlined AI analysis
+- **Proper Python packaging** with `pip install -e .` installation
+- **Centralized configuration** via `PipelineConfig.from_env()`
 
-**📰 Daily Newsletter** (separate scheduled task):
-- `daily_newsletter.py` - generates AI-powered cross-analysis of daily content
-- Sends HTML emails via Gmail API
-- Run separately after main pipeline completes
 
 ## Core Notion Database Schema
 
@@ -41,10 +36,6 @@ All scripts work with a **Sources** database containing these critical propertie
 - **Vendor**: Select - company/organization mentioned
 - **Created Date**: Date - original publication date
 
-⚠️ **Known Issue**: Email capture script expects a "Source Type" property that doesn't exist in the database. This needs to be either:
-1. Added to Notion database as a Select property with options: `PDF`, `Website`, `Email`
-2. Or removed from the `capture_emails.py` script
-
 Classification taxonomies are **dynamically loaded** from the Notion database schema, so updating select options in Notion automatically changes available categories.
 
 ## OpenAI Integration Pattern
@@ -53,7 +44,7 @@ All AI processing uses a **dual API approach**:
 1. **Preferred**: OpenAI Responses API (if available in client version ≥1.3)
 2. **Fallback**: Chat Completions API for older clients
 
-Models configurable via environment variables (`MODEL_SUMMARY`, `MODEL_CLASSIFIER`, etc.) with `gpt-4.1` as default.
+Models configurable via environment variables (`MODEL_SUMMARY`, `MODEL_CLASSIFIER`, etc.) with `gpt-4o` as default.
 
 ## Key Environment Variables
 
@@ -66,98 +57,74 @@ Models configurable via environment variables (`MODEL_SUMMARY`, `MODEL_CLASSIFIE
 - `GMAIL_WINDOW_DAYS` (default 7) - Gmail search window
 - `WEBSITE_WINDOW_DAYS` (default 30) - website content recency
 
-## Daily Newsletter System
-
-The knowledge pipeline includes an AI-powered daily newsletter system that generates cross-analysis summaries:
-
-### Newsletter Features
-- **Content Aggregation**: Pulls today's enriched content from Notion
-- **Cross-Analysis**: Uses GPT-4.1 to generate intelligent summaries across sources
-- **HTML Email**: Professional formatted emails sent via Gmail API
-- **Citation System**: Links back to original Notion pages
-- **Smart Filtering**: Only sends when meaningful content is available
-
-### Newsletter Configuration
-```bash
-# Newsletter environment variables (add to .env)
-NEWSLETTER_RECIPIENTS=user@example.com,other@example.com
-NEWSLETTER_SENDER_NAME="Knowledge Pipeline"
-GMAIL_CREDENTIALS_PATH=gmail_credentials/credentials.json
-GMAIL_TOKEN_PATH=gmail_credentials/token.json
-```
-
-### Newsletter Usage
-```bash
-# Test newsletter generation (uses mock data)
-python test_newsletter.py
-
-# Generate and send actual newsletter
-python daily_newsletter.py
-
-# Test email content formatting
-python test_email_content.py
-```
-
 ## Commands
 
 ### Basic Operations
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install package in development mode
+pip install -e .
 
-# Activate virtual environment
-source .venv/bin/activate
+# Run complete pipeline (all sources + enrichment)
+python scripts/run_pipeline.py
 
-# Run consolidated pipeline (75% faster processing)
-./pipeline_consolidated.sh
+# Run specific source only
+python scripts/run_pipeline.py --source drive
+python scripts/run_pipeline.py --source gmail
 
-# Generate daily newsletter (run after pipeline)
-python daily_newsletter.py
+# Skip enrichment phase
+python scripts/run_pipeline.py --skip-enrichment
 ```
 
-### Individual Scripts
-```bash
-# Content ingestion (run by pipeline_consolidated.sh)
-python ingest_drive.py        # Ingest PDFs from Google Drive
-python capture_websites.py   # Scrape websites with Firecrawl  
-python capture_emails.py     # Capture Gmail newsletters (⚠️ has Source Type bug)
+### Module Structure
+```python
+# Core modules
+from src.core.config import PipelineConfig
+from src.core.notion_client import NotionClient
+from src.core.models import SourceContent, ContentStatus
 
-# Content enrichment
-python enrich_consolidated.py # Unified AI processing for all content types
+# Drive ingestion (primary source)
+from src.drive.ingester import DriveIngester
+from src.drive.pdf_processor import PDFProcessor
 
-# Newsletter generation (separate from main pipeline)
-python daily_newsletter.py   # Generate and send daily newsletter
+# Enrichment
+from src.enrichment.processor import EnrichmentProcessor
+from src.enrichment.summarizer import ContentSummarizer
+from src.enrichment.classifier import ContentClassifier
 
-# Utility scripts
-python infer_vendor.py        # Backfill vendor fields
-python infer_created_date.py  # Backfill dates from content
-
-# Testing scripts
-python test_newsletter.py     # Test newsletter with mock data
-python test_email_content.py  # Test email formatting
+# Secondary sources
+from src.secondary_sources.gmail.capture import GmailCapture
+from src.secondary_sources.firecrawl.capture import FirecrawlCapture
 ```
 
 ### Pipeline Management
 ```bash
-# Migration and assessment tools
-python migration_v2.py assess     # Assess current database state
-python migration_v2.py backup     # Create comprehensive backup
-python migration_v2.py test       # Test consolidated pipeline
-python migration_v2.py migrate    # Migrate existing content (optional)
-
 # Monitor pipeline execution
-tail -f logs/pipeline.jsonl
+tail -f logs/pipeline.jsonl | jq .
+
+# View errors only
+cat logs/pipeline.jsonl | jq 'select(.level == "ERROR")'
+
+# Check pipeline health
+python scripts/health_check.py
 ```
 
-## Gmail Integration Architecture
+## Module Architecture (v2.0)
 
-Gmail integration uses **OAuth2 flow** with token persistence:
-- `gmail_auth.py` - handles authentication and token refresh
-- `capture_emails.py` - main email capture with smart filtering
-- `email_filters.py` - sender filtering and content quality detection
-- Configuration stored in `gmail_credentials/` directory
+### Primary Source: Google Drive
+- `src/drive/ingester.py` - Main ingestion orchestrator
+- `src/drive/pdf_processor.py` - PDF text extraction
+- `src/drive/deduplication.py` - Content hash management
 
-Gmail search query defaults to `from:newsletter OR from:substack` but is fully configurable.
+### Secondary Sources
+- `src/secondary_sources/gmail/` - OAuth2 email capture
+- `src/secondary_sources/firecrawl/` - Web scraping
+- Lower priority than Drive content
+
+### AI Enrichment
+- `src/enrichment/processor.py` - Orchestrates all AI analysis
+- `src/enrichment/summarizer.py` - Content summarization
+- `src/enrichment/classifier.py` - Dynamic taxonomy classification
+- `src/enrichment/insights.py` - Actionable insights extraction
 
 ## Error Handling Patterns
 
@@ -171,37 +138,36 @@ Gmail search query defaults to `from:newsletter OR from:substack` but is fully c
 
 ## Content Processing Workflow
 
-1. **Capture** scripts add raw content with Status="Inbox"
-2. **Consolidated Enrichment** processes Status="Inbox" items:
-   - Extract/fetch full text content from PDFs, websites, or emails
-   - Generate **Core Summary** (comprehensive overview)
-   - Generate **Smart Classification** (content type + AI primitives + vendor)
-   - Generate **Key Insights** (actionable analysis)
-   - Update Status to "Enriched"
+1. **Ingestion Phase**: 
+   - `DriveIngester`, `GmailCapture`, or `FirecrawlCapture` create `SourceContent`
+   - Content added to Notion with Status="Inbox"
+   - Deduplication via SHA-256 hashing
 
-**Content Storage**:
-- **Summary field**: Brief overview (under 200 chars) 
-- **Page body**: 4 focused toggle blocks with proper markdown formatting:
-  - 📄 **Raw Content** (source material, chunked)
-  - 📋 **Core Summary** (detailed analysis)
-  - 💡 **Key Insights** (actionable intelligence)
-  - 🎯 **Classification** (structured metadata)
+2. **Enrichment Phase**:
+   - `EnrichmentProcessor.process_batch()` fetches Status="Inbox" items
+   - Orchestrates AI analysis:
+     - `ContentSummarizer` → Full markdown summary
+     - `ContentClassifier` → Dynamic taxonomy classification
+     - `InsightsGenerator` → Actionable insights
+   - Updates Status to "Enriched" or "Failed"
 
-## Pipeline Consolidation Results
+3. **Storage Structure**:
+   - **Properties**: Summary (<200 chars), classifications, metadata
+   - **Page Body**: Notion blocks with formatted content
 
-The knowledge pipeline has been **dramatically improved** through consolidation:
+## Key v2.0 Improvements
 
-### Performance Gains
-- **75% faster processing** (3 AI calls vs 20+ per document)
-- **80% content reduction** (4 focused analyses vs 15+ verbose outputs)
-- **85% API cost savings** (using GPT-4o-mini for classification)
-- **100% format improvement** (proper Notion blocks vs plain text dumps)
+- **Modular Architecture**: Clean separation in `src/` packages
+- **Type Safety**: Full type hints throughout codebase
+- **Resilience**: Exponential backoff, graceful error handling
+- **Performance**: Generator patterns, efficient batch processing
+- **Testing**: Organized pytest structure in `tests/`
+- **Documentation**: Comprehensive docs in `docs/` directory
 
-### Migration Tools
-Use `migration_v2.py` for database management:
-- **Assessment**: Analyze current database state
-- **Backup**: Comprehensive backup with rollback capability
-- **Testing**: Validate consolidated pipeline on sample data
-- **Migration**: Migrate existing content to new format (optional)
+## Development Tips
 
-The consolidated pipeline is now the production standard, delivering significant performance and quality improvements.
+- Always use `PipelineConfig.from_env()` for configuration
+- Check existing patterns before implementing new features
+- Use structured logging via `setup_logger()`
+- Apply `@with_notion_resilience()` for Notion API calls
+- Follow existing code style and type hints
