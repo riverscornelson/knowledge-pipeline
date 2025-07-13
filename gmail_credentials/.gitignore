@@ -1,0 +1,7 @@
+# Gmail OAuth credentials
+credentials.json
+token.json
+
+# Backup files
+*.bak
+*.tmp
