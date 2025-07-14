@@ -1,8 +1,24 @@
 # Knowledge Pipeline v2.0
 
-*Migration completed: July 13, 2025*
+*A personal knowledge automation system for staying ahead in AI*
 
-An enterprise-grade content intelligence system that automatically ingests, processes, and enriches content from multiple sources into a centralized Notion knowledge base. Built with a modular architecture prioritizing Google Drive as the primary content source, it delivers 75% faster processing through streamlined AI analysis.
+## The Story Behind This Pipeline
+
+In the rapidly evolving world of AI, staying informed isn't just important—it's essential. Yet the sheer volume of papers, articles, newsletters, and updates makes it impossible to read everything. That's why I built this knowledge pipeline.
+
+This isn't a tool to replace reading or research. It's a workflow enhancement that seamlessly integrates with how I already work. Every morning, I save interesting PDFs to a designated Google Drive folder. Throughout the week, I come across compelling articles and newsletters. Rather than letting these accumulate in an ever-growing "read later" list, this pipeline automatically:
+
+1. **Captures** content from my research sources (Drive, Gmail, web)
+2. **Enriches** it with AI-generated summaries and classifications
+3. **Stores** everything in my Notion "second brain"
+
+The magic happens in Notion. While I have many databases for different aspects of my work and life, the Sources database serves as my research repository. With months of processed content, I can use Notion AI to instantly synthesize insights across time periods, identify trends, and surface connections I might have missed.
+
+This pipeline runs locally on my machine, giving me full control over my data while enhancing—not replacing—my natural research workflow. It's designed to work with how I think, not force me into a rigid system.
+
+## What This Pipeline Does
+
+An intelligent content processing system that automatically ingests, enriches, and organizes research materials into a structured Notion knowledge base. Built with a modular architecture prioritizing Google Drive as the primary content source, it delivers AI-powered insights while maintaining human control over the research process.
 
 ## 🚀 Quick Start
 
@@ -140,12 +156,22 @@ See [Testing Guide](docs/reference/testing.md) for detailed testing documentatio
 - ✅ Newsletter deprecation
 - ✅ Comprehensive test suite
 
-## 🎯 Use Cases
+## 🎯 How I Use This Pipeline
 
-1. **Research & Development**: Automated collection and analysis of industry papers
-2. **Competitive Intelligence**: Systematic tracking of market developments
-3. **Knowledge Management**: Centralized repository of processed content
-4. **Executive Briefings**: AI-generated insights from multiple sources
+### Daily Workflow
+1. **Morning Research**: Save interesting AI papers and articles to my Drive folder
+2. **Throughout the Day**: The pipeline runs automatically, processing new content
+3. **Weekly Review**: Use Notion AI to query across all sources: "What were the key AI breakthroughs this month?"
+4. **Strategic Planning**: Surface patterns and trends from months of collected research
+
+### Real-World Examples
+- **Tracking AI Model Releases**: Every new model paper gets automatically summarized with key innovations highlighted
+- **Competitive Intelligence**: Newsletter mentions of companies get tagged and classified
+- **Technology Trends**: Ask Notion AI to identify emerging patterns across 6 months of content
+- **Research Synthesis**: Combine insights from multiple papers on similar topics
+
+### Beyond Notion
+The structured data in Notion isn't locked away. I regularly export collections of processed content to feed into other AI tools for deeper analysis—whether that's Claude for comprehensive research reports, GPT-4 for trend analysis, or specialized tools for specific research tasks. The pipeline creates a foundation of organized, enriched content that enhances every AI tool I use.
 
 ## 📋 Requirements
 
