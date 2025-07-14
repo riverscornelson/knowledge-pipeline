@@ -12,6 +12,10 @@ from ..utils.logging import setup_logger
 from .summarizer import ContentSummarizer
 from .classifier import ContentClassifier
 from .insights import InsightsGenerator
+from ..drive.pdf_processor import PDFProcessor
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
+import re
 
 
 class EnrichmentProcessor:
@@ -27,6 +31,20 @@ class EnrichmentProcessor:
         self.summarizer = ContentSummarizer(config.openai)
         self.classifier = ContentClassifier(config.openai, self._load_taxonomy())
         self.insights_generator = InsightsGenerator(config.openai)
+        
+        # Initialize PDF processor
+        self.pdf_processor = PDFProcessor()
+        
+        # Initialize Drive service if credentials available
+        self.drive_service = None
+        if config.google_drive.service_account_path:
+            try:
+                credentials = Credentials.from_service_account_file(
+                    config.google_drive.service_account_path
+                )
+                self.drive_service = build("drive", "v3", credentials=credentials, cache_discovery=False)
+            except Exception as e:
+                self.logger.warning(f"Could not initialize Drive service: {e}")
         
     def _load_taxonomy(self) -> Dict[str, List[str]]:
         """Load classification taxonomies from Notion database schema."""
@@ -135,13 +153,18 @@ class EnrichmentProcessor:
             "total_tokens": 0
         }
         
+        # Convert string confidence to numeric score for storage
+        confidence_str = classification.get("confidence", "medium")
+        confidence_mapping = {"high": 0.9, "medium": 0.7, "low": 0.5}
+        confidence_score = confidence_mapping.get(confidence_str, 0.7)
+        
         return EnrichmentResult(
             core_summary=core_summary,
             key_insights=key_insights,
             content_type=classification["content_type"],
             ai_primitives=classification["ai_primitives"],
             vendor=classification.get("vendor"),
-            confidence_scores={"classification": classification.get("confidence", 1.0)},
+            confidence_scores={"classification": confidence_score},
             processing_time=processing_time,
             token_usage=token_usage
         )
@@ -163,15 +186,139 @@ class EnrichmentProcessor:
     
     def _extract_drive_content(self, drive_url: str) -> Optional[str]:
         """Extract content from Google Drive."""
-        # TODO: Implement using PDFProcessor from drive module
-        self.logger.warning("Drive content extraction not yet implemented in new structure")
-        return None
+        if not self.drive_service:
+            self.logger.error("Google Drive service not initialized")
+            return None
+            
+        try:
+            # Extract file ID from Drive URL
+            file_id = self._extract_drive_file_id(drive_url)
+            if not file_id:
+                self.logger.error(f"Could not extract file ID from URL: {drive_url}")
+                return None
+            
+            # Download PDF content
+            pdf_content = self.pdf_processor.download_file(self.drive_service, file_id)
+            
+            # Extract text from PDF
+            text_content = self.pdf_processor.extract_text_from_pdf(pdf_content)
+            
+            if not text_content:
+                self.logger.warning(f"No text extracted from PDF: {drive_url}")
+                return None
+                
+            self.logger.info(f"Successfully extracted {len(text_content)} characters from Drive PDF")
+            return text_content
+            
+        except Exception as e:
+            self.logger.error(f"Failed to extract Drive content: {e}")
+            return None
+    
+    def _extract_drive_file_id(self, drive_url: str) -> Optional[str]:
+        """Extract Google Drive file ID from URL."""
+        try:
+            # Handle various Google Drive URL formats
+            # Format: https://drive.google.com/file/d/FILE_ID/view
+            # Format: https://drive.google.com/open?id=FILE_ID
+            if "/d/" in drive_url:
+                return drive_url.split("/d/")[1].split("/")[0]
+            elif "id=" in drive_url:
+                return drive_url.split("id=")[1].split("&")[0]
+            else:
+                return None
+        except Exception as e:
+            self.logger.error(f"Error parsing Drive URL {drive_url}: {e}")
+            return None
     
     def _extract_web_content(self, article_url: str) -> Optional[str]:
-        """Extract content from web URL."""
-        # TODO: Implement using Firecrawl or similar
-        self.logger.warning("Web content extraction not yet implemented in new structure")
-        return None
+        """Extract content from web URL using Firecrawl API."""
+        import os
+        import requests
+        from tenacity import retry, wait_exponential, stop_after_attempt
+        
+        api_key = os.getenv("FIRECRAWL_API_KEY")
+        if not api_key:
+            # Fallback to basic HTTP request if Firecrawl not available
+            return self._extract_web_content_basic(article_url)
+        
+        try:
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "url": article_url,
+                "formats": ["markdown"],
+                "onlyMainContent": True
+            }
+            
+            response = requests.post(
+                "https://api.firecrawl.dev/v1/scrape",
+                headers=headers,
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    content = data.get("data", {}).get("markdown")
+                    if content:
+                        self.logger.info(f"Successfully extracted {len(content)} characters from web URL")
+                        return content
+            
+            self.logger.warning(f"Firecrawl extraction failed, falling back to basic method")
+            return self._extract_web_content_basic(article_url)
+            
+        except Exception as e:
+            self.logger.error(f"Failed to extract web content with Firecrawl: {e}")
+            return self._extract_web_content_basic(article_url)
+    
+    def _extract_web_content_basic(self, article_url: str) -> Optional[str]:
+        """Basic web content extraction using requests and BeautifulSoup."""
+        try:
+            import requests
+            from bs4 import BeautifulSoup
+            
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            
+            response = requests.get(article_url, headers=headers, timeout=15)
+            response.raise_for_status()
+            
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Remove unwanted elements
+            for element in soup(['script', 'style', 'nav', 'footer', 'header', 'aside']):
+                element.decompose()
+            
+            # Try to find main content
+            main_content = None
+            content_selectors = ['article', 'main', '[role="main"]', '.content', '.post-content']
+            
+            for selector in content_selectors:
+                main_content = soup.select_one(selector)
+                if main_content:
+                    break
+            
+            if not main_content:
+                main_content = soup
+            
+            # Extract text
+            text = main_content.get_text(separator='\n', strip=True)
+            
+            if text and len(text) > 100:  # Minimum content length
+                self.logger.info(f"Successfully extracted {len(text)} characters using basic method")
+                return text
+            else:
+                self.logger.warning(f"Insufficient content extracted from {article_url}")
+                return None
+                
+        except Exception as e:
+            self.logger.error(f"Failed to extract web content: {e}")
+            return None
     
     def _extract_page_content(self, page_id: str) -> Optional[str]:
         """Extract existing content from Notion page."""
@@ -180,16 +327,58 @@ class EnrichmentProcessor:
             content_parts = []
             
             for block in blocks['results']:
-                if block['type'] == 'paragraph':
-                    text = block['paragraph'].get('rich_text', [])
-                    if text:
-                        content_parts.append(text[0]['plain_text'])
+                block_type = block.get('type')
+                text_content = None
+                
+                # Extract text from different block types
+                if block_type == 'paragraph':
+                    text_content = self._extract_rich_text(block['paragraph'].get('rich_text', []))
+                elif block_type == 'heading_1':
+                    text_content = self._extract_rich_text(block['heading_1'].get('rich_text', []))
+                elif block_type == 'heading_2':
+                    text_content = self._extract_rich_text(block['heading_2'].get('rich_text', []))
+                elif block_type == 'heading_3':
+                    text_content = self._extract_rich_text(block['heading_3'].get('rich_text', []))
+                elif block_type == 'bulleted_list_item':
+                    text_content = self._extract_rich_text(block['bulleted_list_item'].get('rich_text', []))
+                elif block_type == 'numbered_list_item':
+                    text_content = self._extract_rich_text(block['numbered_list_item'].get('rich_text', []))
+                elif block_type == 'toggle':
+                    text_content = self._extract_rich_text(block['toggle'].get('rich_text', []))
+                elif block_type == 'code':
+                    text_content = self._extract_rich_text(block['code'].get('rich_text', []))
+                elif block_type == 'quote':
+                    text_content = self._extract_rich_text(block['quote'].get('rich_text', []))
+                
+                if text_content and text_content.strip():
+                    content_parts.append(text_content.strip())
             
-            return '\n'.join(content_parts) if content_parts else None
+            content = '\n'.join(content_parts) if content_parts else None
+            
+            if content and len(content) > 50:  # Minimum content threshold
+                self.logger.info(f"Successfully extracted {len(content)} characters from Notion page")
+                return content
+            else:
+                self.logger.warning(f"Insufficient content found in Notion page {page_id}")
+                return None
             
         except Exception as e:
             self.logger.error(f"Failed to extract page content: {e}")
             return None
+    
+    def _extract_rich_text(self, rich_text_array: List[Dict]) -> str:
+        """Extract plain text from Notion rich text array."""
+        if not rich_text_array:
+            return ""
+        
+        text_parts = []
+        for text_item in rich_text_array:
+            if text_item.get('type') == 'text':
+                text_parts.append(text_item.get('text', {}).get('content', ''))
+            elif text_item.get('plain_text'):
+                text_parts.append(text_item['plain_text'])
+        
+        return ''.join(text_parts)
     
     def _store_results(self, item: Dict, result: EnrichmentResult, raw_content: str):
         """Store enrichment results in Notion."""
@@ -256,7 +445,7 @@ class EnrichmentProcessor:
 **Content Type**: {result.content_type}
 **AI Primitives**: {', '.join(result.ai_primitives)}
 **Vendor**: {result.vendor or 'N/A'}
-**Confidence**: {result.confidence_scores.get('classification', 0):.0%}
+**Confidence**: {result.confidence_scores.get('classification', 0.7):.0%}
 """
         blocks.append({
             "object": "block",

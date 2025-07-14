@@ -3,6 +3,7 @@ Google Drive content ingestion module.
 """
 import time
 from typing import List, Optional, Dict, Any
+from datetime import datetime
 from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 from ..core.config import GoogleDriveConfig, PipelineConfig
@@ -78,6 +79,15 @@ class DriveIngester:
         # Calculate file hash
         file_hash = self.dedup_service.calculate_drive_file_hash(self.drive, file_id)
         
+        # Parse created date
+        created_date = None
+        if file_info.get("createdTime"):
+            try:
+                # Parse ISO format datetime string from Drive API
+                created_date = datetime.fromisoformat(file_info["createdTime"].replace('Z', '+00:00'))
+            except:
+                self.logger.warning(f"Could not parse date: {file_info.get('createdTime')}")
+        
         # Create source content
         content = SourceContent(
             title=file_info["name"],
@@ -85,7 +95,7 @@ class DriveIngester:
             hash=file_hash,
             content_type=ContentType.PDF,  # Assuming PDFs for now
             drive_url=file_info["webViewLink"],
-            created_date=file_info.get("createdTime")  # This is already a string, not datetime
+            created_date=created_date
         )
         
         return content
