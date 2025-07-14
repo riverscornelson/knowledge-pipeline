@@ -55,6 +55,7 @@ python scripts/run_pipeline.py --skip-enrichment
 ### Intelligent Content Processing
 - **Multi-Source Ingestion**: Google Drive PDFs, Gmail newsletters, and web content
 - **AI-Powered Enrichment**: Automated summarization, classification, and insight extraction using GPT-4.1
+- **Advanced Analysis**: Multi-step reasoning with story structures and evidence-based classification
 - **Smart Deduplication**: SHA-256 hashing prevents duplicate content
 - **Structured Storage**: Rich Notion database with metadata and formatted content blocks
 

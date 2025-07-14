@@ -19,7 +19,6 @@ class ContentType(Enum):
     PDF = "PDF"
     WEBSITE = "Website"
     EMAIL = "Email"
-    RSS = "RSS"
 
 
 @dataclass

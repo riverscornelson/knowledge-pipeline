@@ -465,7 +465,7 @@ To force reprocessing:
 1. Check last run time in logs
 2. Monitor Notion database for stuck items
 3. Set up alerts for error count thresholds
-4. Use health check script from deployment guide
+4. Monitor logs for recent execution timestamps
 
 ## Getting Help
 

@@ -22,6 +22,7 @@ Detailed technical documentation:
 
 - **[Architecture Overview](reference/architecture.md)** - System design and data flow
 - **[API Reference](reference/api.md)** - Complete module and class documentation
+- **[Advanced Enrichment Features](reference/advanced-enrichment.md)** - Sophisticated AI analysis capabilities
 - **[Testing Guide](reference/testing.md)** - Test suite documentation and patterns
 
 ### Operations & Maintenance
@@ -30,10 +31,6 @@ For deployment and ongoing operations:
 - **[Deployment Guide](operations/deployment.md)** - Production deployment options
 - **[Troubleshooting Guide](operations/troubleshooting.md)** - Common issues and solutions
 
-### Archive
-Historical documentation:
-
-- **[v1 to v2 Migration](archive/migration_guide_v1_to_v2.md)** - Legacy migration guide
 
 ## 🎯 Quick Links by Role
 

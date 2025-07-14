@@ -103,9 +103,6 @@ tail -f logs/pipeline.jsonl | jq .
 
 # View errors only
 cat logs/pipeline.jsonl | jq 'select(.level == "ERROR")'
-
-# Check pipeline health
-python scripts/health_check.py
 ```
 
 ## Module Architecture (v2.0)

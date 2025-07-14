@@ -415,42 +415,28 @@ cat logs/pipeline.jsonl | jq 'select(.message | contains("complete"))'
 
 ### Monitoring Setup
 
-#### Health Check Script
-Create `scripts/health_check.py`:
-```python
-#!/usr/bin/env python3
-import json
-import sys
-from datetime import datetime, timedelta
-from pathlib import Path
+#### Log Monitoring
+Monitor pipeline execution through structured logs:
 
+```bash
 # Check if pipeline ran recently
-log_file = Path("logs/pipeline.jsonl")
-if not log_file.exists():
-    print("ERROR: No log file found")
-    sys.exit(1)
+tail -n 100 logs/pipeline.jsonl | jq -r '.timestamp' | tail -1
 
-# Check last run time
-with open(log_file, 'r') as f:
-    last_line = None
-    for line in f:
-        last_line = line
+# Count errors in last run
+cat logs/pipeline.jsonl | jq 'select(.level == "ERROR")' | wc -l
 
-if last_line:
-    last_log = json.loads(last_line)
-    last_time = datetime.fromisoformat(last_log['timestamp'])
-    if datetime.utcnow() - last_time > timedelta(hours=6):
-        print("WARNING: Pipeline hasn't run in 6+ hours")
-        sys.exit(1)
-
-print("OK: Pipeline healthy")
-sys.exit(0)
+# View performance metrics
+cat logs/pipeline.jsonl | jq 'select(.performance_ms != null) | {operation: .msg, time: .performance_ms}'
 ```
 
 #### Monitoring Integration
 ```bash
-# Prometheus node_exporter textfile
-*/5 * * * * /home/pipeline/knowledge-pipeline/scripts/health_check.py && echo "pipeline_health 1" > /var/lib/node_exporter/pipeline.prom || echo "pipeline_health 0" > /var/lib/node_exporter/pipeline.prom
+# Simple health check via log monitoring
+# Check if pipeline has run in last 6 hours
+if [ -f logs/pipeline.jsonl ]; then
+    LAST_RUN=$(tail -n 1 logs/pipeline.jsonl | jq -r '.timestamp')
+    # Compare with current time
+fi
 
 # CloudWatch custom metric (AWS)
 aws cloudwatch put-metric-data \

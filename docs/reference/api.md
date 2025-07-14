@@ -152,7 +152,6 @@ from src.core.models import ContentType
 ContentType.PDF
 ContentType.WEBSITE
 ContentType.EMAIL
-ContentType.RSS
 ```
 
 #### `SourceContent`

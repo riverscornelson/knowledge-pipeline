@@ -33,7 +33,7 @@ The Knowledge Pipeline is a modular system for ingesting, processing, and enrich
 │  ┌─────────────────────────┐  ┌─────────────────────────┐  │
 │  │   Primary: Drive        │  │  Secondary Sources      │  │
 │  │  - PDF Processing       │  │  - Gmail                │  │
-│  │  - Deduplication        │  │  - RSS Feeds           │  │
+│  │  - Deduplication        │  │  - Firecrawl           │  │
 │  │  - Metadata Extraction  │  │  - Web Scraping        │  │
 │  └─────────────────────────┘  └─────────────────────────┘  │
 └─────────────────────┬───────────────────────────────────────┘

@@ -133,4 +133,3 @@ class TestContentType:
         assert ContentType.PDF.value == "PDF"
         assert ContentType.WEBSITE.value == "Website"
         assert ContentType.EMAIL.value == "Email"
-        assert ContentType.RSS.value == "RSS"
