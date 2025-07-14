@@ -22,6 +22,7 @@ Detailed technical documentation:
 
 - **[Architecture Overview](reference/architecture.md)** - System design and data flow
 - **[API Reference](reference/api.md)** - Complete module and class documentation
+- **[Testing Guide](reference/testing.md)** - Test suite documentation and patterns
 
 ### Operations & Maintenance
 For deployment and ongoing operations:
@@ -40,6 +41,7 @@ Historical documentation:
 1. Start with [Quick Start](getting-started/quick-start.md)
 2. Review [Architecture](reference/architecture.md)
 3. Reference [API Documentation](reference/api.md)
+4. Understand [Testing Guide](reference/testing.md)
 
 ### For DevOps/SRE
 1. Follow [Deployment Guide](operations/deployment.md)
