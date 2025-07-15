@@ -64,6 +64,11 @@ class OpenAIConfig:
     model_classifier: str = "gpt-4.1-mini"
     model_insights: str = "gpt-4.1"
     
+    @property
+    def model(self) -> str:
+        """Default model for backward compatibility."""
+        return self.model_summary
+    
     @classmethod
     def from_env(cls) -> "OpenAIConfig":
         """Create config from environment variables."""

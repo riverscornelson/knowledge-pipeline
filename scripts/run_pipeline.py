@@ -86,8 +86,8 @@ def main():
         # Run enrichment unless skipped
         if not args.skip_enrichment and not args.dry_run:
             logger.info("Starting enrichment phase")
-            from src.enrichment.processor import EnrichmentProcessor
-            enrichment_processor = EnrichmentProcessor(config, notion_client)
+            from src.enrichment.pipeline_processor import PipelineProcessor
+            enrichment_processor = PipelineProcessor(config, notion_client)
             
             stats = enrichment_processor.process_batch()
             logger.info(f"Enrichment complete: {stats}")

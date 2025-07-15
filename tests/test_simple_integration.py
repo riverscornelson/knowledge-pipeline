@@ -60,7 +60,7 @@ class TestSimpleIntegration:
         """Test basic pipeline flow without full mocking."""
         # This demonstrates the basic flow
         from src.drive.ingester import DriveIngester
-        from src.enrichment.processor import EnrichmentProcessor
+        from src.enrichment.pipeline_processor import PipelineProcessor
         
         # Without Drive credentials, ingester should still initialize
         mock_config.google_drive.service_account_path = ""

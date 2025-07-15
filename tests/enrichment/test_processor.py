@@ -6,27 +6,27 @@ from unittest.mock import patch, Mock, MagicMock
 from dataclasses import dataclass
 from typing import List, Optional
 
-from src.enrichment.processor import EnrichmentProcessor
+from src.enrichment.pipeline_processor import PipelineProcessor
 from src.core.models import ContentStatus, EnrichmentResult
 
 
-class TestEnrichmentProcessor:
-    """Test EnrichmentProcessor orchestration."""
+class TestPipelineProcessor:
+    """Test PipelineProcessor orchestration."""
     
     def test_create_processor(self, mock_config, mock_notion_client):
-        """Test creating EnrichmentProcessor instance."""
-        with patch('src.enrichment.processor.ContentSummarizer') as mock_summarizer_class:
-            with patch('src.enrichment.processor.ContentClassifier') as mock_classifier_class:
-                with patch('src.enrichment.processor.InsightsGenerator') as mock_insights_class:
+        """Test creating PipelineProcessor instance."""
+        with patch('src.enrichment.pipeline_processor.AdvancedContentSummarizer') as mock_summarizer_class:
+            with patch('src.enrichment.pipeline_processor.AdvancedContentClassifier') as mock_classifier_class:
+                with patch('src.enrichment.pipeline_processor.AdvancedInsightsGenerator') as mock_insights_class:
                     # Mock taxonomy loading
-                    with patch.object(EnrichmentProcessor, '_load_taxonomy') as mock_load_taxonomy:
+                    with patch.object(PipelineProcessor, '_load_taxonomy') as mock_load_taxonomy:
                         mock_load_taxonomy.return_value = {
                             "content_types": ["Technical"],
                             "ai_primitives": ["Classification"],
                             "vendors": ["OpenAI"]
                         }
                         
-                        processor = EnrichmentProcessor(mock_config, mock_notion_client)
+                        processor = PipelineProcessor(mock_config, mock_notion_client)
                         
                         # Verify all components were initialized
                         mock_summarizer_class.assert_called_once_with(mock_config.openai)
@@ -57,16 +57,16 @@ class TestEnrichmentProcessor:
             "Key insight 3"
         ]
         
-        with patch('src.enrichment.processor.ContentSummarizer') as mock_summarizer_class:
+        with patch('src.enrichment.pipeline_processor.AdvancedContentSummarizer') as mock_summarizer_class:
             mock_summarizer_class.return_value = mock_summarizer
-            with patch('src.enrichment.processor.ContentClassifier') as mock_classifier_class:
+            with patch('src.enrichment.pipeline_processor.AdvancedContentClassifier') as mock_classifier_class:
                 mock_classifier_class.return_value = mock_classifier
-                with patch('src.enrichment.processor.InsightsGenerator') as mock_insights_class:
+                with patch('src.enrichment.pipeline_processor.AdvancedInsightsGenerator') as mock_insights_class:
                     mock_insights_class.return_value = mock_insights
-                    with patch.object(EnrichmentProcessor, '_load_taxonomy') as mock_load_taxonomy:
+                    with patch.object(PipelineProcessor, '_load_taxonomy') as mock_load_taxonomy:
                         mock_load_taxonomy.return_value = {"content_types": [], "ai_primitives": [], "vendors": []}
                         
-                        processor = EnrichmentProcessor(mock_config, mock_notion_client)
+                        processor = PipelineProcessor(mock_config, mock_notion_client)
                         result = processor.enrich_content(
                             content="Test content about AI",
                             item=sample_notion_page
@@ -94,11 +94,11 @@ class TestEnrichmentProcessor:
         ])
         
         # Mock content extraction
-        with patch.object(EnrichmentProcessor, '_extract_content') as mock_extract:
+        with patch.object(PipelineProcessor, '_extract_content') as mock_extract:
             mock_extract.return_value = "Extracted content"
             
             # Mock enrichment
-            with patch.object(EnrichmentProcessor, 'enrich_content') as mock_enrich:
+            with patch.object(PipelineProcessor, 'enrich_content') as mock_enrich:
                 mock_result = EnrichmentResult(
                     core_summary="Summary",
                     key_insights=["Insight 1"],
@@ -112,14 +112,14 @@ class TestEnrichmentProcessor:
                 mock_enrich.return_value = mock_result
                 
                 # Mock storage
-                with patch.object(EnrichmentProcessor, '_store_results') as mock_store:
-                    with patch('src.enrichment.processor.ContentSummarizer'):
-                        with patch('src.enrichment.processor.ContentClassifier'):
-                            with patch('src.enrichment.processor.InsightsGenerator'):
-                                with patch.object(EnrichmentProcessor, '_load_taxonomy') as mock_load_taxonomy:
+                with patch.object(PipelineProcessor, '_store_results') as mock_store:
+                    with patch('src.enrichment.pipeline_processor.AdvancedContentSummarizer'):
+                        with patch('src.enrichment.pipeline_processor.AdvancedContentClassifier'):
+                            with patch('src.enrichment.pipeline_processor.AdvancedInsightsGenerator'):
+                                with patch.object(PipelineProcessor, '_load_taxonomy') as mock_load_taxonomy:
                                     mock_load_taxonomy.return_value = {"content_types": [], "ai_primitives": [], "vendors": []}
                                     
-                                    processor = EnrichmentProcessor(mock_config, mock_notion_client)
+                                    processor = PipelineProcessor(mock_config, mock_notion_client)
                                     stats = processor.process_batch(limit=10)
                                     
                                     # Verify stats
@@ -171,10 +171,10 @@ class TestEnrichmentProcessor:
             }
         }
         
-        with patch('src.enrichment.processor.ContentSummarizer'):
-            with patch('src.enrichment.processor.ContentClassifier'):
-                with patch('src.enrichment.processor.InsightsGenerator'):
-                    processor = EnrichmentProcessor(mock_config, mock_notion_client)
+        with patch('src.enrichment.pipeline_processor.AdvancedContentSummarizer'):
+            with patch('src.enrichment.pipeline_processor.AdvancedContentClassifier'):
+                with patch('src.enrichment.pipeline_processor.AdvancedInsightsGenerator'):
+                    processor = PipelineProcessor(mock_config, mock_notion_client)
                     
                     # The taxonomy should have been loaded during init
                     # Let's verify by checking the classifier was created with correct taxonomy

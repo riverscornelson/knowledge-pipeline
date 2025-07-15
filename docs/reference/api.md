@@ -278,13 +278,13 @@ Normalizes and hashes URLs.
 
 ### Enrichment Processor
 
-#### `EnrichmentProcessor`
+#### `PipelineProcessor`
 Main orchestrator for AI enrichment pipeline.
 
 ```python
-from src.enrichment.processor import EnrichmentProcessor
+from src.enrichment.pipeline_processor import PipelineProcessor
 
-processor = EnrichmentProcessor(config, notion_client)
+processor = PipelineProcessor(config, notion_client)
 stats = processor.process_batch(limit=10)
 # Returns: {"processed": 8, "failed": 1, "skipped": 1}
 ```
@@ -473,7 +473,7 @@ blocks = converter.convert(markdown_text)
 from src.core.config import PipelineConfig
 from src.core.notion_client import NotionClient
 from src.drive.ingester import DriveIngester
-from src.enrichment.processor import EnrichmentProcessor
+from src.enrichment.pipeline_processor import PipelineProcessor
 
 # Initialize
 config = PipelineConfig.from_env()
@@ -484,7 +484,7 @@ drive_ingester = DriveIngester(config, notion_client)
 ingest_stats = drive_ingester.ingest()
 
 # Enrich content
-enrichment_processor = EnrichmentProcessor(config, notion_client)
+enrichment_processor = PipelineProcessor(config, notion_client)
 enrich_stats = enrichment_processor.process_batch()
 
 print(f"Ingested: {ingest_stats}")

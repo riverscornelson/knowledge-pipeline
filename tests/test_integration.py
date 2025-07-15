@@ -8,7 +8,7 @@ from datetime import datetime
 from src.core.models import SourceContent, ContentStatus, ContentType
 from src.core.config import PipelineConfig
 from src.drive.ingester import DriveIngester
-from src.enrichment.processor import EnrichmentProcessor
+from src.enrichment.pipeline_processor import PipelineProcessor
 
 
 class TestPipelineIntegration:
@@ -94,14 +94,14 @@ class TestPipelineIntegration:
                                     mock_notion_client.create_page.assert_called_once()
                         
                         # Step 2: Enrich the content
-                        with patch('src.enrichment.processor.NotionClient') as mock_notion_class2:
+                        with patch('src.enrichment.pipeline_processor.NotionClient') as mock_notion_class2:
                             mock_notion_class2.return_value = mock_notion_client
                             
-                            with patch('src.enrichment.processor.ContentSummarizer'):
-                                with patch('src.enrichment.processor.ContentClassifier'):
-                                    with patch('src.enrichment.processor.InsightsGenerator'):
-                                        with patch.object(EnrichmentProcessor, '_load_taxonomy', return_value={'content_types': [], 'ai_primitives': [], 'vendors': []}):
-                                            processor = EnrichmentProcessor(mock_config, mock_notion_client)
+                            with patch('src.enrichment.pipeline_processor.AdvancedContentSummarizer'):
+                                with patch('src.enrichment.pipeline_processor.AdvancedContentClassifier'):
+                                    with patch('src.enrichment.pipeline_processor.AdvancedInsightsGenerator'):
+                                        with patch.object(PipelineProcessor, '_load_taxonomy', return_value={'content_types': [], 'ai_primitives': [], 'vendors': []}):
+                                            processor = PipelineProcessor(mock_config, mock_notion_client)
                                             # Mock extract_content to return something
                                             with patch.object(processor, '_extract_content', return_value="Test content"):
                                                 with patch.object(processor, 'enrich_content') as mock_enrich:
@@ -203,13 +203,13 @@ class TestPipelineIntegration:
                                 assert ingest_stats["total"] == 0
                     
                     # Enrichment should handle empty inbox
-                    with patch('src.enrichment.processor.NotionClient') as mock_notion_class2:
+                    with patch('src.enrichment.pipeline_processor.NotionClient') as mock_notion_class2:
                         mock_notion_class2.return_value = mock_notion_client
                         
-                        with patch('src.enrichment.processor.ContentSummarizer'):
-                            with patch('src.enrichment.processor.ContentClassifier'):
-                                with patch('src.enrichment.processor.InsightsGenerator'):
-                                    with patch.object(EnrichmentProcessor, '_load_taxonomy', return_value={'content_types': [], 'ai_primitives': [], 'vendors': []}):
-                                        processor = EnrichmentProcessor(mock_config, mock_notion_client)
+                        with patch('src.enrichment.pipeline_processor.AdvancedContentSummarizer'):
+                            with patch('src.enrichment.pipeline_processor.AdvancedContentClassifier'):
+                                with patch('src.enrichment.pipeline_processor.AdvancedInsightsGenerator'):
+                                    with patch.object(PipelineProcessor, '_load_taxonomy', return_value={'content_types': [], 'ai_primitives': [], 'vendors': []}):
+                                        processor = PipelineProcessor(mock_config, mock_notion_client)
                                         enrich_stats = processor.process_batch()
                                         assert enrich_stats["processed"] == 0
