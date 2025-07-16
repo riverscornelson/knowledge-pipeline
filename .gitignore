@@ -56,10 +56,39 @@ logs/
 .env.local
 .env.*.local
 
-# Credentials
+# Credentials - Comprehensive protection
 gmail_credentials/token.json
 gmail_credentials/credentials.json
 auth_configs.json
+*.key
+*.pem
+*.p12
+*.pfx
+*_credentials.json
+*_token.json
+*client_secret*.json
+*service_account*.json
+
+# API Keys and Secrets
+*api_key*
+*secret*
+*password*
+*token*
+credentials/
+secrets/
+keys/
+
+# OAuth and Authentication
+oauth_token*
+refresh_token*
+access_token*
+*.oauth
+*.auth
+
+# Development and debug files
+temp/
+debug_*.py
+test_*.py  # Ad-hoc test files (keep tests/ directory)
 
 # Temporary files
 *.tmp
