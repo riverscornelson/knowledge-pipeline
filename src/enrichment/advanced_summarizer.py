@@ -28,7 +28,7 @@ class AdvancedContentSummarizer:
             Structured summary with layered complexity and validation
         """
         # Step 1: Intelligent content preprocessing
-        processed_content = self._intelligent_preprocessing(content, max_chars=8000)
+        processed_content = content  # Use full content, no truncation
         
         # Step 2: Advanced multi-step prompting with system message
         system_message = {

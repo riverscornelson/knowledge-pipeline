@@ -32,7 +32,7 @@ Format as markdown with clear sections and bullet points."""
         """Build the user prompt for technical analysis."""
         return self.default_prompt_template.format(
             title=title,
-            content=content[:8000]  # Limit for token management
+            content=content  # Use full content
         )
     
     def _get_default_system_prompt(self) -> str:

@@ -34,7 +34,7 @@ class AdvancedContentClassifier:
             Dict with comprehensive classification results and reasoning
         """
         # Step 1: Intelligent content preprocessing
-        processed_content = self._intelligent_content_extraction(content, max_chars=4000)
+        processed_content = content  # Use full content for classification
         
         # Step 2: Advanced multi-step classification with system message
         system_message = {

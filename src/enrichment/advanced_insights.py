@@ -28,7 +28,7 @@ class AdvancedInsightsGenerator:
             List of structured, actionable insights with narrative context
         """
         # Step 1: Intelligent content preprocessing for insights extraction
-        processed_content = self._extract_insights_content(content, max_chars=6000)
+        processed_content = content  # Use full content for insights
         
         # Step 2: Advanced multi-step insights generation
         system_message = {

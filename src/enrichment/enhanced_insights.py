@@ -57,8 +57,8 @@ class EnhancedInsightsGenerator(BaseAnalyzer):
     
     def _build_prompt(self, content: str, title: str, config: Dict[str, Any]) -> str:
         """Build the user prompt for insights generation."""
-        # Limit content to reasonable size
-        processed_content = content[:8000] if len(content) > 8000 else content
+        # Use full content - no arbitrary limits
+        processed_content = content
         
         prompt = f"""
 # Strategic Insights Analysis

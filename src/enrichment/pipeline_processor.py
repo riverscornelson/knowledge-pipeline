@@ -422,7 +422,7 @@ class PipelineProcessor:
             
             # Log content length for debugging
             if len(text_content) > 50000:
-                self.logger.info(f"Large document detected: {len(text_content)} chars will be processed with 200k limit")
+                self.logger.info(f"Large document detected: {len(text_content)} chars - processing full content")
             
             return text_content
             

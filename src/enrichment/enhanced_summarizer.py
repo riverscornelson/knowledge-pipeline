@@ -49,8 +49,8 @@ class EnhancedContentSummarizer(BaseAnalyzer):
     
     def _build_prompt(self, content: str, title: str, config: Dict[str, Any]) -> str:
         """Build the user prompt for summarization."""
-        # Use the advanced prompting structure from the original
-        processed_content = self.legacy_summarizer._intelligent_preprocessing(content, max_chars=8000)
+        # Use full content - models have massive context windows
+        processed_content = content
         
         prompt = f"""
 # Document Analysis Request
