@@ -2,10 +2,16 @@
 PDF processing utilities for Drive content.
 """
 import io
+import logging
+import warnings
 from typing import Optional, Dict, Any
 from pdfminer.high_level import extract_text
 from pdfminer.layout import LAParams
 from googleapiclient.http import MediaIoBaseDownload
+
+# Suppress specific pdfminer warnings about font descriptors
+logging.getLogger('pdfminer').setLevel(logging.ERROR)
+warnings.filterwarnings('ignore', message='.*FontBBox.*')
 
 
 class PDFProcessor:

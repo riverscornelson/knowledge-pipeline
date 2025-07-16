@@ -152,7 +152,7 @@ cat logs/pipeline.jsonl | jq 'select(.level == "ERROR")'
    - **Properties**: Summary (<200 chars), classifications, metadata
    - **Page Body**: Notion blocks with formatted content
 
-## Key v2.0 Improvements
+## Key v3.0 Improvements
 
 - **Modular Architecture**: Clean separation in `src/` packages
 - **Type Safety**: Full type hints throughout codebase
