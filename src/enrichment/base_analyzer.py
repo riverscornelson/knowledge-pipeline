@@ -55,6 +55,13 @@ class BaseAnalyzer(ABC):
             
             # Determine if we should use web search
             config_web_search = prompt_config.get("web_search", False)
+            
+            # Debug logging
+            self.logger.debug(f"Web search decision for {self.analyzer_name}:")
+            self.logger.debug(f"  - config_web_search: {config_web_search}")
+            self.logger.debug(f"  - global enabled: {self.prompt_config.web_search_enabled}")
+            self.logger.debug(f"  - has responses API: {self.has_responses_api}")
+            
             use_web_search = (
                 self.prompt_config.web_search_enabled and 
                 config_web_search and
@@ -111,12 +118,19 @@ class BaseAnalyzer(ABC):
                 }
             ]
             
-            response = self.client.responses.create(
-                model=os.getenv("WEB_SEARCH_MODEL", "o3"),
-                input=input_data,
-                tools=[{"type": "web_search"}],
-                temperature=config.get("temperature", 0.3)
-            )
+            # Create request parameters
+            request_params = {
+                "model": os.getenv("WEB_SEARCH_MODEL", "o3"),
+                "input": input_data,
+                "tools": [{"type": "web_search"}]
+            }
+            
+            # Only add temperature if not using o3 (o3 doesn't support temperature)
+            model = request_params["model"]
+            if model != "o3":
+                request_params["temperature"] = config.get("temperature", 0.3)
+            
+            response = self.client.responses.create(**request_params)
             
             # Comprehensive logging to understand response structure
             self.logger.info(f"Responses API response type: {type(response)}")
@@ -125,6 +139,12 @@ class BaseAnalyzer(ABC):
             # Log specific attributes if they exist
             if hasattr(response, 'output'):
                 self.logger.info(f"response.output type: {type(response.output)}")
+                if isinstance(response.output, list) and response.output:
+                    self.logger.info(f"response.output[0] type: {type(response.output[0])}")
+                    if hasattr(response.output[0], 'type'):
+                        self.logger.info(f"response.output[0].type: {response.output[0].type}")
+                    if hasattr(response.output[0], 'text'):
+                        self.logger.info(f"response.output has text content")
             if hasattr(response, 'annotations'):
                 self.logger.info(f"response.annotations: {response.annotations}")
             if hasattr(response, 'messages'):
@@ -136,12 +156,35 @@ class BaseAnalyzer(ABC):
                             self.logger.info(f"Message {i} tool_calls: {msg.tool_calls}")
             
             # Extract the output text
-            output_text = getattr(response, 'output_text', None)
-            if not output_text and hasattr(response, 'output'):
-                output_text = response.output
+            output_text = None
+            
+            # Try various ways to get the text
+            if hasattr(response, 'output_text') and response.output_text:
+                output_text = response.output_text
+                self.logger.info("Got text from output_text")
+            elif hasattr(response, 'text') and response.text:
+                output_text = response.text
+                self.logger.info("Got text from text attribute")
+            elif hasattr(response, 'output') and response.output:
+                # Output is a list of message objects
+                if isinstance(response.output, list):
+                    for item in response.output:
+                        if hasattr(item, 'text'):
+                            output_text = item.text
+                            self.logger.info("Got text from output list item")
+                            break
+                        elif hasattr(item, 'content'):
+                            output_text = item.content
+                            self.logger.info("Got text from output list content")
+                            break
+                else:
+                    output_text = str(response.output)
+                    self.logger.info("Got text by converting output to string")
+            
             if not output_text:
                 # Fallback to extracting from response structure
                 output_text = str(response)
+                self.logger.warning("Had to use fallback string conversion")
             
             # Extract citations/web search data
             web_citations = []

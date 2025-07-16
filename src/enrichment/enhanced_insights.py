@@ -11,6 +11,11 @@ from .base_analyzer import BaseAnalyzer
 class EnhancedInsightsGenerator(BaseAnalyzer):
     """Enhanced insights generator that wraps existing functionality with new features."""
     
+    @property
+    def analyzer_name(self) -> str:
+        """Override to match the config file which uses 'insights'."""
+        return "insights"
+    
     def __init__(self, config: PipelineConfig, prompt_config: Optional[PromptConfig] = None):
         """Initialize enhanced insights generator.
         

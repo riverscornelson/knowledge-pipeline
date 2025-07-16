@@ -11,6 +11,11 @@ from .base_analyzer import BaseAnalyzer
 class EnhancedContentSummarizer(BaseAnalyzer):
     """Enhanced summarizer that wraps existing functionality with new features."""
     
+    @property
+    def analyzer_name(self) -> str:
+        """Override to match the config file which uses 'summarizer'."""
+        return "summarizer"
+    
     def __init__(self, config: PipelineConfig, prompt_config: Optional[PromptConfig] = None):
         """Initialize enhanced summarizer.
         
