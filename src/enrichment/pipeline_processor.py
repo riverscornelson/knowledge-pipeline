@@ -15,7 +15,6 @@ from .advanced_classifier import AdvancedContentClassifier
 from .advanced_insights import AdvancedInsightsGenerator
 from .enhanced_summarizer import EnhancedContentSummarizer
 from .enhanced_insights import EnhancedInsightsGenerator
-from .technical_analyzer import TechnicalAnalyzer
 from ..core.prompt_config import PromptConfig
 from ..drive.pdf_processor import PDFProcessor
 from google.oauth2.service_account import Credentials
@@ -53,10 +52,6 @@ class PipelineProcessor:
         
         # Initialize additional analyzers if enabled
         self.additional_analyzers = []
-        # Check if technical analysis is enabled
-        if self.prompt_config.is_analyzer_enabled("technical"):
-            self.logger.info("Technical analysis enabled")
-            self.additional_analyzers.append(TechnicalAnalyzer(config, self.prompt_config))
         
         # Initialize content extraction components
         self.pdf_processor = PDFProcessor()
@@ -77,7 +72,15 @@ class PipelineProcessor:
             "total_processed": 0,
             "total_quality_score": 0.0,
             "content_type_accuracy": [],
-            "processing_times": []
+            "processing_times": [],
+            "quality_breakdown": {
+                "summary_scores": [],
+                "insights_scores": [],
+                "classification_scores": [],
+                "efficiency_scores": []
+            },
+            "content_type_performance": {},
+            "validation_failures": []
         }
     
     def _load_taxonomy(self) -> Dict[str, List[str]]:
@@ -149,6 +152,19 @@ class PipelineProcessor:
                 # Track quality metrics
                 if hasattr(result, 'quality_score'):
                     batch_quality_scores.append(result.quality_score)
+                    
+                    # Track content type performance
+                    content_type = result.content_type
+                    if content_type not in self.quality_metrics["content_type_performance"]:
+                        self.quality_metrics["content_type_performance"][content_type] = {
+                            "count": 0,
+                            "total_score": 0.0,
+                            "processing_times": []
+                        }
+                    
+                    self.quality_metrics["content_type_performance"][content_type]["count"] += 1
+                    self.quality_metrics["content_type_performance"][content_type]["total_score"] += result.quality_score
+                    self.quality_metrics["content_type_performance"][content_type]["processing_times"].append(result.processing_time)
                 
                 # Rate limiting
                 time.sleep(self.config.rate_limit_delay)
@@ -202,13 +218,13 @@ class PipelineProcessor:
             
             # Advanced multi-step summarization with semantic content type
             if self.enhanced_summarizer:
-                core_summary = self.enhanced_summarizer.generate_summary(content, title, semantic_content_type)
+                core_summary = self.enhanced_summarizer.generate_summary(content, title, semantic_content_type, item['id'])
             else:
                 core_summary = self.summarizer.generate_summary(content, title)
             
             # Strategic insights with semantic content type
             if self.enhanced_insights:
-                key_insights = self.enhanced_insights.generate_insights(content, title, semantic_content_type)
+                key_insights = self.enhanced_insights.generate_insights(content, title, semantic_content_type, item['id'])
             else:
                 key_insights = self.insights_generator.generate_insights(content, title)
             
@@ -217,7 +233,7 @@ class PipelineProcessor:
             
             for analyzer in self.additional_analyzers:
                 try:
-                    analysis_result = analyzer.analyze(content, title, semantic_content_type)
+                    analysis_result = analyzer.analyze(content, title, semantic_content_type, item['id'])
                     if analysis_result.get("success"):
                         additional_analyses[analyzer.__class__.__name__] = analysis_result
                         self.logger.info(
@@ -279,6 +295,18 @@ class PipelineProcessor:
         result.quality_score = quality_score
         result.classification_reasoning = classification.get("reasoning", "")
         
+        # Add detailed quality validation metadata
+        result.temperature = getattr(self.summarizer, 'temperature', 0.3)
+        result.web_search_used = getattr(self.enhanced_summarizer, 'web_search_enabled', False) if self.enhanced_summarizer else False
+        
+        # Track prompt configuration used
+        result.prompt_config = {
+            "content_type": semantic_content_type,
+            "original_type": existing_content_type,
+            "prompt_version": "2.0",
+            "analyzers_used": ["summarizer", "classifier", "insights"] + list(additional_analyses.keys())
+        }
+        
         # Add additional analyses if any
         if additional_analyses:
             result.additional_analyses = additional_analyses
@@ -287,34 +315,45 @@ class PipelineProcessor:
     
     def _calculate_quality_score(self, summary_length: int, insights_count: int, 
                                 classification_confidence: str, processing_time: float) -> float:
-        """Calculate a quality score for the enrichment."""
+        """Calculate a quality score for the enrichment and track detailed metrics."""
         score = 0.0
         
         # Summary quality (0-0.3)
+        summary_score = 0.0
         if summary_length > 500:
-            score += 0.3
+            summary_score = 0.3
         elif summary_length > 200:
-            score += 0.2
+            summary_score = 0.2
         elif summary_length > 100:
-            score += 0.1
+            summary_score = 0.1
+        score += summary_score
+        self.quality_metrics["quality_breakdown"]["summary_scores"].append(summary_score)
         
         # Insights quality (0-0.3)
+        insights_score = 0.0
         if insights_count >= 5:
-            score += 0.3
+            insights_score = 0.3
         elif insights_count >= 3:
-            score += 0.2
+            insights_score = 0.2
         elif insights_count >= 1:
-            score += 0.1
+            insights_score = 0.1
+        score += insights_score
+        self.quality_metrics["quality_breakdown"]["insights_scores"].append(insights_score)
         
         # Classification confidence (0-0.3)
         confidence_scores = {"high": 0.3, "medium": 0.2, "low": 0.1}
-        score += confidence_scores.get(classification_confidence, 0.1)
+        classification_score = confidence_scores.get(classification_confidence, 0.1)
+        score += classification_score
+        self.quality_metrics["quality_breakdown"]["classification_scores"].append(classification_score)
         
         # Processing efficiency (0-0.1)
+        efficiency_score = 0.0
         if processing_time < 10:
-            score += 0.1
+            efficiency_score = 0.1
         elif processing_time < 20:
-            score += 0.05
+            efficiency_score = 0.05
+        score += efficiency_score
+        self.quality_metrics["quality_breakdown"]["efficiency_scores"].append(efficiency_score)
         
         return min(score, 1.0)  # Cap at 1.0
     
@@ -357,6 +396,11 @@ class PipelineProcessor:
                 return None
                 
             self.logger.info(f"Successfully extracted {len(text_content)} characters from Drive PDF")
+            
+            # Log content length for debugging
+            if len(text_content) > 50000:
+                self.logger.info(f"Large document detected: {len(text_content)} chars will be processed with 200k limit")
+            
             return text_content
             
         except Exception as e:
@@ -635,6 +679,18 @@ class PipelineProcessor:
                 }
             })
         
+        # Quality Control & Validation toggle (detailed breakdown)
+        if hasattr(result, 'quality_score'):
+            quality_details = self._create_quality_validation_report(result, raw_content)
+            blocks.append({
+                "object": "block",
+                "type": "toggle",
+                "toggle": {
+                    "rich_text": [{"type": "text", "text": {"content": "✅ Quality Control & Validation"}}],
+                    "children": self._markdown_to_blocks(quality_details)
+                }
+            })
+        
         # Additional analyses toggles (new)
         if hasattr(result, 'additional_analyses'):
             for analyzer_name, analysis in result.additional_analyses.items():
@@ -650,26 +706,242 @@ class PipelineProcessor:
         return blocks
     
     def _chunk_text_to_blocks(self, text: str, max_length: int = 1900) -> List[Dict]:
-        """Chunk text into Notion paragraph blocks."""
-        blocks = []
+        """
+        Chunk text using hierarchical separators to preserve formatting.
+        Uses industry-standard recursive character splitting approach.
+        """
+        if not text or not text.strip():
+            return []
+            
+        # Hierarchical separators: paragraphs -> lines -> sentences -> words -> characters
+        separators = ["\n\n", "\n", ". ", " ", ""]
+        return self._recursive_split(text, separators, max_length)
+    
+    def _recursive_split(self, text: str, separators: List[str], max_length: int) -> List[Dict]:
+        """Recursively split text using separator hierarchy."""
+        # Base case: text fits within limit or no separators left
+        if len(text) <= max_length or not separators:
+            return [self._create_paragraph_block(text)] if text.strip() else []
         
-        for i in range(0, len(text), max_length):
-            chunk = text[i:i + max_length]
-            blocks.append({
-                "object": "block",
-                "type": "paragraph",
-                "paragraph": {
-                    "rich_text": [{"type": "text", "text": {"content": chunk}}]
-                }
-            })
+        separator = separators[0]
+        remaining_separators = separators[1:]
+        
+        # If current separator not found, try next separator
+        if separator not in text:
+            return self._recursive_split(text, remaining_separators, max_length)
+        
+        # Split by current separator
+        chunks = text.split(separator)
+        blocks = []
+        current_chunk = ""
+        
+        for i, chunk in enumerate(chunks):
+            # Build potential chunk with separator (except for last chunk)
+            if current_chunk:
+                test_chunk = current_chunk + separator + chunk
+            else:
+                test_chunk = chunk
+            
+            if len(test_chunk) <= max_length:
+                # Chunk fits, add to current
+                current_chunk = test_chunk
+            else:
+                # Current chunk is full, process it
+                if current_chunk:
+                    # Process accumulated chunk recursively
+                    blocks.extend(self._recursive_split(current_chunk, remaining_separators, max_length))
+                
+                # Start new chunk with current piece
+                current_chunk = chunk
+        
+        # Process final chunk
+        if current_chunk:
+            blocks.extend(self._recursive_split(current_chunk, remaining_separators, max_length))
         
         return blocks
+    
+    def _create_paragraph_block(self, content: str) -> Dict:
+        """Create a Notion paragraph block."""
+        return {
+            "object": "block",
+            "type": "paragraph",
+            "paragraph": {
+                "rich_text": [{"type": "text", "text": {"content": content.strip()}}]
+            }
+        }
     
     def _markdown_to_blocks(self, markdown: str) -> List[Dict]:
         """Convert markdown to Notion blocks."""
         # Use the existing chunk method that respects Notion's character limits
         # This will create far fewer blocks by putting ~1900 chars in each block
         return self._chunk_text_to_blocks(markdown, max_length=1900)
+    
+    def _create_quality_validation_report(self, result: EnrichmentResult, raw_content: str) -> str:
+        """Create a detailed quality control and validation report."""
+        # Calculate individual quality components
+        summary_length = len(result.core_summary)
+        insights_count = len(result.key_insights)
+        
+        # Summary quality assessment
+        summary_score = 0.0
+        summary_status = "❌ Below Standard"
+        if summary_length > 500:
+            summary_score = 0.3
+            summary_status = "✅ Excellent"
+        elif summary_length > 200:
+            summary_score = 0.2
+            summary_status = "✓ Good"
+        elif summary_length > 100:
+            summary_score = 0.1
+            summary_status = "⚠️ Minimal"
+        
+        # Insights quality assessment
+        insights_score = 0.0
+        insights_status = "❌ Below Standard"
+        if insights_count >= 5:
+            insights_score = 0.3
+            insights_status = "✅ Excellent"
+        elif insights_count >= 3:
+            insights_score = 0.2
+            insights_status = "✓ Good"
+        elif insights_count >= 1:
+            insights_score = 0.1
+            insights_status = "⚠️ Minimal"
+        
+        # Classification confidence
+        confidence_str = result.confidence_scores.get('classification', 0.7)
+        if isinstance(confidence_str, float):
+            confidence_percent = confidence_str * 100
+        else:
+            confidence_percent = 70  # Default
+        
+        confidence_status = "❌ Low"
+        if confidence_percent >= 80:
+            confidence_status = "✅ High"
+        elif confidence_percent >= 60:
+            confidence_status = "✓ Medium"
+        
+        # Processing efficiency
+        efficiency_status = "❌ Slow"
+        if result.processing_time < 10:
+            efficiency_status = "✅ Fast"
+        elif result.processing_time < 20:
+            efficiency_status = "✓ Acceptable"
+        
+        # Content coverage analysis
+        content_length = len(raw_content)
+        compression_ratio = len(result.core_summary) / content_length if content_length > 0 else 0
+        
+        # Cost calculation based on GPT-4.1 pricing
+        # GPT-4.1 standard: $2/million input, $8/million output tokens
+        # Approximate token count: chars / 4
+        input_tokens = result.token_usage.get('prompt_tokens', 0)
+        output_tokens = result.token_usage.get('completion_tokens', 0)
+        
+        # Calculate costs in dollars
+        input_cost = (input_tokens / 1_000_000) * 2.00  # $2 per million
+        output_cost = (output_tokens / 1_000_000) * 8.00  # $8 per million
+        total_cost = input_cost + output_cost
+        
+        # Check if caching would apply (same content within 5-10 mins)
+        cached_input_cost = (input_tokens / 1_000_000) * 0.50  # $0.50 per million (75% discount)
+        cached_total_cost = cached_input_cost + output_cost
+        
+        # Actionability checks
+        action_items = sum(1 for insight in result.key_insights if any(
+            keyword in insight.lower() for keyword in ['should', 'must', 'need to', 'recommend', 'action', 'consider']
+        ))
+        
+        # Evidence quality
+        evidence_markers = sum(1 for marker in ['%', '$', 'data', 'study', 'report', 'analysis'] 
+                              if marker in result.core_summary.lower())
+        
+        # Build the detailed report
+        report = f"""## Quality Control Report
+
+### 📊 Overall Quality Score: {result.quality_score:.2f}/1.00
+
+### Component Breakdown:
+
+#### 1. Summary Quality ({summary_score:.1f}/0.3) - {summary_status}
+- **Length**: {summary_length} characters
+- **Target**: 200-500+ characters for comprehensive coverage
+- **Compression Ratio**: {compression_ratio:.1%} of original content
+- **Readability**: {"✅ Concise" if compression_ratio < 0.2 else "⚠️ May be too detailed"}
+
+#### 2. Insights Quality ({insights_score:.1f}/0.3) - {insights_status}
+- **Count**: {insights_count} key insights extracted
+- **Target**: 3-5+ insights for comprehensive analysis
+- **Actionable Items**: {action_items} insights with clear actions
+- **Strategic Value**: {"✅ High" if action_items >= 2 else "⚠️ Could be more actionable"}
+
+#### 3. Classification Confidence ({confidence_percent:.0f}%) - {confidence_status}
+- **Content Type**: {result.content_type}
+- **AI Primitives**: {len(result.ai_primitives)} identified
+- **Vendor Detection**: {"✅ Identified" if result.vendor else "⚠️ Not detected"}
+- **Taxonomy Match**: {"✅ Standard category" if result.content_type != "Other" else "⚠️ Generic category"}
+
+#### 4. Processing Efficiency - {efficiency_status}
+- **Time**: {result.processing_time:.2f} seconds
+- **Tokens Used**: {result.token_usage.get('total_tokens', 0):,} (Input: {input_tokens:,}, Output: {output_tokens:,})
+- **Cost Estimate (GPT-4.1)**: ${total_cost:.4f} (Input: ${input_cost:.4f} @ $2/M, Output: ${output_cost:.4f} @ $8/M)
+- **With Caching**: ${cached_total_cost:.4f} (75% input discount if reused within 5-10 mins)
+- **Performance**: {"✅ Optimal" if result.processing_time < 10 else "⚠️ Consider optimization"}
+
+### 📋 Content Analysis Metrics:
+
+#### Coverage & Completeness
+- **Original Content**: {content_length:,} characters
+- **Summary Coverage**: {summary_length:,} characters ({compression_ratio:.1%})
+- **Key Topics Identified**: {insights_count}
+- **Evidence Markers**: {evidence_markers} data points referenced
+
+#### Cost Comparison (for {result.token_usage.get('total_tokens', 0):,} tokens)
+- **GPT-4.1**: ${total_cost:.4f} (current model - $2/$8 per M tokens)
+- **o3 (June 2025)**: ${(input_tokens / 1_000_000) * 2.00 + (output_tokens / 1_000_000) * 8.00:.4f} (same pricing as GPT-4.1)
+- **o3-pro**: ${(input_tokens / 1_000_000) * 20.00 + (output_tokens / 1_000_000) * 80.00:.4f} ($20/$80 per M tokens)
+
+#### Actionability Assessment
+- **Action Items**: {action_items} specific recommendations
+- **Decision Points**: {"✅ Clear next steps" if action_items >= 2 else "⚠️ Needs more specific actions"}
+- **Time Sensitivity**: {"Detected" if any(word in str(result.key_insights).lower() for word in ['urgent', 'immediate', 'asap', 'deadline']) else "Not indicated"}
+
+#### Prompt Configuration Used
+- **Content Type**: {result.content_type}
+- **Temperature**: {getattr(result, 'temperature', 'Default')}
+- **Web Search**: {"Enabled" if getattr(result, 'web_search_used', False) else "Disabled"}
+- **Analysis Framework**: {"Content-specific" if result.content_type != "Other" else "Default"}
+
+### 🎯 Quality Assurance Checklist:
+
+✓ **Completeness**: {"✅ Pass" if summary_length > 100 else "❌ Fail"} - Summary captures key information
+✓ **Actionability**: {"✅ Pass" if action_items > 0 else "❌ Fail"} - Contains actionable insights
+✓ **Evidence-Based**: {"✅ Pass" if evidence_markers > 0 else "❌ Fail"} - Supported by data/facts
+✓ **Classification**: {"✅ Pass" if confidence_percent >= 60 else "❌ Fail"} - Accurate categorization
+✓ **Efficiency**: {"✅ Pass" if result.processing_time < 30 else "❌ Fail"} - Processed in reasonable time
+
+### 💡 Improvement Suggestions:
+"""
+        
+        # Add specific improvement suggestions based on scores
+        suggestions = []
+        if summary_score < 0.2:
+            suggestions.append("- Consider adjusting prompts to generate more comprehensive summaries")
+        if insights_score < 0.2:
+            suggestions.append("- Enhance insight extraction prompts to identify more strategic opportunities")
+        if confidence_percent < 70:
+            suggestions.append("- Review classification taxonomy or improve content type detection")
+        if result.processing_time > 20:
+            suggestions.append("- Optimize prompt length or consider using a faster model for initial analysis")
+        if action_items == 0:
+            suggestions.append("- Modify prompts to emphasize actionable recommendations")
+        
+        if suggestions:
+            report += "\n".join(suggestions)
+        else:
+            report += "- All quality metrics meet or exceed standards ✅"
+        
+        return report
     
     def _mark_failed(self, page_id: str, error_msg: str):
         """Mark a page as failed with detailed error analysis."""
@@ -680,7 +952,7 @@ class PipelineProcessor:
         )
     
     def get_quality_report(self) -> Dict[str, Any]:
-        """Get a report of quality metrics collected during processing."""
+        """Get a detailed report of quality metrics collected during processing."""
         avg_quality = 0.0
         if self.quality_metrics["total_processed"] > 0:
             avg_quality = self.quality_metrics["total_quality_score"] / self.quality_metrics["total_processed"]
@@ -689,6 +961,13 @@ class PipelineProcessor:
         if self.quality_metrics["processing_times"]:
             avg_processing_time = sum(self.quality_metrics["processing_times"]) / len(self.quality_metrics["processing_times"])
         
+        # Calculate component averages
+        breakdown = self.quality_metrics["quality_breakdown"]
+        avg_summary = sum(breakdown["summary_scores"]) / len(breakdown["summary_scores"]) if breakdown["summary_scores"] else 0
+        avg_insights = sum(breakdown["insights_scores"]) / len(breakdown["insights_scores"]) if breakdown["insights_scores"] else 0
+        avg_classification = sum(breakdown["classification_scores"]) / len(breakdown["classification_scores"]) if breakdown["classification_scores"] else 0
+        avg_efficiency = sum(breakdown["efficiency_scores"]) / len(breakdown["efficiency_scores"]) if breakdown["efficiency_scores"] else 0
+        
         return {
             "total_processed": self.quality_metrics["total_processed"],
             "average_quality_score": avg_quality,
@@ -696,5 +975,27 @@ class PipelineProcessor:
             "processing_time_range": {
                 "min": min(self.quality_metrics["processing_times"]) if self.quality_metrics["processing_times"] else 0,
                 "max": max(self.quality_metrics["processing_times"]) if self.quality_metrics["processing_times"] else 0
+            },
+            "quality_breakdown": {
+                "summary_average": avg_summary,
+                "insights_average": avg_insights,
+                "classification_average": avg_classification,
+                "efficiency_average": avg_efficiency
+            },
+            "content_type_performance": self.quality_metrics["content_type_performance"],
+            "validation_failures": len(self.quality_metrics["validation_failures"]),
+            "quality_distribution": {
+                "excellent": sum(1 for i in range(len(breakdown["summary_scores"])) 
+                               if (breakdown["summary_scores"][i] + breakdown["insights_scores"][i] + 
+                                   breakdown["classification_scores"][i] + breakdown["efficiency_scores"][i]) >= 0.8),
+                "good": sum(1 for i in range(len(breakdown["summary_scores"])) 
+                           if 0.6 <= (breakdown["summary_scores"][i] + breakdown["insights_scores"][i] + 
+                                      breakdown["classification_scores"][i] + breakdown["efficiency_scores"][i]) < 0.8),
+                "acceptable": sum(1 for i in range(len(breakdown["summary_scores"])) 
+                                if 0.4 <= (breakdown["summary_scores"][i] + breakdown["insights_scores"][i] + 
+                                           breakdown["classification_scores"][i] + breakdown["efficiency_scores"][i]) < 0.6),
+                "poor": sum(1 for i in range(len(breakdown["summary_scores"])) 
+                           if (breakdown["summary_scores"][i] + breakdown["insights_scores"][i] + 
+                               breakdown["classification_scores"][i] + breakdown["efficiency_scores"][i]) < 0.4)
             }
         }
