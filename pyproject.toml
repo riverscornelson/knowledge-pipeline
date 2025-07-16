@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "knowledge-pipeline"
-version = "3.0.0"
+version = "3.0.1"
 description = "AI-powered knowledge pipeline for content ingestion and enrichment"
 readme = "README.md"
 license = {text = "MIT"}

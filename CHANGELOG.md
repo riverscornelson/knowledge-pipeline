@@ -7,27 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] - 2025-01-16
+
+### Changed
+- **Simplified Architecture**: Removed Gmail and Firecrawl integrations to focus on core Google Drive functionality
+- **Streamlined Pipeline**: Single-source architecture for improved reliability and maintainability
+- **Updated Documentation**: All docs now reflect Google Drive-only focus with clear future roadmap
+- **Enhanced Future Planning**: Added comprehensive FUTURE_FEATURES.md for planned integrations
+
+### Removed
+- Gmail integration code and dependencies (moved to future features)
+- Firecrawl integration code and dependencies (moved to future features)
+- Secondary source command-line options
+- Unused dependencies: firecrawl-py, feedparser, aiohttp, asyncio
+
+### Added
+- FUTURE_FEATURES.md with detailed roadmap for Gmail and web content integrations
+- Improved error handling for web content extraction fallbacks
+- Enhanced architecture documentation for v3.0 focus
+
+### Fixed
+- Pipeline runner now correctly handles drive-only source selection
+- Removed references to deprecated secondary source integrations
+- Updated environment variable documentation for simplified setup
+
 ### Security
 - Complete removal of credentials from git history
 - Added comprehensive pre-commit hooks for credential scanning
 - Enhanced .gitignore with extensive credential protection patterns
 - Added dependency pinning for security and reproducibility
 
-### Added
-- Pre-commit hooks for automated code quality and security checks
-- Comprehensive dependency version pinning in requirements.txt
-- Enhanced contributing guidelines with security tools
-- Automated credential scanning with detect-secrets
-- Security linting with bandit
-- Development tools for pip-audit vulnerability scanning
-
-### Changed
-- Updated contact information to personal email (rivers.cornelson@gmail.com)
-- Changed homepage URL to LinkedIn profile
-- Enhanced .gitignore for better protection against credential leaks
-- Cleaned up temporary and debug files from repository
-
-### Fixed
+### Documentation
+- Updated all documentation to reflect v3.0.1 architecture
+- Comprehensive API reference cleanup
+- Enhanced troubleshooting guides
+- Improved quick-start instructions for simplified setup
 - Removed all temporary development files (temp/, debug_*.py, test_*.py)
 - Fixed email references in documentation
 
