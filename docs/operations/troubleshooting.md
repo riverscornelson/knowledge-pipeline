@@ -1,4 +1,4 @@
-# Knowledge Pipeline v2.0 - Troubleshooting Guide
+# Knowledge Pipeline v3.0 - Troubleshooting Guide
 
 This guide helps diagnose and resolve common issues with the Knowledge Pipeline.
 
@@ -9,7 +9,6 @@ This guide helps diagnose and resolve common issues with the Knowledge Pipeline.
   - [Notion API Errors](#notion-api-errors)
   - [Google Drive Issues](#google-drive-issues)
   - [OpenAI API Errors](#openai-api-errors)
-  - [Gmail Integration Problems](#gmail-integration-problems)
   - [Content Processing Failures](#content-processing-failures)
 - [Performance Issues](#performance-issues)
 - [Debugging Procedures](#debugging-procedures)
@@ -42,7 +41,7 @@ cat .env | grep -E "NOTION_TOKEN|OPENAI_API_KEY|GOOGLE_APP_CREDENTIALS"
 ### 3. Test Individual Components
 ```bash
 # Test Drive ingestion only
-python scripts/run_pipeline.py --source drive --dry-run
+python scripts/run_pipeline.py --dry-run
 
 # Test enrichment on existing items
 python scripts/run_pipeline.py --skip-enrichment
@@ -182,7 +181,7 @@ curl https://api.openai.com/v1/models \
 **Cause**: OAuth consent screen not configured
 
 **Solution**:
-1. Follow setup guide: `gmail_credentials/SETUP_TROUBLESHOOTING.md`
+1. Follow setup guide: See FUTURE_FEATURES.md for planned Gmail integration
 2. Key steps:
    - Enable Gmail API in GCP Console
    - Configure OAuth consent screen
@@ -195,8 +194,7 @@ curl https://api.openai.com/v1/models \
 **Solution**:
 ```bash
 # Delete token and re-authenticate
-rm gmail_credentials/token.json
-python scripts/run_pipeline.py --source gmail
+# Gmail integration removed - see FUTURE_FEATURES.md
 # Follow browser prompt to re-authorize
 ```
 
@@ -235,7 +233,7 @@ python scripts/run_pipeline.py --source gmail
    ```bash
    # Process sources separately
    python scripts/run_pipeline.py --source drive &
-   python scripts/run_pipeline.py --source gmail &
+   python scripts/run_pipeline.py &
    ```
 
 2. **Skip Re-processing**:

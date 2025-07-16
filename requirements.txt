@@ -3,13 +3,9 @@ google-auth
 google-auth-oauthlib
 google-auth-httplib2
 notion-client
-feedparser
 python-dotenv
 openai
 pdfminer.six
 tenacity
-firecrawl-py
-aiohttp>=3.8.0
-asyncio
 markdown>=3.4.0
 pyyaml>=6.0

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-The Knowledge Pipeline is an automated system that discovers, captures, and enriches content from multiple sources, transforming raw information into actionable intelligence stored in Notion. This document provides a comprehensive walkthrough of how the pipeline operates, designed for product managers and stakeholders.
+The Knowledge Pipeline is an automated system that discovers, captures, and enriches content from Google Drive PDFs, transforming raw information into actionable intelligence stored in Notion. This document provides a comprehensive walkthrough of how the pipeline operates, designed for product managers and stakeholders.
 
 ## High-Level Pipeline Architecture
 
@@ -14,8 +14,8 @@ graph TD
     D --> E[Enriched Content]
     
     A1[Google Drive PDFs] --> B
-    A2[Websites/Articles] --> B
-    A3[Gmail Newsletters] --> B
+    A2[Future: Web Content] --> B
+    A3[Future: Gmail] --> B
     
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style E fill:#9f9,stroke:#333,stroke-width:2px
@@ -23,7 +23,7 @@ graph TD
 
 ## Pipeline Execution Flow
 
-When the consolidated pipeline runs (`./pipeline_consolidated.sh`), it executes four main stages in sequence:
+When the pipeline runs (`python scripts/run_pipeline.py`), it executes two main stages in sequence:
 
 ### Stage 1: PDF Ingestion from Google Drive
 

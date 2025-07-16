@@ -1,6 +1,6 @@
-# Knowledge Pipeline v2.0 - API Reference
+# Knowledge Pipeline v3.0 - API Reference
 
-This document provides comprehensive API documentation for the Knowledge Pipeline v2.0 modular architecture.
+This document provides comprehensive API documentation for the Knowledge Pipeline v3.0 Google Drive-focused architecture.
 
 ## Table of Contents
 
@@ -15,9 +15,7 @@ This document provides comprehensive API documentation for the Knowledge Pipelin
 - [Enrichment Module](#enrichment-module)
   - [Enrichment Processor](#enrichment-processor)
   - [AI Services](#ai-services)
-- [Secondary Sources](#secondary-sources)
-  - [Gmail Integration](#gmail-integration)
-  - [Firecrawl Integration](#firecrawl-integration)
+- [Future Integrations](#future-integrations)
 - [Utilities](#utilities)
   - [Logging](#logging)
   - [Resilience](#resilience)
@@ -352,63 +350,9 @@ generator = InsightsGenerator(openai_config)
 ##### `generate_insights(content: str, title: str) -> List[str]`
 Generates list of key actionable insights.
 
-## Secondary Sources
+## Future Integrations
 
-### Gmail Integration
-
-#### `GmailCapture`
-Captures newsletter emails from Gmail.
-
-```python
-from src.secondary_sources.gmail.capture import GmailCapture
-
-capture = GmailCapture(config, notion_client)
-stats = capture.capture_emails(limit=50)
-```
-
-##### `capture_emails(limit: Optional[int] = None) -> Dict[str, int]`
-Captures and processes newsletter emails.
-
-**Parameters:**
-- `limit`: Maximum emails to process
-
-**Returns:** Dictionary with counts: `processed`, `skipped`, `failed`
-
-#### `GmailAuthenticator`
-Handles OAuth2 authentication for Gmail.
-
-```python
-from src.secondary_sources.gmail.auth import GmailAuthenticator
-
-auth = GmailAuthenticator(credentials_path, token_path)
-service = auth.get_service()
-```
-
-#### `EmailFilter`
-Filters emails for quality and relevance.
-
-```python
-from src.secondary_sources.gmail.filters import EmailFilter
-
-filter = EmailFilter()
-if filter.should_process(sender, message):
-    # Process email
-```
-
-### Firecrawl Integration
-
-#### `FirecrawlCapture`
-Scrapes website content using Firecrawl API.
-
-```python
-from src.secondary_sources.firecrawl.capture import FirecrawlCapture
-
-capture = FirecrawlCapture(config, notion_client)
-stats = capture.capture_websites(limit=20)
-```
-
-##### `capture_websites(limit: Optional[int] = None) -> Dict[str, int]`
-Captures content from configured websites.
+The `src/secondary_sources/` package structure is preserved for future integrations. See `FUTURE_FEATURES.md` for planned Gmail and web content integrations with detailed implementation notes.
 
 ## Utilities
 
@@ -479,7 +423,7 @@ from src.enrichment.pipeline_processor import PipelineProcessor
 config = PipelineConfig.from_env()
 notion_client = NotionClient(config.notion)
 
-# Ingest from Drive
+# Ingest from Google Drive
 drive_ingester = DriveIngester(config, notion_client)
 ingest_stats = drive_ingester.ingest()
 

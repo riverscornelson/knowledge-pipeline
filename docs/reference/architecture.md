@@ -2,12 +2,12 @@
 
 ## Overview
 
-The Knowledge Pipeline is a modular system for ingesting, processing, and enriching content from multiple sources into a Notion database. The architecture prioritizes Google Drive as the primary content source while maintaining support for secondary sources.
+The Knowledge Pipeline is a modular system for ingesting, processing, and enriching content from Google Drive PDFs into a Notion database. The v3.0 architecture focuses exclusively on Google Drive while preserving extensibility for future sources.
 
 ## Core Design Principles
 
 1. **Modularity**: Clear separation of concerns with dedicated modules
-2. **Priority-Based**: Drive content takes precedence over other sources
+2. **Drive-Focused**: Streamlined for Google Drive PDF processing
 3. **Extensibility**: Easy to add new sources or processors
 4. **Resilience**: Built-in retry logic and error handling
 5. **Performance**: Optimized batch processing and caching
@@ -31,10 +31,10 @@ The Knowledge Pipeline is a modular system for ingesting, processing, and enrich
 ┌─────────────────────▼───────────────────────────────────────┐
 │                   Content Sources                            │
 │  ┌─────────────────────────┐  ┌─────────────────────────┐  │
-│  │   Primary: Drive        │  │  Secondary Sources      │  │
-│  │  - PDF Processing       │  │  - Gmail                │  │
-│  │  - Deduplication        │  │  - Firecrawl           │  │
-│  │  - Metadata Extraction  │  │  - Web Scraping        │  │
+│  │    Google Drive         │  │  Future Sources         │  │
+│  │  - PDF Processing       │  │  (see FUTURE_FEATURES) │  │
+│  │  - Deduplication        │  │  - Gmail (planned)      │  │
+│  │  - Metadata Extraction  │  │  - Web content (planned)│  │
 │  └─────────────────────────┘  └─────────────────────────┘  │
 └─────────────────────┬───────────────────────────────────────┘
                       │

@@ -1,6 +1,6 @@
 # Knowledge Pipeline Documentation
 
-Welcome to the Knowledge Pipeline v2.0 documentation. This guide helps you navigate the comprehensive documentation organized by purpose and audience.
+Welcome to the Knowledge Pipeline v3.0 documentation. This guide helps you navigate the comprehensive documentation organized by purpose and audience.
 
 ## 📚 Documentation Structure
 
@@ -15,7 +15,7 @@ For new users and initial setup:
 Step-by-step guides for specific tasks:
 
 - **[Workflow Overview](guides/workflow-overview.md)** - Visual guide to the pipeline process
-- **[Gmail Setup Guide](guides/gmail-setup.md)** - Complete Gmail integration instructions
+- **[Future Features](../FUTURE_FEATURES.md)** - Planned Gmail and web content integrations
 
 ### Technical Reference
 Detailed technical documentation:
@@ -57,7 +57,7 @@ All documentation follows these principles:
 1. **Clear Structure**: Each document has a table of contents
 2. **Practical Examples**: Real-world code samples and commands
 3. **Problem-Solution Format**: Especially in troubleshooting
-4. **Version Specific**: All docs reflect v2.0 architecture
+4. **Version Specific**: All docs reflect v3.0 Google Drive-focused architecture
 
 ## 🔄 Keeping Docs Updated
 
@@ -74,4 +74,4 @@ All documentation follows these principles:
 
 ---
 
-*Documentation for Knowledge Pipeline v2.0 - Last updated with codebase*
+*Documentation for Knowledge Pipeline v3.0 - Last updated with codebase*

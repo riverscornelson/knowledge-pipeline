@@ -1,4 +1,4 @@
-# Knowledge Pipeline v2.0 - Deployment Guide
+# Knowledge Pipeline v3.0 - Deployment Guide
 
 This guide covers deployment options for the Knowledge Pipeline in various environments.
 
@@ -35,9 +35,9 @@ This guide covers deployment options for the Knowledge Pipeline in various envir
 3. **OpenAI API**
    - API key from https://platform.openai.com
 
-4. **Optional: Secondary Sources**
-   - Gmail OAuth2 credentials (for email capture)
-   - Firecrawl API key (for web scraping)
+4. **Future Integrations** (see FUTURE_FEATURES.md)
+   - Gmail OAuth2 credentials (planned)
+   - Web scraping capabilities (planned)
 
 ## Local Development Setup
 

@@ -20,9 +20,9 @@ def main():
     parser = argparse.ArgumentParser(description="Knowledge Pipeline Runner")
     parser.add_argument(
         "--source",
-        choices=["all", "drive", "gmail", "firecrawl"],
-        default="all",
-        help="Which sources to process"
+        choices=["drive"],
+        default="drive",
+        help="Source to process (currently only Google Drive supported)"
     )
     parser.add_argument(
         "--skip-enrichment",
@@ -49,39 +49,15 @@ def main():
         # Initialize Notion client
         notion_client = NotionClient(config.notion)
         
-        # Run ingestion based on source
-        if args.source in ["all", "drive"]:
-            logger.info("Starting Drive ingestion")
-            drive_ingester = DriveIngester(config, notion_client)
-            
-            if not args.dry_run:
-                stats = drive_ingester.ingest()
-                logger.info(f"Drive ingestion complete: {stats}")
-            else:
-                logger.info("Dry run - skipping actual ingestion")
+        # Run Google Drive ingestion
+        logger.info("Starting Drive ingestion")
+        drive_ingester = DriveIngester(config, notion_client)
         
-        # Secondary sources (lower priority)
-        if args.source in ["all", "gmail"]:
-            logger.info("Starting Gmail capture (secondary source)")
-            from src.secondary_sources.gmail.capture import GmailCapture
-            gmail_capture = GmailCapture(config, notion_client)
-            
-            if not args.dry_run:
-                stats = gmail_capture.capture_emails()
-                logger.info(f"Gmail capture complete: {stats}")
-            else:
-                logger.info("Dry run - skipping Gmail capture")
-        
-        if args.source in ["all", "firecrawl"]:
-            logger.info("Starting Firecrawl capture (secondary source)")
-            from src.secondary_sources.firecrawl.capture import FirecrawlCapture
-            firecrawl_capture = FirecrawlCapture(config, notion_client)
-            
-            if not args.dry_run:
-                stats = firecrawl_capture.capture_websites()
-                logger.info(f"Firecrawl capture complete: {stats}")
-            else:
-                logger.info("Dry run - skipping Firecrawl capture")
+        if not args.dry_run:
+            stats = drive_ingester.ingest()
+            logger.info(f"Drive ingestion complete: {stats}")
+        else:
+            logger.info("Dry run - skipping actual ingestion")
         
         # Run enrichment unless skipped
         if not args.skip_enrichment and not args.dry_run:

@@ -14,17 +14,12 @@ cp .env.example .env
 # - Notion token & database ID
 # - OpenAI API key
 # - Google Drive service account JSON path
-# - (Optional) Gmail OAuth credentials
-# - (Optional) Firecrawl API key
 ```
 
 ### 3. Run the Pipeline
 ```bash
-# Full pipeline (all sources + AI enrichment)
+# Full pipeline (Google Drive + AI enrichment)
 python scripts/run_pipeline.py
-
-# Drive only (highest priority)
-python scripts/run_pipeline.py --source drive
 
 # Test mode (no changes)
 python scripts/run_pipeline.py --dry-run
@@ -43,7 +38,7 @@ tail -f logs/pipeline.jsonl | jq .
 
 ## 🎯 What It Does
 
-1. **Ingests** content from Google Drive, Gmail, and websites
+1. **Ingests** content from Google Drive PDFs
 2. **Deduplicates** using content hashing
 3. **Enriches** with AI-powered analysis:
    - Executive summaries
@@ -59,10 +54,6 @@ python scripts/run_pipeline.py
 
 # Skip AI enrichment (faster)
 python scripts/run_pipeline.py --skip-enrichment
-
-# Process specific source
-python scripts/run_pipeline.py --source gmail
-python scripts/run_pipeline.py --source firecrawl
 ```
 
 ## 📚 Need Help?

@@ -424,47 +424,7 @@ class PipelineProcessor:
             return None
     
     def _extract_web_content(self, article_url: str) -> Optional[str]:
-        """Extract content from web URL with multiple fallback strategies."""
-        import os
-        import requests
-        from tenacity import retry, wait_exponential, stop_after_attempt
-        
-        # Try Firecrawl API first
-        api_key = os.getenv("FIRECRAWL_API_KEY")
-        if api_key:
-            try:
-                headers = {
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json"
-                }
-                
-                payload = {
-                    "url": article_url,
-                    "formats": ["markdown"],
-                    "onlyMainContent": True
-                }
-                
-                response = requests.post(
-                    "https://api.firecrawl.dev/v1/scrape",
-                    headers=headers,
-                    json=payload,
-                    timeout=30
-                )
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    if data.get("success"):
-                        content = data.get("data", {}).get("markdown")
-                        if content:
-                            self.logger.info(f"Successfully extracted {len(content)} characters from web URL using Firecrawl")
-                            return content
-                
-                self.logger.warning(f"Firecrawl extraction failed, falling back to basic method")
-                
-            except Exception as e:
-                self.logger.error(f"Failed to extract web content with Firecrawl: {e}")
-        
-        # Fallback to basic extraction
+        """Extract content from web URL using basic extraction."""
         return self._extract_web_content_basic(article_url)
     
     def _extract_web_content_basic(self, article_url: str) -> Optional[str]:

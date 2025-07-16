@@ -37,7 +37,7 @@ python scripts/run_pipeline.py
 
 ## 🚀 Running the Pipeline
 
-The v2.0 pipeline is now the production standard:
+The v3.0 pipeline is now the production standard:
 
 ```bash
 # Full pipeline (all sources + enrichment)

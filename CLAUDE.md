@@ -4,19 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Pipeline Architecture
 
-This is a **knowledge pipeline** that ingests content from multiple sources (Google Drive PDFs, websites, Gmail) into a Notion database, then enriches it with AI-generated summaries and classifications.
+This is a **knowledge pipeline** that ingests content from Google Drive PDFs into a Notion database, then enriches it with AI-generated summaries and classifications.
 
 ### Core Processing Flow
 
-1. **Ingestion**: Multiple capture scripts add content to Notion "Sources" database with Status="Inbox"
+1. **Ingestion**: Google Drive ingester adds PDF content to Notion "Sources" database with Status="Inbox"
 2. **Enrichment**: AI processing scripts generate summaries, classifications, and analysis
 3. **Storage**: Results stored as Notion page properties + toggle blocks with detailed analysis
 
-### Production Pipeline (v2.0)
+### Production Pipeline (v3.0)
 
-**🚀 Knowledge Pipeline v2.0** (`scripts/run_pipeline.py`) - **PRODUCTION**:
+**🚀 Knowledge Pipeline v3.0** (`scripts/run_pipeline.py`) - **PRODUCTION**:
 - **Modular architecture** with organized package structure under `src/`
-- **Priority-based processing** with Google Drive as primary source
+- **Google Drive focus** - streamlined to core functionality 
 - **75% faster processing** with streamlined AI analysis
 - **Proper Python packaging** with `pip install -e .` installation
 - **Centralized configuration** via `PipelineConfig.from_env()`
@@ -51,11 +51,11 @@ Models configurable via environment variables (`MODEL_SUMMARY`, `MODEL_CLASSIFIE
 **Core**:
 - `NOTION_TOKEN`, `NOTION_SOURCES_DB` - Notion database access
 - `OPENAI_API_KEY` - AI processing
-- `GOOGLE_APP_CREDENTIALS` - Google Drive/Gmail access
+- `GOOGLE_APP_CREDENTIALS` - Google Drive access
 
 **Processing Control**:
-- `GMAIL_WINDOW_DAYS` (default 7) - Gmail search window
-- `WEBSITE_WINDOW_DAYS` (default 30) - website content recency
+- `BATCH_SIZE` (default 10) - Number of items to process per batch
+- `RATE_LIMIT_DELAY` (default 0.3) - Delay between API calls
 
 ## Commands
 
@@ -64,14 +64,10 @@ Models configurable via environment variables (`MODEL_SUMMARY`, `MODEL_CLASSIFIE
 # Install package in development mode
 pip install -e .
 
-# Run complete pipeline (all sources + enrichment)
+# Run complete pipeline (ingestion + enrichment)
 python scripts/run_pipeline.py
 
-# Run specific source only
-python scripts/run_pipeline.py --source drive
-python scripts/run_pipeline.py --source gmail
-
-# Skip enrichment phase
+# Skip enrichment phase (ingestion only)
 python scripts/run_pipeline.py --skip-enrichment
 ```
 
@@ -91,9 +87,8 @@ from src.enrichment.processor import EnrichmentProcessor
 from src.enrichment.summarizer import ContentSummarizer
 from src.enrichment.classifier import ContentClassifier
 
-# Secondary sources
-from src.secondary_sources.gmail.capture import GmailCapture
-from src.secondary_sources.firecrawl.capture import FirecrawlCapture
+# Future integrations (see FUTURE_FEATURES.md)
+# src.secondary_sources package structure preserved for extensions
 ```
 
 ### Pipeline Management
@@ -105,17 +100,16 @@ tail -f logs/pipeline.jsonl | jq .
 cat logs/pipeline.jsonl | jq 'select(.level == "ERROR")'
 ```
 
-## Module Architecture (v2.0)
+## Module Architecture (v3.0)
 
 ### Primary Source: Google Drive
 - `src/drive/ingester.py` - Main ingestion orchestrator
 - `src/drive/pdf_processor.py` - PDF text extraction
 - `src/drive/deduplication.py` - Content hash management
 
-### Secondary Sources
-- `src/secondary_sources/gmail/` - OAuth2 email capture
-- `src/secondary_sources/firecrawl/` - Web scraping
-- Lower priority than Drive content
+### Future Integrations
+- `src/secondary_sources/` - Package structure preserved for future sources
+- See `FUTURE_FEATURES.md` for planned Gmail and web content integrations
 
 ### AI Enrichment
 - `src/enrichment/processor.py` - Orchestrates all AI analysis
@@ -136,7 +130,7 @@ cat logs/pipeline.jsonl | jq 'select(.level == "ERROR")'
 ## Content Processing Workflow
 
 1. **Ingestion Phase**: 
-   - `DriveIngester`, `GmailCapture`, or `FirecrawlCapture` create `SourceContent`
+   - `DriveIngester` creates `SourceContent` from Google Drive PDFs
    - Content added to Notion with Status="Inbox"
    - Deduplication via SHA-256 hashing
 
