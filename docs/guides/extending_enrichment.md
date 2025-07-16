@@ -2,275 +2,228 @@
 
 This document explains how to add new AI analysis types to the knowledge pipeline enrichment process.
 
-## Quick Start
+## Current Implementation Status
 
-### 1. Create a New Analyzer
+### ✅ What's Fully Implemented
 
-Create a new file in `src/enrichment/` following this pattern:
+1. **Content-Type Aware Prompts** - The `config/prompts.yaml` system provides sophisticated prompt customization
+2. **BaseAnalyzer Infrastructure** - Clean foundation for building new analyzers  
+3. **TechnicalAnalyzer** - One complete example analyzer implementation
+4. **PromptConfig System** - Runtime configuration with environment variable overrides
 
-```python
-# src/enrichment/market_analyzer.py
-from typing import Dict, Any
-from openai import OpenAI
-from ..core.config import PipelineConfig
-from ..utils.logging import setup_logger
+### 🚧 Extension Points Available
 
+- **Custom analyzer prompts** configured in `config/prompts.yaml` 
+- **BaseAnalyzer infrastructure** ready for new analyzer implementations
+- **Environment variable patterns** established for analyzer control
 
-class MarketAnalyzer:
-    """Analyzes market and business aspects of content."""
-    
-    def __init__(self, config: PipelineConfig):
-        self.config = config.openai
-        self.client = OpenAI(api_key=config.openai.api_key)
-        self.logger = setup_logger(__name__)
-        
-    def analyze(self, content: str, title: str) -> Dict[str, Any]:
-        """Perform market analysis on content."""
-        try:
-            prompt = f"""Analyze the market and business implications of this content:
+## How the System Currently Works
 
-Title: {title}
-Content: {content[:8000]}
+### 1. Content-Type Aware Processing
 
-Focus on:
-1. Market opportunities and threats
-2. Competitive landscape mentions
-3. Business model implications
-4. Industry trends
+When content is processed, the system:
 
-Format as markdown with clear sections."""
+1. **Detects content type** (Research, Vendor Capability, Market News, etc.)
+2. **Loads appropriate prompts** from `config/prompts.yaml`
+3. **Applies content-specific analysis** with specialized system prompts
+4. **Uses web search** based on content type configuration
 
-            completion = self.client.chat.completions.create(
-                model=self.config.model,
-                messages=[
-                    {"role": "system", "content": "You are a business analyst specializing in market research and competitive intelligence."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.3
-            )
-            
-            return {
-                "analysis": completion.choices[0].message.content,
-                "toggle_title": "📊 Market Analysis",
-                "success": True
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Market analysis failed: {e}")
-            return {
-                "analysis": "Market analysis failed",
-                "toggle_title": "📊 Market Analysis",
-                "success": False
-            }
-```
+### 2. Available Content Types
 
-### 2. Register the Analyzer
+The system has sophisticated prompts for:
 
-Add it to `pipeline_processor.py` in the `__init__` method:
+- **Research** - Academic papers with methodology focus
+- **Vendor Capability** - Product features with competitive analysis  
+- **Market News** - Financial implications and strategic moves
+- **Thought Leadership** - Strategic vision and industry implications
+- **Client Deliverable** - Recommendations and outcomes
+- **Personal Note** - Action items and decisions
+- **Email** - Communication analysis
+- **Website** - Content credibility and messaging
+- **PDF** - Generic document analysis
 
-```python
-# In src/enrichment/pipeline_processor.py
-from .market_analyzer import MarketAnalyzer
+### 3. Web Search Integration
 
-# In __init__ method:
-if os.getenv("ENABLE_MARKET_ANALYSIS", "").lower() == "true":
-    self.additional_analyzers.append(MarketAnalyzer(config))
-```
-
-### 3. Enable via Environment Variable
-
-```bash
-# In .env file
-ENABLE_MARKET_ANALYSIS=true
-```
-
-## How It Works
-
-1. **Initialization**: When `PipelineProcessor` starts, it checks environment variables and initializes enabled analyzers
-2. **Processing**: During enrichment, each analyzer's `analyze()` method is called with the content
-3. **Storage**: Results are automatically stored as toggle blocks in Notion
-
-## Analyzer Requirements
-
-Each analyzer must:
-- Have an `analyze(content: str, title: str)` method
-- Return a dict with:
-  - `analysis`: The markdown-formatted analysis text
-  - `toggle_title`: The title for the Notion toggle block (with emoji)
-  - `success`: Boolean indicating if analysis succeeded
-- Handle errors gracefully and return a failure dict
-
-## Available Analyzers
-
-### Market Analyzer (example above)
-- Market opportunities
-- Competitive landscape
-- Business implications
-- Industry trends
-
-## Best Practices
-
-1. **Token Limits**: Truncate content to ~8000 chars to stay within token limits
-2. **Error Handling**: Always catch exceptions and return a failure result
-3. **Markdown Output**: Format analysis as markdown for better Notion rendering
-4. **System Prompts**: Use specific system prompts to guide the AI's expertise
-5. **Temperature**: Use low temperature (0.3) for consistent, factual analysis
-
-## Customizing Prompts
-
-The pipeline now supports comprehensive prompt customization through the `config/prompts.yaml` file. This allows you to tailor AI analysis for different content types without modifying code.
-
-### Configuration Structure
+Each content type configures whether web search enhances analysis:
 
 ```yaml
-# config/prompts.yaml
-global:
-  web_search_enabled: true  # Enable web search globally
-
-content_types:
-  Research:
-    prompts:
-      summarizer: |
-        You are analyzing a research document. Focus on:
-        - Key findings and methodologies
-        - Statistical significance
-        - Practical applications
-        
-        Title: {title}
-        Content: {content}
-      insights: |
-        Extract actionable research insights...
-    web_search_enabled: false  # Disable for this content type
+# Research benefits from recent citations
+research:
+  summarizer:
+    web_search: true
     
-  "Vendor Capability":
-    prompts:
-      summarizer: |
-        Analyze this vendor's capabilities focusing on:
-        - Core features and differentiators
-        - Integration requirements
-        - Pricing and licensing model
-        
-additional_analyzers:
-  technical:
-    enabled: true
-    prompt: |
-      Perform deep technical analysis...
+# Client deliverables should stay confidential  
+client_deliverable:
+  summarizer:
+    web_search: false
 ```
 
-### Using the Base Analyzer
+## Adding a New Analyzer (Step-by-Step)
 
-For new analyzers, inherit from `BaseAnalyzer` to automatically get prompt configuration support:
+### Step 1: Create the Analyzer Class
 
 ```python
-# src/enrichment/market_analyzer.py
+# src/enrichment/custom_analyzer.py
+from typing import Dict, Any, Optional
+from ..core.config import PipelineConfig
+from ..core.prompt_config import PromptConfig
 from .base_analyzer import BaseAnalyzer
 
-class MarketAnalyzer(BaseAnalyzer):
-    """Market and business analysis."""
+class CustomAnalyzer(BaseAnalyzer):
+    """Template for creating custom analyzers."""
     
-    def _build_prompt(self, content: str, title: str, config: Dict[str, Any]) -> str:
-        # Config contains web_search_enabled and other settings
-        return f"Analyze market implications of '{title}'..."
-    
+    def __init__(self, config: PipelineConfig, prompt_config: Optional[PromptConfig] = None):
+        super().__init__(config, prompt_config)
+        self.analyzer_name = "custom"  # Match your config key
+        
+        # Get custom prompt from config/prompts.yaml
+        custom_prompt = self.prompt_config.get_custom_analyzer_prompt("custom")
+        self.default_prompt_template = custom_prompt or """Analyze this content:
+        
+Title: {title}
+Content: {content}
+
+Focus on:
+1. Your specific analysis needs
+2. Domain-specific insights  
+3. Actionable recommendations
+4. Key findings
+"""
+
     def _get_default_system_prompt(self) -> str:
-        return "You are a market analyst..."
-    
+        return "You are a specialist analyst focused on [your domain]."
+        
     def _get_fallback_result(self, error_message: str) -> Dict[str, Any]:
         return {
-            "analysis": f"Market analysis failed: {error_message}",
-            "toggle_title": "📊 Market Analysis",
+            "analysis": f"Custom analysis failed: {error_message}",
+            "toggle_title": "🔍 Custom Analysis",
             "success": False
         }
 ```
 
-### Registering Custom Prompts
+### Step 2: Add Environment Control
 
-1. Add to `config/prompts.yaml`:
-```yaml
-additional_analyzers:
-  market:
-    enabled: true
-    prompt: |
-      Analyze market dynamics and business implications...
+```bash
+# .env file
+ENABLE_CUSTOM_ANALYSIS=true
+CUSTOM_ANALYZER_WEB_SEARCH=true
 ```
 
-2. The analyzer automatically uses the custom prompt if available.
+### Step 3: Register in Pipeline
 
-### Content-Type Specific Behavior
+```python
+# src/enrichment/pipeline_processor.py
+from .custom_analyzer import CustomAnalyzer
 
-Different content types can have entirely different analysis approaches:
-
-```yaml
-content_types:
-  "Technical Guide":
-    prompts:
-      summarizer: |
-        Create a technical summary with code examples...
-      insights: |
-        Extract implementation patterns and best practices...
-        
-  "Market News":
-    prompts:
-      summarizer: |
-        Summarize market movements and implications...
-      insights: |
-        Identify trading opportunities and risks...
-    web_search_enabled: true  # Enable real-time data lookup
-```
-
-### Dynamic Feature Control
-
-Enable/disable capabilities per content type:
-
-```yaml
-content_types:
-  Research:
-    web_search_enabled: false  # Don't search for academic papers
+# In __init__ method:
+if self.prompt_config.is_analyzer_enabled("custom"):
+    self.custom_analyzer = CustomAnalyzer(config, prompt_config)
     
-  "Market News":
-    web_search_enabled: true   # Get latest market data
-    
-  "Client Deliverable":
-    additional_analyzers:
-      technical:
-        enabled: false  # Skip technical analysis for deliverables
+# In process_content method:
+if hasattr(self, 'custom_analyzer'):
+    custom_analysis = self.custom_analyzer.process(content, title, content_type)
+    if custom_analysis["success"]:
+        analysis_blocks.append(custom_analysis)
 ```
 
-### Model Configuration
-
-The pipeline uses different models for different purposes:
-
-**Standard Analysis Models** (via Chat Completions API):
-- `MODEL_SUMMARY=gpt-4.1` - For content summarization
-- `MODEL_CLASSIFIER=gpt-4.1-mini` - For efficient classification
-- `MODEL_INSIGHTS=gpt-4.1` - For deep insights generation
-
-**Web Search Model** (via Responses API):
-- `WEB_SEARCH_MODEL=o3` - Used only when web search is enabled
-
-The appropriate model is automatically selected based on the analyzer and whether web search is enabled.
-
-### Best Practices for Custom Prompts
-
-1. **Use Placeholders**: Always include `{title}` and `{content}` placeholders
-2. **Be Specific**: Tailor prompts to the content type's unique needs
-3. **Set Boundaries**: Specify what to focus on and what to ignore
-4. **Format Instructions**: Request specific output formats (markdown, sections, etc.)
-5. **Token Awareness**: Keep prompts concise to leave room for content
-
-### Testing Custom Prompts
-
-Test your prompts with specific content types:
+### Step 4: Test the Analyzer
 
 ```python
 # Test script
+from src.core.config import PipelineConfig
 from src.core.prompt_config import PromptConfig
+from src.enrichment.custom_analyzer import CustomAnalyzer
 
-config = PromptConfig()
-prompt = config.get_prompt("summarizer", "Research")
-print(f"Research summarizer prompt:\n{prompt}")
+config = PipelineConfig.from_env()
+prompt_config = PromptConfig()
+analyzer = CustomAnalyzer(config, prompt_config)
+
+result = analyzer.process(
+    content="Your test content here...",
+    title="Test Document",
+    content_type="Research"  # Or your target content type
+)
+print(result["analysis"])
 ```
 
-### Hot Reloading
+## Customizing Prompts
 
-Changes to `config/prompts.yaml` are loaded on each pipeline run, allowing rapid iteration without code changes or restarts.
+The `config/prompts.yaml` file provides powerful customization:
+
+### Content-Type Specific Prompts
+
+```yaml
+content_types:
+  research:
+    # Different system prompt for research content
+    summarizer:
+      system: |
+        You are an academic research analyst focusing on:
+        - Methodology evaluation
+        - Statistical significance  
+        - Research impact
+      web_search: true  # Check for recent citations
+      
+    # Custom analyzer gets different behavior for research
+    custom_analyzer:
+      web_search: true  # For implementation details
+```
+
+### Environment Variable Integration
+
+```yaml
+analyzers:
+  custom:
+    enabled: "${ENABLE_CUSTOM_ANALYSIS}"
+    web_search: "${CUSTOM_ANALYZER_WEB_SEARCH}"
+    default_prompt: |
+      Your custom prompt template here...
+```
+
+## Architecture Benefits
+
+### 🎯 **Content-Aware**
+- Different analysis for research papers vs marketing content
+- Web search enabled only when it adds value
+- Specialized system prompts for each domain
+
+### 💰 **Cost-Effective**  
+- Only run analyzers you need via environment variables
+- Web search only when configured (saves API costs)
+- Content-type awareness reduces irrelevant analysis
+
+### 🚀 **Extensible**
+- BaseAnalyzer provides consistent interface
+- PromptConfig handles all customization
+- No code changes needed for prompt updates
+
+### 🔧 **Maintainable**
+- Each analyzer is self-contained
+- Configuration separate from code
+- Environment variable control for easy deployment
+
+## Real Example
+
+**Input**: "Microsoft Copilot for Office 365 - New Enterprise Features"
+**Content Type**: "Vendor Capability"
+
+**Current System** (working):
+- ✅ Summarizer uses vendor-focused system prompt  
+- ✅ Classifier identifies vendor and capabilities
+- ✅ Insights focus on enterprise implications
+- ✅ Web search enabled for competitive context
+
+**With Custom Analyzer** (after implementation):
+- ✅ All of the above PLUS...
+- ✅ Domain-specific analysis based on your needs
+- ✅ Specialized insights for your use case
+- ✅ Custom output format and focus areas
+
+## Next Steps
+
+1. **Create custom analyzers** - Follow the pattern established by TechnicalAnalyzer
+2. **Integrate with pipeline** - Add analyzer registration and execution
+3. **Test thoroughly** - Ensure analyzers work with all content types
+4. **Extend prompts** - Add new content types and analyzer configurations
+
+The foundation is solid - the prompt configuration system is sophisticated and ready for extension!
