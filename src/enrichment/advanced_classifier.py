@@ -70,13 +70,16 @@ A) CONTENT TYPE ANALYSIS
 Available Options: {', '.join(self.taxonomy['content_types'])}
 
 Classification Methodology:
-1. Identify primary document purpose and format
-2. Analyze content structure and presentation style  
-3. Determine intended audience and use case
-4. Match against available content type definitions
+1. Analyze the ACTUAL SUBJECT MATTER and topics discussed
+2. Identify the primary PURPOSE of the content (research, news, analysis, etc.)
+3. Focus on WHAT is being communicated, not HOW it was delivered
+4. Ignore format indicators (PDF, email headers, "Gmail" in title) - these are delivery mechanisms, not content types
+
+IMPORTANT: A PDF containing market analysis is "Market News" regardless of being saved from Gmail
+A research paper is "Research" even if received via email and saved as "Gmail - [title].pdf"
 
 Evidence Analysis:
-[Examine content for specific indicators of each content type]
+[Examine the actual content substance, not the delivery format or file naming]
 
 B) AI PRIMITIVE IDENTIFICATION  
 Available Options: {', '.join(self.taxonomy['ai_primitives'])}
@@ -106,11 +109,14 @@ Step 3: Reasoning and Validation
 
 CONTENT TYPE REASONING:
 Based on the analysis above, the most appropriate content type is [X] because:
-- Evidence 1: [Specific content characteristics]
-- Evidence 2: [Document structure/format indicators]  
-- Evidence 3: [Purpose and audience alignment]
+- Evidence 1: [Specific CONTENT and SUBJECT MATTER discussed]
+- Evidence 2: [Primary PURPOSE and INTENT of the material]  
+- Evidence 3: [Target audience and use case based on CONTENT, not format]
 
-Confidence Level: [High/Medium/Low] because [specific reasoning]
+NOTE: Do NOT classify as "Email" just because title contains "Gmail" or it was originally an email
+Focus on the actual content: Is it research? Market analysis? Vendor announcement? Thought leadership?
+
+Confidence Level: [High/Medium/Low] because [specific reasoning about content substance]
 
 AI PRIMITIVES REASONING:
 Selected AI primitives and justification:

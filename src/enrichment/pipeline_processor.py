@@ -218,13 +218,13 @@ class PipelineProcessor:
             
             # Advanced multi-step summarization with semantic content type
             if self.enhanced_summarizer:
-                core_summary = self.enhanced_summarizer.generate_summary(content, title, semantic_content_type, item['id'])
+                core_summary = self.enhanced_summarizer.generate_summary(content, title, semantic_content_type)
             else:
                 core_summary = self.summarizer.generate_summary(content, title)
             
             # Strategic insights with semantic content type
             if self.enhanced_insights:
-                key_insights = self.enhanced_insights.generate_insights(content, title, semantic_content_type, item['id'])
+                key_insights = self.enhanced_insights.generate_insights(content, title, semantic_content_type)
             else:
                 key_insights = self.insights_generator.generate_insights(content, title)
             
