@@ -338,24 +338,34 @@ Please provide your systematic classification analysis following this framework.
     def _validate_ai_primitive_relevance(self, primitive: str, content: str) -> bool:
         """Check if AI primitive is actually relevant to the content."""
         content_lower = content.lower()
+        primitive_lower = primitive.lower()
         
-        # Map primitives to their indicators
-        primitive_indicators = {
-            "Natural Language Processing": ["nlp", "text", "language", "semantic", "sentiment", "parsing"],
-            "Machine Learning": ["ml", "model", "training", "algorithm", "prediction", "classification"],
-            "Computer Vision": ["vision", "image", "visual", "recognition", "detection", "ocr"],
-            "Deep Learning": ["neural", "deep", "tensorflow", "pytorch", "layers", "networks"],
-            "Generative AI": ["generative", "generate", "create", "synthesis", "gpt", "llm"],
-            "Automation": ["automate", "automated", "workflow", "process", "efficiency"]
-        }
+        # Use dynamic AI primitives from taxonomy
+        if primitive not in self.taxonomy.get("ai_primitives", []):
+            return False
         
-        indicators = primitive_indicators.get(primitive, [primitive.lower().split()])
-        if isinstance(indicators[0], list):
-            indicators = indicators[0]
+        # Build indicators based on the primitive name itself
+        # Split compound terms and create variations
+        primitive_words = primitive_lower.replace("/", " ").replace("-", " ").split()
         
-        # Check for multiple indicators (higher confidence)
-        found_indicators = sum(1 for indicator in indicators if indicator in content_lower)
-        return found_indicators >= 2  # Require at least 2 related terms
+        # Create indicators from the primitive name and common variations
+        indicators = []
+        indicators.extend(primitive_words)  # Individual words
+        indicators.append(primitive_lower)  # Full primitive name
+        
+        # Add common AI-related terms that might indicate any AI primitive
+        general_ai_indicators = ["ai", "artificial intelligence", "model", "algorithm", 
+                                "machine", "learning", "neural", "data", "analysis",
+                                "automation", "intelligent", "system", "technology"]
+        
+        # Check for primitive-specific indicators
+        found_primitive_indicator = any(indicator in content_lower for indicator in indicators)
+        
+        # Check for general AI context
+        found_ai_context = sum(1 for indicator in general_ai_indicators if indicator in content_lower) >= 2
+        
+        # More lenient validation: either specific primitive term OR general AI context
+        return found_primitive_indicator or found_ai_context
     
     def _assess_vendor_prominence(self, vendor: str, content: str, title: str) -> float:
         """Assess how prominently a vendor is featured in the content."""

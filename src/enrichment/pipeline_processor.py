@@ -233,7 +233,7 @@ class PipelineProcessor:
             
             for analyzer in self.additional_analyzers:
                 try:
-                    analysis_result = analyzer.analyze(content, title, semantic_content_type, item['id'])
+                    analysis_result = analyzer.analyze(content, title, semantic_content_type)
                     if analysis_result.get("success"):
                         additional_analyses[analyzer.__class__.__name__] = analysis_result
                         self.logger.info(
@@ -565,15 +565,32 @@ class PipelineProcessor:
         """Create Notion blocks for enriched content with quality indicators."""
         blocks = []
         
-        # Raw Content toggle
-        blocks.append({
-            "object": "block",
-            "type": "toggle",
-            "toggle": {
-                "rich_text": [{"type": "text", "text": {"content": "📄 Raw Content"}}],
-                "children": self._chunk_text_to_blocks(raw_content)
-            }
-        })
+        # Raw Content toggle - limit to 100 children per Notion API requirements
+        raw_content_blocks = self._chunk_text_to_blocks(raw_content)
+        if len(raw_content_blocks) > 100:
+            # Split into multiple toggles if too many blocks
+            self.logger.warning(f"Raw content has {len(raw_content_blocks)} blocks, splitting into multiple toggles")
+            for i in range(0, len(raw_content_blocks), 100):
+                chunk_blocks = raw_content_blocks[i:i+100]
+                part_num = (i // 100) + 1
+                total_parts = (len(raw_content_blocks) + 99) // 100
+                blocks.append({
+                    "object": "block",
+                    "type": "toggle",
+                    "toggle": {
+                        "rich_text": [{"type": "text", "text": {"content": f"📄 Raw Content (Part {part_num}/{total_parts})"}}],
+                        "children": chunk_blocks
+                    }
+                })
+        else:
+            blocks.append({
+                "object": "block",
+                "type": "toggle",
+                "toggle": {
+                    "rich_text": [{"type": "text", "text": {"content": "📄 Raw Content"}}],
+                    "children": raw_content_blocks
+                }
+            })
         
         # Core Summary toggle (enhanced with quality indicator)
         quality_indicator = ""
