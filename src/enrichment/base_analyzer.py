@@ -140,11 +140,16 @@ class BaseAnalyzer(ABC):
             if hasattr(response, 'output'):
                 self.logger.info(f"response.output type: {type(response.output)}")
                 if isinstance(response.output, list) and response.output:
-                    self.logger.info(f"response.output[0] type: {type(response.output[0])}")
-                    if hasattr(response.output[0], 'type'):
-                        self.logger.info(f"response.output[0].type: {response.output[0].type}")
-                    if hasattr(response.output[0], 'text'):
-                        self.logger.info(f"response.output has text content")
+                    self.logger.info(f"response.output length: {len(response.output)}")
+                    for idx, item in enumerate(response.output):
+                        self.logger.info(f"response.output[{idx}] type: {type(item)}")
+                        if hasattr(item, 'type'):
+                            self.logger.info(f"response.output[{idx}].type: {item.type}")
+                        if hasattr(item, 'tool_calls'):
+                            self.logger.info(f"response.output[{idx}] has tool_calls")
+                        # Log all attributes of the output item
+                        attrs = [attr for attr in dir(item) if not attr.startswith('_')]
+                        self.logger.info(f"response.output[{idx}] attributes: {attrs}")
             if hasattr(response, 'annotations'):
                 self.logger.info(f"response.annotations: {response.annotations}")
             if hasattr(response, 'messages'):
@@ -189,8 +194,31 @@ class BaseAnalyzer(ABC):
             # Extract citations/web search data
             web_citations = []
             web_search_actually_used = False
+            web_search_queries = []
             
-            # Check for annotations (common in Responses API)
+            # Check in the output array for web_search_call items
+            if hasattr(response, 'output') and isinstance(response.output, list):
+                for item in response.output:
+                    if hasattr(item, 'type') and item.type == 'web_search_call':
+                        web_search_actually_used = True
+                        self.logger.info(f"Found web search call: {item.id}")
+                        
+                        # Extract search query
+                        if hasattr(item, 'action') and hasattr(item.action, 'query'):
+                            web_search_queries.append(item.action.query)
+                            self.logger.info(f"Web search query: {item.action.query}")
+                    
+                    # Check for web search results (might be in a different format)
+                    elif hasattr(item, 'type') and item.type == 'web_search_result':
+                        if hasattr(item, 'results'):
+                            for result in item.results:
+                                web_citations.append({
+                                    'title': getattr(result, 'title', 'Unknown'),
+                                    'url': getattr(result, 'url', ''),
+                                    'domain': self._extract_domain(getattr(result, 'url', ''))
+                                })
+            
+            # Also check for annotations (might be in different location)
             if hasattr(response, 'annotations') and response.annotations:
                 self.logger.info(f"Found {len(response.annotations)} annotations")
                 for ann in response.annotations:
@@ -202,25 +230,26 @@ class BaseAnalyzer(ABC):
                         })
                         web_search_actually_used = True
             
-            # Check for tool calls in messages
-            if hasattr(response, 'messages') and response.messages:
-                for msg in response.messages:
-                    if hasattr(msg, 'tool_calls') and msg.tool_calls:
-                        for tool_call in msg.tool_calls:
-                            if hasattr(tool_call, 'type') and tool_call.type == 'web_search':
-                                web_search_actually_used = True
-                                self.logger.info("Web search tool was called")
-            
             # Log citation results
             if web_citations:
                 self.logger.info(f"Extracted {len(web_citations)} web citations")
+            elif web_search_queries:
+                self.logger.info(f"Web search was used with {len(web_search_queries)} queries but no citations extracted")
+                # If we have queries but no citations, we can at least show what was searched
+                for query in web_search_queries:
+                    web_citations.append({
+                        'title': f'Search: "{query}"',
+                        'url': '',
+                        'domain': 'Web Search Query'
+                    })
             else:
-                self.logger.info("No web citations found in response")
+                self.logger.info("No web search activity found in response")
             
             return {
                 "analysis": output_text,
                 "web_search_used": web_search_actually_used,
                 "web_citations": web_citations,
+                "web_search_queries": web_search_queries,
                 "success": True,
                 "model": os.getenv("WEB_SEARCH_MODEL", "o3")
             }
