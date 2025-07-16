@@ -60,7 +60,6 @@ python scripts/run_pipeline.py --skip-enrichment
 - **Structured Storage**: Rich Notion database with metadata and formatted content blocks
 
 ### Performance & Architecture  
-- **75% Faster Processing**: Optimized from 20+ AI calls to just 3 per document
 - **Priority-Based System**: Google Drive as primary source, others as secondary
 - **Modular Design**: Clean separation of concerns with professional Python packaging
 - **Resilient Operations**: Built-in retry logic and graceful error handling
