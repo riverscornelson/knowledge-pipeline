@@ -217,14 +217,31 @@ class PipelineProcessor:
             self.logger.info(f"Using semantic content type '{semantic_content_type}' for analyses (was: {existing_content_type})")
             
             # Advanced multi-step summarization with semantic content type
+            summary_result = None
             if self.enhanced_summarizer:
-                core_summary = self.enhanced_summarizer.generate_summary(content, title, semantic_content_type)
+                # Get full result to capture web citations
+                summary_result = self.enhanced_summarizer.analyze(content, title, semantic_content_type)
+                core_summary = summary_result.get("analysis", "") if summary_result.get("success") else ""
+                if not core_summary:
+                    core_summary = self.summarizer.generate_summary(content, title)
             else:
                 core_summary = self.summarizer.generate_summary(content, title)
             
             # Strategic insights with semantic content type
+            insights_result = None
             if self.enhanced_insights:
-                key_insights = self.enhanced_insights.generate_insights(content, title, semantic_content_type)
+                # Get full result to capture web citations
+                insights_result = self.enhanced_insights.analyze(content, title, semantic_content_type)
+                key_insights = []
+                if insights_result.get("success") and insights_result.get("analysis"):
+                    # Parse insights from the analysis text
+                    insights_text = insights_result["analysis"]
+                    # Extract bullet points or numbered items
+                    import re
+                    insights_matches = re.findall(r'[•\-\d\.]\s*(.+?)(?=\n[•\-\d\.]|\n\n|$)', insights_text, re.DOTALL)
+                    key_insights = [match.strip() for match in insights_matches if match.strip()]
+                if not key_insights:
+                    key_insights = self.insights_generator.generate_insights(content, title)
             else:
                 key_insights = self.insights_generator.generate_insights(content, title)
             
@@ -298,6 +315,12 @@ class PipelineProcessor:
         # Add detailed quality validation metadata
         result.temperature = getattr(self.summarizer, 'temperature', 0.3)
         result.web_search_used = getattr(self.enhanced_summarizer, 'web_search_enabled', False) if self.enhanced_summarizer else False
+        
+        # Add web citations from analyzer results
+        result.summary_web_citations = summary_result.get("web_citations", []) if summary_result else []
+        result.insights_web_citations = insights_result.get("web_citations", []) if insights_result else []
+        result.summary_web_search_used = summary_result.get("web_search_used", False) if summary_result else False
+        result.insights_web_search_used = insights_result.get("web_search_used", False) if insights_result else False
         
         # Track prompt configuration used
         result.prompt_config = {
@@ -600,23 +623,38 @@ class PipelineProcessor:
             elif result.quality_score >= 0.6:
                 quality_indicator = " ✓"
         
+        # Create summary children blocks with citations if available
+        summary_children = self._markdown_to_blocks(result.core_summary)
+        
+        # Add web search citations if available
+        if hasattr(result, 'summary_web_citations') and result.summary_web_citations:
+            citation_text = self._format_web_citations(result.summary_web_citations)
+            summary_children.extend(self._markdown_to_blocks(citation_text))
+        
         blocks.append({
             "object": "block",
             "type": "toggle",
             "toggle": {
                 "rich_text": [{"type": "text", "text": {"content": f"📋 Core Summary{quality_indicator}"}}],
-                "children": self._markdown_to_blocks(result.core_summary)
+                "children": summary_children
             }
         })
         
         # Key Insights toggle
         insights_text = "\n".join(f"• {insight}" for insight in result.key_insights)
+        insights_children = self._markdown_to_blocks(insights_text)
+        
+        # Add web search citations if available
+        if hasattr(result, 'insights_web_citations') and result.insights_web_citations:
+            citation_text = self._format_web_citations(result.insights_web_citations)
+            insights_children.extend(self._markdown_to_blocks(citation_text))
+        
         blocks.append({
             "object": "block",
             "type": "toggle",
             "toggle": {
                 "rich_text": [{"type": "text", "text": {"content": "💡 Key Insights"}}],
-                "children": self._markdown_to_blocks(insights_text)
+                "children": insights_children
             }
         })
         
@@ -642,10 +680,20 @@ class PipelineProcessor:
         
         # Processing Metadata toggle (new)
         if hasattr(result, 'quality_score'):
+            # Add web search status to metadata
+            web_search_status = []
+            if hasattr(result, 'summary_web_search_used') and result.summary_web_search_used:
+                web_search_status.append(f"Summary ({len(getattr(result, 'summary_web_citations', []))} sources)")
+            if hasattr(result, 'insights_web_search_used') and result.insights_web_search_used:
+                web_search_status.append(f"Insights ({len(getattr(result, 'insights_web_citations', []))} sources)")
+            
+            web_search_line = "**Web Search**: " + (", ".join(web_search_status) if web_search_status else "Not used")
+            
             metadata_text = f"""
 **Quality Score**: {result.quality_score:.2f}/1.00
 **Processing Time**: {result.processing_time:.2f}s
 **Token Usage**: {result.token_usage.get('total_tokens', 0):,} tokens
+{web_search_line}
 """
             blocks.append({
                 "object": "block",
@@ -746,6 +794,25 @@ class PipelineProcessor:
                 "rich_text": [{"type": "text", "text": {"content": content.strip()}}]
             }
         }
+    
+    def _format_web_citations(self, citations: List[Dict]) -> str:
+        """Format web search citations as markdown."""
+        if not citations:
+            return ""
+        
+        lines = ["", "---", f"🔍 **Web Search Sources** ({len(citations)} consulted):"]
+        
+        for citation in citations:
+            title = citation.get('title', 'Unknown')
+            url = citation.get('url', '')
+            domain = citation.get('domain', '')
+            
+            if url:
+                lines.append(f"• [{title}]({url}) - {domain}")
+            else:
+                lines.append(f"• {title}")
+        
+        return "\n".join(lines)
     
     def _markdown_to_blocks(self, markdown: str) -> List[Dict]:
         """Convert markdown to Notion blocks."""

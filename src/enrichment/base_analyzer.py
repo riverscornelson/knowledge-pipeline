@@ -4,6 +4,7 @@ Base analyzer class with prompt configuration and web search support.
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
 import os
+from urllib.parse import urlparse
 from openai import OpenAI
 from ..core.config import PipelineConfig
 from ..core.prompt_config import PromptConfig
@@ -117,6 +118,23 @@ class BaseAnalyzer(ABC):
                 temperature=config.get("temperature", 0.3)
             )
             
+            # Comprehensive logging to understand response structure
+            self.logger.info(f"Responses API response type: {type(response)}")
+            self.logger.info(f"Response attributes: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+            
+            # Log specific attributes if they exist
+            if hasattr(response, 'output'):
+                self.logger.info(f"response.output type: {type(response.output)}")
+            if hasattr(response, 'annotations'):
+                self.logger.info(f"response.annotations: {response.annotations}")
+            if hasattr(response, 'messages'):
+                self.logger.info(f"response.messages count: {len(response.messages) if response.messages else 0}")
+                if response.messages:
+                    for i, msg in enumerate(response.messages):
+                        self.logger.info(f"Message {i} attributes: {[attr for attr in dir(msg) if not attr.startswith('_')]}")
+                        if hasattr(msg, 'tool_calls'):
+                            self.logger.info(f"Message {i} tool_calls: {msg.tool_calls}")
+            
             # Extract the output text
             output_text = getattr(response, 'output_text', None)
             if not output_text and hasattr(response, 'output'):
@@ -125,9 +143,41 @@ class BaseAnalyzer(ABC):
                 # Fallback to extracting from response structure
                 output_text = str(response)
             
+            # Extract citations/web search data
+            web_citations = []
+            web_search_actually_used = False
+            
+            # Check for annotations (common in Responses API)
+            if hasattr(response, 'annotations') and response.annotations:
+                self.logger.info(f"Found {len(response.annotations)} annotations")
+                for ann in response.annotations:
+                    if hasattr(ann, 'type') and ann.type == 'url_citation':
+                        web_citations.append({
+                            'title': getattr(ann, 'title', 'Unknown'),
+                            'url': getattr(ann, 'url', ''),
+                            'domain': self._extract_domain(getattr(ann, 'url', ''))
+                        })
+                        web_search_actually_used = True
+            
+            # Check for tool calls in messages
+            if hasattr(response, 'messages') and response.messages:
+                for msg in response.messages:
+                    if hasattr(msg, 'tool_calls') and msg.tool_calls:
+                        for tool_call in msg.tool_calls:
+                            if hasattr(tool_call, 'type') and tool_call.type == 'web_search':
+                                web_search_actually_used = True
+                                self.logger.info("Web search tool was called")
+            
+            # Log citation results
+            if web_citations:
+                self.logger.info(f"Extracted {len(web_citations)} web citations")
+            else:
+                self.logger.info("No web citations found in response")
+            
             return {
                 "analysis": output_text,
-                "web_search_used": True,
+                "web_search_used": web_search_actually_used,
+                "web_citations": web_citations,
                 "success": True,
                 "model": os.getenv("WEB_SEARCH_MODEL", "o3")
             }
@@ -136,6 +186,14 @@ class BaseAnalyzer(ABC):
             self.logger.error(f"Web search analysis failed: {e}")
             # Fallback to standard analysis
             return self._analyze_standard(user_prompt, config)
+    
+    def _extract_domain(self, url: str) -> str:
+        """Extract domain from URL for display."""
+        try:
+            parsed = urlparse(url)
+            return parsed.netloc or parsed.path.split('/')[0]
+        except:
+            return ""
     
     def _analyze_standard(self, user_prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:
         """Standard analysis using Chat Completions API.
