@@ -15,6 +15,7 @@ from .advanced_classifier import AdvancedContentClassifier
 from .advanced_insights import AdvancedInsightsGenerator
 from .enhanced_summarizer import EnhancedContentSummarizer
 from .enhanced_insights import EnhancedInsightsGenerator
+from .content_tagger import ContentTagger
 from ..core.prompt_config import PromptConfig
 from ..drive.pdf_processor import PDFProcessor
 from google.oauth2.service_account import Credentials
@@ -49,6 +50,15 @@ class PipelineProcessor:
             self.enhanced_insights = None
             
         self.classifier = AdvancedContentClassifier(config.openai, self._load_taxonomy())
+        
+        # Initialize content tagger
+        tagger_config = self.prompt_config.get_prompt("tagger", None)
+        if tagger_config.get("enabled", True):  # Default to enabled
+            self.logger.info("Initializing ContentTagger for intelligent tagging")
+            self.content_tagger = ContentTagger(config, notion_client, self.prompt_config)
+        else:
+            self.content_tagger = None
+            self.logger.info("ContentTagger disabled by configuration")
         
         # Initialize additional analyzers if enabled
         self.additional_analyzers = []
@@ -245,6 +255,20 @@ class PipelineProcessor:
             else:
                 key_insights = self.insights_generator.generate_insights(content, title)
             
+            # Generate content tags if enabled
+            tag_result = None
+            if self.content_tagger:
+                try:
+                    tag_result = self.content_tagger.analyze(content, title, semantic_content_type)
+                    if tag_result.get("success"):
+                        self.logger.info(
+                            f"ContentTagger generated {len(tag_result.get('topical_tags', []))} topical and "
+                            f"{len(tag_result.get('domain_tags', []))} domain tags"
+                        )
+                except Exception as e:
+                    self.logger.error(f"ContentTagger failed: {e}")
+                    tag_result = None
+            
             # Run additional analyzers with semantic content type
             additional_analyses = {}
             
@@ -266,6 +290,7 @@ class PipelineProcessor:
             core_summary = f"Analysis failed. Document '{title}' contains approximately {len(content)} characters of content."
             classification = {"content_type": "Other", "ai_primitives": [], "vendor": None, "confidence": "low"}
             key_insights = ["Content requires manual review due to processing error."]
+            tag_result = None  # No tags on fallback
             additional_analyses = {}  # Empty on fallback
         
         # Calculate processing time
@@ -333,6 +358,16 @@ class PipelineProcessor:
         # Add additional analyses if any
         if additional_analyses:
             result.additional_analyses = additional_analyses
+        
+        # Add tag results if available
+        if tag_result and tag_result.get("success"):
+            result.topical_tags = tag_result.get("topical_tags", [])
+            result.domain_tags = tag_result.get("domain_tags", [])
+            result.tag_metadata = {
+                "reasoning": tag_result.get("tag_selection_reasoning", {}),
+                "confidence": tag_result.get("confidence_scores", {}),
+                "cache_size": tag_result.get("existing_tags_cache", {})
+            }
         
         return result
     
@@ -574,6 +609,17 @@ class PipelineProcessor:
         if result.vendor:
             properties["Vendor"] = {"select": {"name": result.vendor}}
         
+        # Add tags if available
+        if hasattr(result, 'topical_tags') and result.topical_tags:
+            properties["Topical Tags"] = {
+                "multi_select": [{"name": tag} for tag in result.topical_tags]
+            }
+        
+        if hasattr(result, 'domain_tags') and result.domain_tags:
+            properties["Domain Tags"] = {
+                "multi_select": [{"name": tag} for tag in result.domain_tags]
+            }
+        
         self.notion_client.client.pages.update(page_id=page_id, properties=properties)
         
         # Add enhanced content blocks
@@ -677,6 +723,34 @@ class PipelineProcessor:
                 "children": self._markdown_to_blocks(classification_text)
             }
         })
+        
+        # Tags toggle (if available)
+        if hasattr(result, 'topical_tags') and (result.topical_tags or result.domain_tags):
+            tags_text = f"""
+**Topical Tags**: {', '.join(result.topical_tags) if result.topical_tags else 'None'}
+**Domain Tags**: {', '.join(result.domain_tags) if result.domain_tags else 'None'}
+"""
+            
+            # Add tag metadata if available
+            if hasattr(result, 'tag_metadata') and result.tag_metadata:
+                reasoning = result.tag_metadata.get('reasoning', {})
+                if reasoning.get('existing_tags_used'):
+                    tags_text += f"\n**Existing Tags Used**: {', '.join(reasoning['existing_tags_used'])}"
+                if reasoning.get('new_tags_created'):
+                    tags_text += f"\n**New Tags Created**: {', '.join(reasoning['new_tags_created'])}"
+                
+                cache_info = result.tag_metadata.get('cache_size', {})
+                if cache_info:
+                    tags_text += f"\n**Tag Cache**: {cache_info.get('topical_count', 0)} topical, {cache_info.get('domain_count', 0)} domain tags available"
+            
+            blocks.append({
+                "object": "block",
+                "type": "toggle",
+                "toggle": {
+                    "rich_text": [{"type": "text", "text": {"content": "🏷️ Content Tags"}}],
+                    "children": self._markdown_to_blocks(tags_text)
+                }
+            })
         
         # Processing Metadata toggle (new)
         if hasattr(result, 'quality_score'):

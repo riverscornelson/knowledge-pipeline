@@ -135,3 +135,44 @@ class NotionClient:
                 children=batch
             )
             time.sleep(0.3)  # Rate limiting
+    
+    def get_multi_select_options(self, property_name: str) -> List[str]:
+        """Get all existing options for a multi-select property.
+        
+        Args:
+            property_name: Name of the multi-select property
+            
+        Returns:
+            List of existing option names
+        """
+        try:
+            # Get database schema
+            database = self.client.databases.retrieve(database_id=self.db_id)
+            
+            # Find the property
+            properties = database.get("properties", {})
+            prop = properties.get(property_name, {})
+            
+            # Extract options if it's a multi-select property
+            if prop.get("type") == "multi_select":
+                options = prop.get("multi_select", {}).get("options", [])
+                return [opt["name"] for opt in options]
+            
+            return []
+            
+        except Exception as e:
+            # Log error but don't fail - return empty list
+            import logging
+            logging.error(f"Failed to get multi-select options for '{property_name}': {e}")
+            return []
+    
+    def get_tag_options(self) -> Dict[str, List[str]]:
+        """Get all existing tag options for both Topical and Domain tags.
+        
+        Returns:
+            Dictionary with 'topical_tags' and 'domain_tags' lists
+        """
+        return {
+            "topical_tags": self.get_multi_select_options("Topical Tags"),
+            "domain_tags": self.get_multi_select_options("Domain Tags")
+        }

@@ -253,6 +253,16 @@ content_types:
 
 # Custom analyzer configurations
 analyzers:
+  tagger:
+    enabled: "${ENABLE_CONTENT_TAGGING:-true}"
+    model: "${MODEL_TAGGER:-gpt-4o-mini}"
+    temperature: 0.3
+    system: |
+      You are an expert content tagger specializing in maintaining consistent taxonomies.
+      Your goal is to categorize content with existing tags whenever possible, only creating new tags
+      when absolutely necessary. You understand nuanced differences between topics and domains,
+      and you prioritize taxonomy consistency over perfect accuracy.
+  
   technical:
     enabled: "${ENABLE_TECHNICAL_ANALYSIS}"
     web_search: "${TECHNICAL_ANALYZER_WEB_SEARCH}"
