@@ -5,6 +5,7 @@ import time
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 from google.oauth2.service_account import Credentials
 from ..core.config import GoogleDriveConfig, PipelineConfig
 from ..core.models import SourceContent, ContentStatus, ContentType
@@ -163,3 +164,62 @@ class DriveIngester:
         
         print(f"\n✅ Drive ingestion complete: {stats['new']} new files added")
         return stats
+    
+    def upload_local_file(self, filepath: str, cleaned_name: str) -> str:
+        """
+        Upload a local file to Google Drive.
+        
+        Args:
+            filepath: Path to the local file to upload
+            cleaned_name: Cleaned filename to use in Drive
+            
+        Returns:
+            The Google Drive file ID of the uploaded file
+            
+        Raises:
+            Exception: If upload fails
+        """
+        # Check if Drive API is available
+        if not self.drive:
+            raise Exception("Google Drive API not available - cannot upload file")
+        
+        # Determine the target folder ID
+        # Use local_uploader config if specified, otherwise use default folder
+        target_folder_id = self.drive_config.folder_id
+        if hasattr(self.config, 'local_uploader') and self.config.local_uploader.upload_folder_id:
+            target_folder_id = self.config.local_uploader.upload_folder_id
+            self.logger.info(f"Using custom upload folder: {target_folder_id}")
+        
+        if not target_folder_id:
+            raise ValueError("No target folder ID configured for uploads")
+        
+        try:
+            # Prepare file metadata
+            file_metadata = {
+                'name': cleaned_name,
+                'parents': [target_folder_id]
+            }
+            
+            # Create media upload object
+            media = MediaFileUpload(
+                filepath,
+                mimetype='application/pdf',
+                resumable=True
+            )
+            
+            # Upload the file
+            self.logger.info(f"Uploading {cleaned_name} to Drive folder {target_folder_id}...")
+            file = self.drive.files().create(
+                body=file_metadata,
+                media_body=media,
+                fields='id'
+            ).execute()
+            
+            file_id = file.get('id')
+            self.logger.info(f"Successfully uploaded file with ID: {file_id}")
+            
+            return file_id
+            
+        except Exception as e:
+            self.logger.error(f"Failed to upload file {filepath}: {str(e)}")
+            raise Exception(f"Drive upload failed: {str(e)}")
