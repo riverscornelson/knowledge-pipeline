@@ -9,3 +9,4 @@ pdfminer.six
 tenacity
 markdown>=3.4.0
 pyyaml>=6.0
+google-auth-oauthlib

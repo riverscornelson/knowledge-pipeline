@@ -85,11 +85,37 @@ class OpenAIConfig:
 
 
 @dataclass
+class LocalUploaderConfig:
+    """Local PDF uploader configuration."""
+    enabled: bool = False
+    scan_days: int = 7
+    upload_folder_id: Optional[str] = None  # Uses default Drive folder if None
+    delete_after_upload: bool = False
+    use_oauth2: bool = False
+    oauth_credentials_file: str = "credentials.json"
+    oauth_token_file: str = ".token.pickle"
+    
+    @classmethod
+    def from_env(cls) -> "LocalUploaderConfig":
+        """Create config from environment variables."""
+        return cls(
+            enabled=os.getenv("LOCAL_UPLOADER_ENABLED", "false").lower() == "true",
+            scan_days=int(os.getenv("LOCAL_SCAN_DAYS", "7")),
+            upload_folder_id=os.getenv("LOCAL_UPLOAD_FOLDER_ID"),
+            delete_after_upload=os.getenv("LOCAL_DELETE_AFTER_UPLOAD", "false").lower() == "true",
+            use_oauth2=os.getenv("USE_OAUTH2_FOR_UPLOADS", "false").lower() == "true",
+            oauth_credentials_file=os.getenv("OAUTH_CREDENTIALS_FILE", "credentials.json"),
+            oauth_token_file=os.getenv("OAUTH_TOKEN_FILE", ".token.pickle")
+        )
+
+
+@dataclass
 class PipelineConfig:
     """Main pipeline configuration."""
     notion: NotionConfig
     google_drive: GoogleDriveConfig
     openai: OpenAIConfig
+    local_uploader: LocalUploaderConfig
     
     # Processing settings
     batch_size: int = 10
@@ -102,6 +128,7 @@ class PipelineConfig:
             notion=NotionConfig.from_env(),
             google_drive=GoogleDriveConfig.from_env(),
             openai=OpenAIConfig.from_env(),
+            local_uploader=LocalUploaderConfig.from_env(),
             batch_size=int(os.getenv("BATCH_SIZE", "10")),
             rate_limit_delay=float(os.getenv("RATE_LIMIT_DELAY", "0.3"))
         )

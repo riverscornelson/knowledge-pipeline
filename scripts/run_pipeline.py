@@ -13,6 +13,7 @@ from src.core.config import PipelineConfig
 from src.core.notion_client import NotionClient
 from src.drive.ingester import DriveIngester
 from src.utils.logging import setup_logger
+from src.local_uploader.preprocessor import process_local_pdfs
 
 
 def main():
@@ -34,6 +35,11 @@ def main():
         action="store_true",
         help="Run without making changes"
     )
+    parser.add_argument(
+        "--process-local",
+        action="store_true",
+        help="Upload local PDFs to Drive before processing"
+    )
     
     args = parser.parse_args()
     
@@ -48,6 +54,16 @@ def main():
         
         # Initialize Notion client
         notion_client = NotionClient(config.notion)
+        
+        # Process local PDFs if requested
+        if args.process_local:
+            logger.info("Starting local PDF upload preprocessing")
+            if not args.dry_run:
+                local_stats = process_local_pdfs(config, notion_client)
+                logger.info(f"Uploaded {local_stats['uploaded']} new PDFs to Drive")
+                logger.info(f"Local upload stats: {local_stats}")
+            else:
+                logger.info("Dry run - skipping local PDF upload")
         
         # Run Google Drive ingestion
         logger.info("Starting Drive ingestion")

@@ -38,13 +38,14 @@ tail -f logs/pipeline.jsonl | jq .
 
 ## 🎯 What It Does
 
-1. **Ingests** content from Google Drive PDFs
-2. **Deduplicates** using content hashing
-3. **Enriches** with AI-powered analysis:
+1. **Uploads** (optional) local PDFs from Downloads to Google Drive
+2. **Ingests** content from Google Drive PDFs
+3. **Deduplicates** using content hashing
+4. **Enriches** with AI-powered analysis:
    - Executive summaries
    - Content classification
    - Key insights extraction
-4. **Stores** in your Notion database with rich formatting
+5. **Stores** in your Notion database with rich formatting
 
 ## 🔧 Common Commands
 
@@ -52,8 +53,17 @@ tail -f logs/pipeline.jsonl | jq .
 # Process only new content (default)
 python scripts/run_pipeline.py
 
+# Full pipeline with local PDF upload
+python scripts/run_pipeline.py --process-local
+
+# Process only local files (no enrichment)
+python scripts/run_pipeline.py --process-local --skip-enrichment
+
 # Skip AI enrichment (faster)
 python scripts/run_pipeline.py --skip-enrichment
+
+# Dry run to see what would be uploaded
+python scripts/run_pipeline.py --process-local --dry-run
 ```
 
 ## 📚 Need Help?

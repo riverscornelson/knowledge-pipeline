@@ -54,6 +54,7 @@ python scripts/run_pipeline.py --skip-enrichment
 
 ### Intelligent Content Processing
 - **Multi-Source Ingestion**: Google Drive PDFs, Gmail newsletters, and web content
+- **Local PDF Upload**: Automatically upload PDFs from Downloads to Drive
 - **AI-Powered Enrichment**: Automated summarization, classification, and insight extraction using GPT-4.1
 - **Advanced Analysis**: Multi-step reasoning with story structures and evidence-based classification
 - **Intelligent Tagging**: AI-generated topical and domain tags with consistency-first approach
