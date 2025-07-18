@@ -11,8 +11,8 @@
   - Return list of option names
   
 - [ ] Add `get_tag_options()` method
-  - Call `get_multi_select_options("Topical Tags")`
-  - Call `get_multi_select_options("Domain Tags")`
+  - Call `get_multi_select_options("Topical-Tags")`
+  - Call `get_multi_select_options("Domain-Tags")`
   - Return dictionary with both lists
   
 - [ ] Add `update_page_tags(page_id, topical_tags, domain_tags)` method

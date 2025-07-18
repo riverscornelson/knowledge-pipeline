@@ -74,8 +74,8 @@ class TestContentTagger:
         
         # Verify Notion client was called correctly
         assert mock_notion_client.get_multi_select_options.call_count == 2
-        mock_notion_client.get_multi_select_options.assert_any_call("Topical Tags")
-        mock_notion_client.get_multi_select_options.assert_any_call("Domain Tags")
+        mock_notion_client.get_multi_select_options.assert_any_call("Topical-Tags")
+        mock_notion_client.get_multi_select_options.assert_any_call("Domain-Tags")
     
     def test_analyze_with_existing_tags(self, content_tagger, mock_notion_client):
         """Test analysis when existing tags match content."""

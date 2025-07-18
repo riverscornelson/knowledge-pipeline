@@ -173,6 +173,6 @@ class NotionClient:
             Dictionary with 'topical_tags' and 'domain_tags' lists
         """
         return {
-            "topical_tags": self.get_multi_select_options("Topical Tags"),
-            "domain_tags": self.get_multi_select_options("Domain Tags")
+            "topical_tags": self.get_multi_select_options("Topical-Tags"),
+            "domain_tags": self.get_multi_select_options("Domain-Tags")
         }

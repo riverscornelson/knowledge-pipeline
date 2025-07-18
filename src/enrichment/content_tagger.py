@@ -95,8 +95,8 @@ class ContentTagger(BaseAnalyzer):
             self.logger.info("Refreshing tag cache from Notion...")
             
             # Get multi-select options for both tag properties
-            topical_options = self.notion_client.get_multi_select_options("Topical Tags")
-            domain_options = self.notion_client.get_multi_select_options("Domain Tags")
+            topical_options = self.notion_client.get_multi_select_options("Topical-Tags")
+            domain_options = self.notion_client.get_multi_select_options("Domain-Tags")
             
             self._tag_cache = {
                 "topical_tags": sorted(topical_options),
@@ -276,15 +276,20 @@ and you prioritize taxonomy consistency over perfect accuracy."""
             validated_domain = [tag for tag in validated_domain if tag]
             
             # Log new tag creation
-            new_tags = tag_output.tag_selection_reasoning.get("new_tags_created", [])
-            if new_tags:
-                self.logger.info(f"Created {len(new_tags)} new tags: {', '.join(new_tags)}")
+            if tag_output.tag_selection_reasoning:
+                new_tags = tag_output.tag_selection_reasoning.get("new_tags_created", [])
+                if new_tags:
+                    self.logger.info(f"Created {len(new_tags)} new tags: {', '.join(new_tags)}")
             
             return {
                 "topical_tags": validated_topical,
                 "domain_tags": validated_domain,
-                "tag_selection_reasoning": tag_output.tag_selection_reasoning,
-                "confidence_scores": tag_output.confidence_scores,
+                "tag_selection_reasoning": tag_output.tag_selection_reasoning or {
+                    "existing_tags_used": [],
+                    "new_tags_created": validated_topical + validated_domain,
+                    "considered_but_rejected": []
+                },
+                "confidence_scores": tag_output.confidence_scores or {},
                 "existing_tags_cache": {
                     "topical_count": len(self._tag_cache["topical_tags"]),
                     "domain_count": len(self._tag_cache["domain_tags"])

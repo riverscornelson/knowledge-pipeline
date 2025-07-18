@@ -611,12 +611,12 @@ class PipelineProcessor:
         
         # Add tags if available
         if hasattr(result, 'topical_tags') and result.topical_tags:
-            properties["Topical Tags"] = {
+            properties["Topical-Tags"] = {
                 "multi_select": [{"name": tag} for tag in result.topical_tags]
             }
         
         if hasattr(result, 'domain_tags') and result.domain_tags:
-            properties["Domain Tags"] = {
+            properties["Domain-Tags"] = {
                 "multi_select": [{"name": tag} for tag in result.domain_tags]
             }
         
