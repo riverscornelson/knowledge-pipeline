@@ -179,7 +179,12 @@ class DriveIngester:
         Raises:
             Exception: If upload fails
         """
-        # Check if Drive API is available
+        # Check if we should use OAuth2 for uploads
+        if (hasattr(self.config, 'local_uploader') and 
+            self.config.local_uploader.use_oauth2):
+            return self._upload_with_oauth2(filepath, cleaned_name)
+        
+        # Otherwise use service account (original implementation)
         if not self.drive:
             raise Exception("Google Drive API not available - cannot upload file")
         
@@ -245,3 +250,49 @@ class DriveIngester:
         except Exception as e:
             self.logger.error(f"Failed to upload file {filepath}: {str(e)}")
             raise Exception(f"Drive upload failed: {str(e)}")
+    
+    def _upload_with_oauth2(self, filepath: str, cleaned_name: str) -> str:
+        """Upload file using OAuth2 authentication (user-owned files).
+        
+        Args:
+            filepath: Path to the local file
+            cleaned_name: Cleaned filename to use in Drive
+            
+        Returns:
+            Google Drive file ID
+            
+        Raises:
+            Exception: If upload fails
+        """
+        try:
+            # Lazy import to avoid dependency if not using OAuth2
+            from .oauth_uploader import OAuthDriveUploader
+            
+            # Initialize OAuth uploader with config
+            oauth_uploader = OAuthDriveUploader(
+                credentials_file=self.config.local_uploader.oauth_credentials_file,
+                token_file=self.config.local_uploader.oauth_token_file
+            )
+            
+            # Determine target folder
+            target_folder_id = (
+                self.config.local_uploader.upload_folder_id or 
+                self.config.google_drive.folder_id
+            )
+            
+            if not target_folder_id:
+                raise ValueError("No target folder ID configured for uploads")
+            
+            self.logger.info("Using OAuth2 authentication for upload (user-owned file)")
+            
+            # Upload file
+            file_id = oauth_uploader.upload_file(filepath, cleaned_name, target_folder_id)
+            
+            if not file_id:
+                raise Exception("OAuth2 upload returned no file ID")
+            
+            return file_id
+            
+        except Exception as e:
+            self.logger.error(f"OAuth2 upload failed: {str(e)}")
+            raise Exception(f"OAuth2 upload failed: {str(e)}")
