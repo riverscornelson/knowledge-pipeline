@@ -212,10 +212,32 @@ class DriveIngester:
             file = self.drive.files().create(
                 body=file_metadata,
                 media_body=media,
-                fields='id'
+                fields='id,webViewLink'
             ).execute()
             
             file_id = file.get('id')
+            
+            # Important: When uploading to a shared folder, the service account becomes the owner
+            # which counts against its 15GB quota. We need to check if this is a shared folder
+            # and handle permissions appropriately.
+            
+            # Get folder metadata to check if it's shared
+            try:
+                folder = self.drive.files().get(
+                    fileId=target_folder_id,
+                    fields='owners,ownedByMe'
+                ).execute()
+                
+                # If the folder is not owned by the service account (i.e., it's shared)
+                # the uploaded file will still be owned by the service account
+                if not folder.get('ownedByMe', True):
+                    self.logger.warning(
+                        "Uploading to a shared folder. File will be owned by service account "
+                        "and count against its 15GB quota. Consider using OAuth2 for user-owned uploads."
+                    )
+            except Exception as e:
+                self.logger.debug(f"Could not check folder ownership: {e}")
+            
             self.logger.info(f"Successfully uploaded file with ID: {file_id}")
             
             return file_id
