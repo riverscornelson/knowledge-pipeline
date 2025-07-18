@@ -14,7 +14,7 @@ This isn't a tool to replace reading or independent research, which are both key
 
 Using this system over time will create months of processed content, which Notion AI and Claude can conduct research over to distill valuable information and trends when there is a need.
 
-This pipeline runs locally on my machine, giving users full control over their data and keeping things simple for future maintainability. It's designed to work with how users think, not force them into a rigid system.
+This pipeline runs locally on your machine, giving users full control over their data and keeping things simple for future maintainability. It's designed to work with how users think, not force them into a rigid system.
 
 ## What This Pipeline Does
 
@@ -56,6 +56,7 @@ python scripts/run_pipeline.py --skip-enrichment
 - **Multi-Source Ingestion**: Google Drive PDFs, Gmail newsletters, and web content
 - **AI-Powered Enrichment**: Automated summarization, classification, and insight extraction using GPT-4.1
 - **Advanced Analysis**: Multi-step reasoning with story structures and evidence-based classification
+- **Intelligent Tagging**: AI-generated topical and domain tags with consistency-first approach
 - **Smart Deduplication**: SHA-256 hashing prevents duplicate content
 - **Structured Storage**: Rich Notion database with metadata and formatted content blocks
 

@@ -131,10 +131,12 @@ graph TB
     F --> G[Generate Summary]
     F --> H[Extract Insights]
     F --> I[Classify Content]
+    F --> T[Generate Tags]
     
     G --> J[Update Notion Page]
     H --> J
     I --> J
+    T --> J
     
     J --> K[Status: Enriched]
     
@@ -145,10 +147,11 @@ graph TB
 
 **What happens:**
 - Processes all items with Status="Inbox"
-- Makes 3 parallel AI calls per document:
+- Makes 4 parallel AI calls per document:
   1. **Core Summary**: Comprehensive analysis of key points
   2. **Key Insights**: Actionable intelligence and implications
   3. **Smart Classification**: Content type, AI capabilities, vendor
+  4. **Intelligent Tags**: Topical tags (3-5) and domain tags (2-4) with consistency focus
 - Updates Notion pages with structured analysis blocks
 - Changes status to "Enriched" when complete
 
@@ -162,6 +165,7 @@ flowchart LR
     B --> C[Core Summary]
     B --> D[Key Insights]
     B --> E[Classification]
+    B --> T[Tags]
     
     C --> C1[Main Points]
     C --> C2[Key Themes]
@@ -174,6 +178,9 @@ flowchart LR
     E --> E1[Content Type]
     E --> E2[AI Capabilities]
     E --> E3[Vendor/Company]
+    
+    T --> T1[Topical Tags]
+    T --> T2[Domain Tags]
     
     style B fill:#f9f,stroke:#333,stroke-width:4px
 ```
