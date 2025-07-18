@@ -1,7 +1,6 @@
 """OAuth2-based Drive uploader for user-owned file uploads."""
 
 import os
-import pickle
 import logging
 from pathlib import Path
 from typing import Optional
@@ -12,6 +11,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
+
+from .secure_token_storage import SecureTokenStorage
 
 
 logger = logging.getLogger(__name__)
@@ -28,16 +29,22 @@ class OAuthDriveUploader:
     
     def __init__(self, 
                  credentials_file: str = 'credentials.json',
-                 token_file: str = '.token.pickle'):
+                 token_file: str = None):
         """Initialize OAuth Drive uploader.
         
         Args:
             credentials_file: Path to OAuth2 credentials JSON file
-            token_file: Path to store/load authentication token
+            token_file: Path to store/load authentication token (uses secure default if None)
         """
         self.credentials_file = credentials_file
-        self.token_file = token_file
+        self.token_storage = SecureTokenStorage(token_file)
         self.service = None
+        
+        # Attempt to migrate from old pickle format if it exists
+        old_pickle_file = token_file if token_file else '.token.pickle'
+        if os.path.exists(old_pickle_file) and not token_file:
+            self.token_storage.migrate_from_pickle(old_pickle_file, self.SCOPES)
+        
         self._init_service()
     
     def _init_service(self):
@@ -56,16 +63,8 @@ class OAuthDriveUploader:
         Returns:
             Authenticated credentials object
         """
-        creds = None
-        
-        # Load existing token if available
-        if os.path.exists(self.token_file):
-            try:
-                with open(self.token_file, 'rb') as token:
-                    creds = pickle.load(token)
-                logger.debug("Loaded existing OAuth2 token")
-            except Exception as e:
-                logger.warning(f"Could not load token file: {e}")
+        # Try to load existing credentials from secure storage
+        creds = self.token_storage.load_credentials(self.SCOPES)
         
         # Refresh or authenticate as needed
         if not creds or not creds.valid:
@@ -97,11 +96,9 @@ class OAuthDriveUploader:
                 )
                 logger.info("OAuth2 authentication completed successfully")
             
-            # Save credentials for next run
+            # Save credentials securely
             try:
-                with open(self.token_file, 'wb') as token:
-                    pickle.dump(creds, token)
-                logger.debug(f"Saved OAuth2 token to {self.token_file}")
+                self.token_storage.save_credentials(creds)
             except Exception as e:
                 logger.warning(f"Could not save token file: {e}")
         

@@ -73,6 +73,26 @@ python scripts/run_pipeline.py --skip-enrichment
 - **Extensible Framework**: Easy to add new sources or processors
 - **Test Coverage**: 100% test pass rate with comprehensive unit and integration tests
 
+## 🔒 Security
+
+The pipeline implements several security best practices:
+
+### OAuth2 Token Storage
+- **Secure JSON storage**: OAuth2 tokens are stored in JSON format (not pickle) to prevent arbitrary code execution
+- **Strict file permissions**: Token files are created with `0600` permissions (owner read/write only)
+- **Secure default location**: Tokens stored in `~/.config/knowledge-pipeline/` by default
+- **Automatic migration**: Existing pickle-based tokens are automatically migrated to secure storage
+
+### Credential Management
+- **No hardcoded secrets**: All credentials loaded from environment variables
+- **Secure file handling**: Service account files and OAuth credentials validated before use
+- **Token validation**: Corrupted or insecure tokens are automatically removed and regenerated
+
+### Data Protection
+- **Local processing**: All data processing happens locally on your machine
+- **No external sharing**: Content never leaves your configured services (Google Drive, Notion)
+- **Audit logging**: All operations logged for security monitoring
+
 ## 📁 Project Structure
 
 ```

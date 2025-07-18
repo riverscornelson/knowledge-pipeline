@@ -93,7 +93,7 @@ class LocalUploaderConfig:
     delete_after_upload: bool = False
     use_oauth2: bool = False
     oauth_credentials_file: str = "credentials.json"
-    oauth_token_file: str = ".token.pickle"
+    oauth_token_file: Optional[str] = None  # Uses secure default location if None
     
     @classmethod
     def from_env(cls) -> "LocalUploaderConfig":
@@ -105,7 +105,7 @@ class LocalUploaderConfig:
             delete_after_upload=os.getenv("LOCAL_DELETE_AFTER_UPLOAD", "false").lower() == "true",
             use_oauth2=os.getenv("USE_OAUTH2_FOR_UPLOADS", "false").lower() == "true",
             oauth_credentials_file=os.getenv("OAUTH_CREDENTIALS_FILE", "credentials.json"),
-            oauth_token_file=os.getenv("OAUTH_TOKEN_FILE", ".token.pickle")
+            oauth_token_file=os.getenv("OAUTH_TOKEN_FILE")  # None uses secure default
         )
 
 
