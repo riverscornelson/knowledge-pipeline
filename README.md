@@ -8,7 +8,7 @@ Staying informed about market news is a marathon, not a sprint. Adding structure
 
 This isn't a tool to replace reading or independent research, which are both key to fully understanding a market or focus area. Instead, it's a workflow enhancement that provides a "save it for later" system that can be used ad-hoc when encountering new information, or to automatically save down selected feeds of information into a consistent structure. Rather than letting market news, research, and expert insights accumulate in an ever-growing "read later" list, this pipeline automatically:
 
-1. **Captures** content from research sources (Google Drive, Gmail, Configured Websites)
+1. **Captures** content from research sources (Google Drive PDFs, local Downloads folder)
 2. **Enriches** it with AI-generated summaries and classifications
 3. **Stores** everything in a Notion "second brain"
 
@@ -53,7 +53,7 @@ python scripts/run_pipeline.py --skip-enrichment
 ## 🎯 Key Features
 
 ### Intelligent Content Processing
-- **Multi-Source Ingestion**: Google Drive PDFs, Gmail newsletters, and web content
+- **Multi-Source Ingestion**: Google Drive PDFs and local Downloads folder scanning
 - **Local PDF Upload**: Automatically upload PDFs from Downloads to Drive
 - **AI-Powered Enrichment**: Automated summarization, classification, and insight extraction using GPT-4.1
 - **Advanced Analysis**: Multi-step reasoning with story structures and evidence-based classification
@@ -85,7 +85,7 @@ The pipeline implements several security best practices:
 
 ### Credential Management
 - **No hardcoded secrets**: All credentials loaded from environment variables
-- **Secure file handling**: Service account files and OAuth credentials validated before use
+- **Secure file handling**: OAuth2 tokens stored with strict permissions in JSON format
 - **Token validation**: Corrupted or insecure tokens are automatically removed and regenerated
 
 ### Data Protection
@@ -101,7 +101,7 @@ knowledge-pipeline/
 │   ├── core/              # Core functionality  
 │   ├── drive/             # PRIMARY: Drive ingestion
 │   ├── enrichment/        # AI processing
-│   ├── secondary_sources/ # Gmail, RSS, Firecrawl (lower priority)
+│   ├── secondary_sources/ # Reserved for future integrations
 │   └── utils/             # Shared utilities
 ├── scripts/               # Executable scripts
 ├── tests/                 # Organized test suite
@@ -115,8 +115,7 @@ knowledge-pipeline/
 - **Language**: Python 3.8+ (3.11+ recommended)
 - **AI**: OpenAI GPT-4.1 (configurable models)
 - **Storage**: Notion API v2
-- **Authentication**: OAuth2 (Gmail), Service Account (Google Drive)
-- **Web Scraping**: Firecrawl API
+- **Authentication**: OAuth2 for Google Drive (user-owned uploads)
 - **Document Processing**: PDFMiner.six
 
 ## 🔧 Configuration
@@ -169,7 +168,7 @@ See [Testing Guide](docs/reference/testing.md) for detailed testing documentatio
 ## 🎯 How to Use This Pipeline
 
 ### Daily Workflow
-1. **Morning Research**: Save interesting AI papers and articles to a configured Drive folder, focusing on sources that won't be captured by the integrations with Gmail and configured websites.
+1. **Morning Research**: Save interesting AI papers and articles to a configured Drive folder or your Downloads folder for automatic processing.
 2. **End of Day**: Run the pipeline locally, processing new content in Drive and in the other content sources.
 3. **Review**: Use Notion AI to query across all sources: "What were the key AI breakthroughs this week?", "What insights in this database would be most relevant for helping me to prepare a presentation for a group of manufacturing executives?"
 
@@ -184,6 +183,6 @@ The structured data in Notion isn't locked away or trapped with Notion AI, thoug
 
 - Python 3.8+ (3.11+ recommended for performance)
 - Notion account with API access
-- Google Cloud service account (for Drive)
+- Google Cloud Project with Drive API enabled
+- OAuth2 credentials for Google Drive (for user-owned uploads)
 - OpenAI API key
-- Optional: Gmail OAuth2 credentials, Firecrawl API key
