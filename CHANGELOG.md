@@ -27,9 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - SecureTokenStorage class for proper OAuth2 token management
 - Comprehensive test coverage for all core functionality
-- Content tagging feature with intelligent tag generation
+- Enhanced content tagging system with dual-taxonomy approach:
+  - **Topical-Tags**: Subject matter and theme classification (3-5 tags per document)
+  - **Domain-Tags**: Industry and application area classification (2-4 tags per document)
+  - Intelligent tag generation with consistency enforcement
+  - Preference for existing tags to maintain taxonomy coherence
+  - Backfill script for tagging existing content
 - OAuth2-based Drive uploads to avoid service account quota limits
-- Local PDF upload preprocessor
+- Local PDF upload preprocessor for batch processing local PDFs
 
 ## [3.0.8] - 2025-07-16
 
