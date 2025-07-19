@@ -40,15 +40,21 @@ python scripts/run_pipeline.py
 The v3.0 pipeline is now the production standard:
 
 ```bash
-# Full pipeline (all sources + enrichment)
+# Full pipeline with local PDF processing (RECOMMENDED)
+# Scans your Downloads folder for PDFs and uploads to Drive before processing
+python scripts/run_pipeline.py --process-local
+
+# Standard pipeline (Drive content only)
 python scripts/run_pipeline.py
 
-# Drive-only ingestion (primary source)
-python scripts/run_pipeline.py --source drive
+# Process local PDFs + skip enrichment (useful for bulk uploads)
+python scripts/run_pipeline.py --process-local --skip-enrichment
 
-# Skip enrichment phase
+# Skip enrichment phase (ingestion only)
 python scripts/run_pipeline.py --skip-enrichment
 ```
+
+**💡 Pro Tip**: Use `--process-local` to automatically upload PDFs from your Downloads folder to Google Drive. This is perfect for research papers, reports, and documents you've downloaded but haven't organized yet.
 
 ## 🎯 Key Features
 
@@ -120,11 +126,28 @@ knowledge-pipeline/
 
 ## 🔧 Configuration
 
-Same environment variables as before, now centrally managed:
+### Core Configuration
+
+Environment variables are centrally managed:
 
 ```python
 from src.core.config import PipelineConfig
 config = PipelineConfig.from_env()
+```
+
+### Local PDF Processing Configuration
+
+Enable automatic processing of PDFs in your Downloads folder:
+
+```bash
+# Enable local PDF processing in .env
+LOCAL_UPLOADER_ENABLED=true        # Enable the feature
+LOCAL_SCAN_DAYS=7                  # Look for PDFs from last 7 days
+LOCAL_DELETE_AFTER_UPLOAD=false    # Keep files after upload
+USE_OAUTH2_FOR_UPLOADS=true        # Use OAuth2 (recommended)
+
+# Optional: Upload to specific Drive folder
+LOCAL_UPLOAD_FOLDER_ID=your_folder_id_here
 ```
 
 ## 📚 Documentation
