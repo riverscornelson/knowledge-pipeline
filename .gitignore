@@ -180,4 +180,4 @@ output/
 
 # Claude Flow
 .claude/
-memory/
+memory/backfill_log.txt
