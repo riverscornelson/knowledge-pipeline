@@ -825,6 +825,18 @@ class PipelineProcessor:
         separator = separators[0]
         remaining_separators = separators[1:]
         
+        # Handle empty separator (character-by-character splitting)
+        # This is the final fallback when no other separators work
+        if separator == "":
+            # Split text into chunks of max_length characters
+            # This prevents ValueError: empty separator when calling text.split("")
+            blocks = []
+            for i in range(0, len(text), max_length):
+                chunk = text[i:i + max_length]
+                if chunk.strip():
+                    blocks.append(self._create_paragraph_block(chunk))
+            return blocks
+        
         # If current separator not found, try next separator
         if separator not in text:
             return self._recursive_split(text, remaining_separators, max_length)

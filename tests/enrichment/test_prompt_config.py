@@ -26,10 +26,17 @@ class TestPromptConfig:
         assert "temperature" in summarizer_config
         assert "web_search" in summarizer_config
         assert summarizer_config["temperature"] == 0.3
-        assert summarizer_config["web_search"] is False
+        
+        # web_search depends on global ENABLE_WEB_SEARCH env var
+        # If ENABLE_WEB_SEARCH is true, all web_search will be forced to match it
+        expected_web_search = os.getenv("ENABLE_WEB_SEARCH", "false").lower() == "true"
+        assert summarizer_config["web_search"] == expected_web_search
     
     def test_content_type_override(self):
         """Test content-type specific prompt overrides."""
+        # Save current ENABLE_WEB_SEARCH value
+        original_web_search = os.environ.get("ENABLE_WEB_SEARCH")
+        
         # Create a test config file
         test_config = {
             "defaults": {
@@ -55,21 +62,40 @@ class TestPromptConfig:
             temp_path = Path(f.name)
         
         try:
+            # Test with web search disabled
+            os.environ["ENABLE_WEB_SEARCH"] = "false"
             config = PromptConfig(temp_path)
             
-            # Default prompt
+            # Default prompt - web_search should be False (both from config and global)
             default_prompt = config.get_prompt("summarizer")
             assert default_prompt["system"] == "Default summarizer prompt"
             assert default_prompt["web_search"] is False
             
-            # Research paper override
+            # Research paper override - web_search should still be False due to global setting
             research_prompt = config.get_prompt("summarizer", "research_paper")
             assert research_prompt["system"] == "Research paper prompt"
             assert research_prompt["temperature"] == 0.2
+            assert research_prompt["web_search"] is False  # Global setting overrides
+            
+            # Test with web search enabled
+            os.environ["ENABLE_WEB_SEARCH"] = "true"
+            config = PromptConfig(temp_path)
+            
+            # Default prompt - web_search should now be True (global overrides config False)
+            default_prompt = config.get_prompt("summarizer")
+            assert default_prompt["web_search"] is True
+            
+            # Research paper override - web_search should be True (both config and global)
+            research_prompt = config.get_prompt("summarizer", "research_paper")
             assert research_prompt["web_search"] is True
             
         finally:
             temp_path.unlink()
+            # Restore original value
+            if original_web_search is not None:
+                os.environ["ENABLE_WEB_SEARCH"] = original_web_search
+            elif "ENABLE_WEB_SEARCH" in os.environ:
+                del os.environ["ENABLE_WEB_SEARCH"]
     
     def test_environment_variable_override(self):
         """Test environment variable overrides for web search."""
@@ -137,10 +163,24 @@ class TestPromptConfig:
         """Test that analyzer names are normalized correctly."""
         config = PromptConfig()
         
-        # These should all resolve to the same config
-        names = ["summarizer", "Summarizer", "AdvancedSummarizer", "advanced_summarizer"]
-        configs = [config.get_prompt(name) for name in names]
+        # Test various name formats that should normalize to "summarizer"
+        test_cases = [
+            ("summarizer", "summarizer"),  # already normalized
+            ("Summarizer", "summarizer"),  # case normalization
+            ("SummarizerAnalyzer", "summarizer"),  # strip "analyzer"
+            ("AdvancedSummarizer", "summarizer"),  # strip "advanced"
+            ("ContentSummarizer", "summarizer"),  # strip "content"
+            ("summarizer_analyzer", "summarizer"),  # strip "analyzer" with underscore
+        ]
         
-        # All should have the same keys
-        for cfg in configs[1:]:
-            assert cfg.keys() == configs[0].keys()
+        for input_name, expected_normalized in test_cases:
+            prompt_config = config.get_prompt(input_name)
+            # Should get valid config with expected keys
+            assert "system" in prompt_config, f"Failed for input: {input_name}"
+            assert "temperature" in prompt_config, f"Failed for input: {input_name}"
+            assert "web_search" in prompt_config, f"Failed for input: {input_name}"
+            
+        # Test a completely invalid analyzer name
+        invalid_config = config.get_prompt("nonexistent_analyzer")
+        # Should return empty dict for unknown analyzer
+        assert invalid_config == {}

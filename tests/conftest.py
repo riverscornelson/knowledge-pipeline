@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 
 from src.core.models import SourceContent, ContentStatus, ContentType
-from src.core.config import PipelineConfig, NotionConfig, OpenAIConfig, GoogleDriveConfig
+from src.core.config import PipelineConfig, NotionConfig, OpenAIConfig, GoogleDriveConfig, LocalUploaderConfig
 
 
 @pytest.fixture
@@ -191,6 +191,15 @@ def mock_config():
             model_summary="gpt-4",
             model_classifier="gpt-4",
             model_insights="gpt-4"
+        ),
+        local_uploader=LocalUploaderConfig(
+            enabled=False,
+            scan_days=7,
+            upload_folder_id=None,
+            delete_after_upload=False,
+            use_oauth2=False,
+            oauth_credentials_file="credentials.json",
+            oauth_token_file=None
         ),
         batch_size=10,
         rate_limit_delay=0.3

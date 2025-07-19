@@ -83,6 +83,8 @@ class PromptConfig:
         """
         # Normalize analyzer name
         analyzer = analyzer.lower().replace("analyzer", "").replace("advanced", "").replace("content", "").strip()
+        # Remove any trailing underscores left after replacements
+        analyzer = analyzer.strip("_")
         
         # Start with defaults
         default_config = self.prompts.get("defaults", {}).get(analyzer, {})

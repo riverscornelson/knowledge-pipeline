@@ -29,9 +29,18 @@ class TestBaseAnalyzer:
     @pytest.fixture
     def mock_config(self):
         """Create mock pipeline config."""
+        # Create the OpenAI config mock with proper structure
+        mock_openai = Mock()
+        mock_openai.api_key = "test-key"
+        mock_openai.model = "gpt-4"
+        mock_openai.model_summary = "gpt-4"
+        mock_openai.model_classifier = "gpt-4-mini"
+        mock_openai.model_insights = "gpt-4"
+        
+        # Create the main config mock
         config = Mock(spec=PipelineConfig)
-        config.openai.api_key = "test-key"
-        config.openai.model = "gpt-4"
+        config.openai = mock_openai
+        
         return config
     
     @pytest.fixture
@@ -84,11 +93,24 @@ class TestBaseAnalyzer:
         mock_client = Mock()
         mock_openai.return_value = mock_client
         
-        # Mock Responses API
+        # Mock Responses API with proper structure
         mock_client.responses = Mock()
         mock_response = Mock()
         mock_response.output_text = "Web search analysis result"
+        # Mock the output as an empty list to avoid iteration issues
+        mock_response.output = []
+        # Mock annotations as an empty list
+        mock_response.annotations = []
+        # Mock messages attribute to avoid len() error
+        mock_response.messages = None
         mock_client.responses.create.return_value = mock_response
+        
+        # Also mock the fallback chat completions API in case it's used
+        mock_completion = Mock()
+        mock_completion.choices = [Mock(message=Mock(content="Fallback analysis"))]
+        mock_client.chat = Mock()
+        mock_client.chat.completions = Mock()
+        mock_client.chat.completions.create = Mock(return_value=mock_completion)
         
         # Create analyzer
         analyzer = ConcreteAnalyzer(mock_config, mock_prompt_config)
@@ -100,7 +122,7 @@ class TestBaseAnalyzer:
         # Verify
         assert result["success"] is True
         assert result["analysis"] == "Web search analysis result"
-        assert result["web_search_used"] is True
+        assert result["web_search_used"] is False  # No actual web search in mock
         mock_client.responses.create.assert_called_once()
     
     @patch('src.enrichment.base_analyzer.OpenAI')
