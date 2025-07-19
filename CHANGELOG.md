@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.9] - 2025-07-19
+## [3.0.9] - 2025-07-19 - Released
 
 ### Security
 - **CRITICAL**: Fixed OAuth2 token storage vulnerability (CVE-level severity)
