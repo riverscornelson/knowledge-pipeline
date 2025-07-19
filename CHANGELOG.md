@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.9] - 2025-07-19
+
+### Security
+- **CRITICAL**: Fixed OAuth2 token storage vulnerability (CVE-level severity)
+  - Replaced insecure pickle serialization with secure JSON format
+  - Enforces strict file permissions (0600) on token files
+  - Tokens now stored in secure location (~/.config/knowledge-pipeline/)
+  - Added automatic migration from legacy pickle format
+  - Validates token file permissions on load, removing insecure tokens
+
+### Fixed
+- Test suite now passes 100% (72/72 tests)
+- Fixed text chunking empty separator handling
+- Fixed pipeline processor test mocks
+- Fixed prompt config test assertions
+- Improved exception handling in tests
+
+### Added
+- SecureTokenStorage class for proper OAuth2 token management
+- Comprehensive test coverage for all core functionality
+- Content tagging feature with intelligent tag generation
+- OAuth2-based Drive uploads to avoid service account quota limits
+- Local PDF upload preprocessor
+
+## [3.0.8] - 2025-07-16
+
+### Changed
+- Removed all content truncation limits - process full documents
+- Enhanced content processing to handle documents of any size
+
+## [3.0.7] - 2025-07-16
+
+### Fixed
+- Web search detection to match o3 Responses API structure
+- Web search activation and o3 model compatibility
+
+## [3.0.6] - 2025-07-16
+
+### Fixed
+- AI primitive classification and method signature errors
+- Added web search citation tracking and display in Notion
+
+## [3.0.5] - 2025-07-16
+
+### Fixed
+- Enrichment errors and improved content classification
+
+## [3.0.4] - 2025-07-16
+
+### Fixed
+- Cleaned up temporary implementation files
+
+## [3.0.3] - 2025-07-16
+
+### Fixed
+- Removed unsubstantiated performance claim
+
+## [3.0.2] - 2025-07-16
+
+### Changed
+- Cleaned up and reorganized documentation
+
 ## [3.0.1] - 2025-01-16
 
 ### Changed
