@@ -286,6 +286,50 @@ analyzers:
       | {category} | {H/M/L} | ${amount} | {strategy} |
 ```
 
+## Enhanced Prompt System with Notion Integration
+
+### Overview
+
+The Knowledge Pipeline now supports dynamic prompt management through Notion, allowing you to update prompts without code changes. The system uses a hierarchical approach:
+
+1. **YAML Base Prompts** - Default prompts stored in `config/prompts.yaml`
+2. **Notion Dynamic Prompts** - Override YAML prompts when available
+3. **Automatic Caching** - 5-minute cache for performance
+
+### Notion Integration Setup
+
+To enable Notion-based prompt management:
+
+1. **Create Notion Database** - See [Notion Database Setup Guide](../setup/notion-prompt-database-setup.md)
+2. **Configure Environment Variables**:
+
+```bash
+# Notion API Configuration
+NOTION_API_KEY=your_integration_token_here
+NOTION_PROMPTS_DATABASE_ID=your_database_id_here
+
+# Optional: Force enhanced prompt system
+USE_ENHANCED_PROMPTS=true
+```
+
+### Prompt Loading Hierarchy
+
+```
+1. Check Notion database for matching prompt
+   └─> If found: Use Notion prompt
+   └─> If not found: Fall back to YAML prompt
+2. Apply content-type-specific overrides
+3. Apply environment variable overrides
+```
+
+### Enhanced Features
+
+- **Version Control** - Track prompt versions in Notion
+- **A/B Testing** - Test different prompts by toggling Active field
+- **Live Updates** - Changes reflect immediately (after cache expires)
+- **Web Search Control** - Per-prompt web search configuration
+- **Rich Formatting** - Use Notion's text editor for complex prompts
+
 ## Environment Variable Configuration
 
 ### Basic Setup
@@ -309,6 +353,11 @@ MARKET_ANALYZER_WEB_SEARCH=true
 MODEL_SUMMARY=gpt-4o
 MODEL_CLASSIFIER=gpt-4o
 MODEL_INSIGHTS=gpt-4o
+
+# Notion Integration (Optional)
+NOTION_API_KEY=secret_xxxxxxxxxxxxx
+NOTION_PROMPTS_DATABASE_ID=abc123def456
+USE_ENHANCED_PROMPTS=true
 ```
 
 ### Advanced Configuration

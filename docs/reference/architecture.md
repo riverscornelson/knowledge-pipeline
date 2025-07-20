@@ -40,16 +40,28 @@ The Knowledge Pipeline is a modular system for ingesting, processing, and enrich
                       │
 ┌─────────────────────▼───────────────────────────────────────┐
 │                 Enrichment Pipeline                          │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │              Enhanced Prompt System                    │ │
+│  │  ┌──────────────┐  ┌─────────────────────────────────┐ │ │
+│  │  │ YAML Prompts │  │      Notion Prompt Database     │ │ │
+│  │  │  (Default)   │  │      (Dynamic Override)        │ │ │
+│  │  └──────────────┘  └─────────────────────────────────┘ │ │
+│  └────────────────────────────────────────────────────────┘ │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────────┐   │
 │  │  Summarizer  │  │  Classifier  │  │ Insights Gen   │   │
-│  │   (GPT-4.1)  │  │ (GPT-4.1-mini)│  │   (GPT-4.1)    │   │
+│  │ + Web Search │  │ + AI Vendor  │  │ + Quality Score│   │
+│  │   (GPT-4.1)  │  │   Detection  │  │   (GPT-4.1)    │   │
 │  └──────────────┘  └──────────────┘  └────────────────┘   │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │               Enhanced Formatter                       │ │
+│  │     (Rich text, callouts, toggles, hierarchy)         │ │
+│  └────────────────────────────────────────────────────────┘ │
 └─────────────────────┬───────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────┐
 │                   Storage Layer                              │
 │                  Notion Database                             │
-│         (Structured properties + Rich content)               │
+│    (Enhanced formatting + Quality metrics + Dynamic tags)   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -59,6 +71,7 @@ The Knowledge Pipeline is a modular system for ingesting, processing, and enrich
 - **config.py**: Centralized configuration management
 - **models.py**: Data models and schemas
 - **notion_client.py**: Enhanced Notion API wrapper
+- **prompt_config_enhanced.py**: Dynamic prompt management with Notion integration
 
 ### Drive Module (`src/drive/`)
 - **ingester.py**: Main Drive ingestion logic
@@ -66,15 +79,16 @@ The Knowledge Pipeline is a modular system for ingesting, processing, and enrich
 - **deduplication.py**: Content deduplication service
 
 ### Enrichment (`src/enrichment/`)
-- **processor.py**: Main enrichment orchestrator
-- **summarizer.py**: Content summarization
-- **classifier.py**: Content classification
-- **insights.py**: Key insights extraction
+- **pipeline_processor.py**: Enhanced enrichment orchestrator with quality scoring
+- **advanced_classifier.py**: Semantic content classification with AI vendor detection
+- **summarizer.py**: Content summarization with web search
+- **insights.py**: Key insights extraction with quality assessment
 
 ### Utils (`src/utils/`)
 - **logging.py**: Structured JSON logging
 - **resilience.py**: API retry and error handling
 - **markdown.py**: Markdown to Notion conversion
+- **notion_formatter.py**: Enhanced Notion formatting with rich text and visual hierarchy
 
 ## Data Flow
 
@@ -84,18 +98,62 @@ The Knowledge Pipeline is a modular system for ingesting, processing, and enrich
    - Metadata is extracted and stored
 
 2. **Enrichment Phase**
-   - Processor queries for Status="Inbox" items
-   - AI models generate summaries, classifications, and insights
-   - Results stored as Notion properties and content blocks
-   - Status updated to "Enriched" or "Failed"
+   - Enhanced processor loads dynamic prompts from Notion/YAML hierarchy
+   - Advanced classification determines semantic content type and AI vendor
+   - AI models generate content-specific summaries with optional web search
+   - Quality scoring assesses output completeness and relevance
+   - Enhanced formatter creates rich Notion blocks with visual hierarchy
+   - Status updated to "Enriched" with quality score
 
-3. **Storage Format**
-   - Properties: Title, Status, Hash, URLs, Classifications
-   - Content Blocks:
-     - 📄 Raw Content (source material)
-     - 📋 Core Summary (AI analysis)
-     - 💡 Key Insights (actionable items)
-     - 🎯 Classification (metadata)
+3. **Enhanced Storage Format**
+   - **Properties**: Title, Status, Hash, URLs, Quality Score, AI Vendor, Semantic Type
+   - **Dynamic Tags**: Automatically generated topical and domain tags
+   - **Rich Content Blocks**:
+     - 📄 Source Material (with formatting preservation)
+     - 📋 Enhanced Summary (with callouts and structure)
+     - 💡 Strategic Insights (with action items)
+     - 🎯 Advanced Classification (with confidence scores)
+     - 📊 Quality Metrics (scoring breakdown)
+
+## Enhanced Prompt System Architecture
+
+### Hierarchical Prompt Loading
+
+The enhanced prompt system uses a hierarchical approach for maximum flexibility:
+
+```
+1. YAML Base Prompts (config/prompts.yaml)
+   └─> Default prompts for all analyzers
+   
+2. Notion Dynamic Prompts (Notion Database)
+   └─> Override YAML prompts when available
+   └─> Searchable by: category/content_type (e.g., "summarizer/Research")
+   
+3. Environment Variable Overrides
+   └─> Runtime configuration of models, web search, etc.
+```
+
+### Prompt Resolution Flow
+
+```python
+def get_prompt(category, content_type):
+    # 1. Check Notion database (with 5-minute cache)
+    notion_prompt = notion_db.get_prompt(f"{category}/{content_type}")
+    if notion_prompt and notion_prompt.active:
+        return notion_prompt
+    
+    # 2. Fall back to YAML configuration
+    yaml_prompt = yaml_config.get_prompt(category, content_type)
+    return yaml_prompt
+```
+
+### Dynamic Features
+
+- **Live Updates**: Notion changes reflect immediately (after cache expiry)
+- **A/B Testing**: Toggle prompts active/inactive for testing
+- **Version Control**: Track prompt versions and rollback capability
+- **Content-Type Specialization**: Different prompts per content type
+- **Web Search Control**: Per-prompt web search enablement
 
 ## Configuration
 
@@ -107,6 +165,26 @@ config = PipelineConfig.from_env()
 notion_config = config.notion
 drive_config = config.google_drive
 openai_config = config.openai
+
+# Enhanced features
+enhanced_config = config.enhanced_prompts
+```
+
+### Enhanced Configuration Options
+
+```bash
+# Enable enhanced features
+USE_ENHANCED_PROMPTS=true
+USE_ENHANCED_FORMATTING=true
+ENABLE_QUALITY_SCORING=true
+
+# Notion prompt database
+NOTION_PROMPTS_DATABASE_ID=your_database_id
+PROMPT_CACHE_DURATION_MINUTES=5
+
+# Web search integration
+ENABLE_WEB_SEARCH=true
+WEB_SEARCH_TIMEOUT_SECONDS=30
 ```
 
 ## Error Handling

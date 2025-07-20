@@ -16,7 +16,9 @@ from .advanced_insights import AdvancedInsightsGenerator
 from .enhanced_summarizer import EnhancedContentSummarizer
 from .enhanced_insights import EnhancedInsightsGenerator
 from .content_tagger import ContentTagger
+from ..utils.notion_formatter import NotionFormatter  # Enhanced formatting
 from ..core.prompt_config import PromptConfig
+from ..core.prompt_config_enhanced import EnhancedPromptConfig
 from ..drive.pdf_processor import PDFProcessor
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
@@ -33,7 +35,21 @@ class PipelineProcessor:
         self.logger = setup_logger(__name__)
         
         # Initialize prompt configuration
-        self.prompt_config = PromptConfig()
+        # Use enhanced config if NOTION_PROMPTS_DB_ID is set
+        if os.getenv('NOTION_PROMPTS_DB_ID'):
+            self.logger.info("Using enhanced prompt configuration with Notion database")
+            self.prompt_config = EnhancedPromptConfig(
+                notion_db_id=os.getenv('NOTION_PROMPTS_DB_ID')
+            )
+        else:
+            self.logger.info("Using standard prompt configuration from YAML")
+            self.prompt_config = PromptConfig()
+        
+        # Initialize Notion formatter for enhanced content presentation
+        self.notion_formatter = NotionFormatter()
+        self.use_enhanced_formatting = os.getenv('USE_ENHANCED_FORMATTING', 'true').lower() == 'true'
+        if self.use_enhanced_formatting:
+            self.logger.info("Enhanced Notion formatting enabled")
         
         # Initialize advanced AI components with backward compatibility
         # Use enhanced versions if web search is enabled, otherwise use original
@@ -246,10 +262,25 @@ class PipelineProcessor:
                 if insights_result.get("success") and insights_result.get("analysis"):
                     # Parse insights from the analysis text
                     insights_text = insights_result["analysis"]
-                    # Extract bullet points or numbered items
+                    # Extract bullet points or numbered items, but skip section headers
                     import re
-                    insights_matches = re.findall(r'[•\-\d\.]\s*(.+?)(?=\n[•\-\d\.]|\n\n|$)', insights_text, re.DOTALL)
-                    key_insights = [match.strip() for match in insights_matches if match.strip()]
+                    # Split by lines and process each line
+                    lines = insights_text.split('\n')
+                    for line in lines:
+                        line = line.strip()
+                        # Skip empty lines and markdown headers
+                        if not line or line.startswith('#'):
+                            continue
+                        # Extract bullet point content
+                        bullet_match = re.match(r'^[•\-\*]\s*(.+)$', line)
+                        if bullet_match:
+                            insight = bullet_match.group(1).strip()
+                            # Skip if it looks like a section header (ends with colon or contains "Actions", "Opportunities", etc.)
+                            if not (insight.endswith(':') or 
+                                    any(header in insight for header in ['Immediate Actions', 'Strategic Opportunities', 
+                                                                         'Risk Factors', 'Market Implications', 
+                                                                         'Innovation Potential'])):
+                                key_insights.append(insight)
                 if not key_insights:
                     key_insights = self.insights_generator.generate_insights(content, title)
             else:
@@ -332,6 +363,10 @@ class PipelineProcessor:
             processing_time=processing_time,
             token_usage=token_usage
         )
+        
+        # Store the full structured insights text if available
+        if insights_result and insights_result.get("success"):
+            result.structured_insights = insights_result.get("analysis", "")
         
         # Add quality metadata
         result.quality_score = quality_score
@@ -633,6 +668,26 @@ class PipelineProcessor:
         """Create Notion blocks for enriched content with quality indicators."""
         blocks = []
         
+        # Try enhanced formatting if enabled
+        if self.use_enhanced_formatting:
+            try:
+                # Create combined content for formatting
+                combined_content = self._create_combined_content_for_formatting(result)
+                content_type = result.content_type.lower().replace(" ", "_") if result.content_type else None
+                
+                # Apply enhanced formatting
+                formatted_blocks = self.notion_formatter.format_content(combined_content, content_type)
+                if formatted_blocks:
+                    blocks.extend(formatted_blocks)
+                    self.logger.info(f"Applied enhanced formatting: {len(formatted_blocks)} blocks created")
+                    
+                    # Add divider before raw content
+                    blocks.append({"type": "divider", "divider": {}})
+            except Exception as e:
+                self.logger.error(f"Enhanced formatting failed, using original: {e}")
+                # Continue with original formatting below
+        
+        
         # Raw Content toggle - limit to 100 children per Notion API requirements
         raw_content_blocks = self._chunk_text_to_blocks(raw_content)
         if len(raw_content_blocks) > 100:
@@ -686,8 +741,15 @@ class PipelineProcessor:
         })
         
         # Key Insights toggle
-        insights_text = "\n".join(f"• {insight}" for insight in result.key_insights)
-        insights_children = self._markdown_to_blocks(insights_text)
+        # Use structured insights if available, otherwise fall back to bullet list
+        if hasattr(result, 'structured_insights') and result.structured_insights:
+            # Use the NotionFormatter to properly format the structured insights
+            formatter = NotionFormatter()
+            insights_children = formatter.format_content(result.structured_insights, content_type="insights")
+        else:
+            # Fallback to simple bullet list
+            insights_text = "\n".join(f"• {insight}" for insight in result.key_insights)
+            insights_children = self._markdown_to_blocks(insights_text)
         
         # Add web search citations if available
         if hasattr(result, 'insights_web_citations') and result.insights_web_citations:
@@ -879,6 +941,49 @@ class PipelineProcessor:
                 "rich_text": [{"type": "text", "text": {"content": content.strip()}}]
             }
         }
+    
+    
+    def _create_combined_content_for_formatting(self, result: EnrichmentResult) -> str:
+        """Create a combined markdown string from enrichment result for formatting."""
+        content_parts = []
+        
+        # Add summary
+        content_parts.append("## Executive Summary")
+        content_parts.append(result.core_summary)
+        
+        # Add key insights  
+        if result.key_insights:
+            content_parts.append("\n## Key Insights")
+            for insight in result.key_insights:
+                content_parts.append(f"• {insight}")
+        
+        # Add strategic implications if using enhanced
+        if hasattr(result, 'strategic_implications') and result.strategic_implications:
+            content_parts.append("\n## Strategic Implications")
+            for impl in result.strategic_implications:
+                content_parts.append(f"• {impl}")
+        
+        # Add classification
+        content_parts.append("\n## Classification")
+        content_parts.append(f"Content Type: {result.content_type}")
+        content_parts.append(f"AI Primitives: {', '.join(result.ai_primitives)}")
+        content_parts.append(f"Vendor: {result.vendor or 'N/A'}")
+        content_parts.append(f"Confidence: {result.confidence_scores.get('classification', 0.7):.0%}")
+        
+        # Add reasoning if available
+        if hasattr(result, 'classification_reasoning') and result.classification_reasoning:
+            content_parts.append(f"\nReasoning: {result.classification_reasoning}")
+        
+        # Add tags
+        if hasattr(result, 'topical_tags') and (result.topical_tags or result.domain_tags):
+            content_parts.append("\n## Content Tags")
+            if result.topical_tags:
+                content_parts.append(f"Topical: {', '.join(result.topical_tags)}")
+            if result.domain_tags:
+                content_parts.append(f"Domain: {', '.join(result.domain_tags)}")
+        
+        return '\n'.join(content_parts)
+    
     
     def _format_web_citations(self, citations: List[Dict]) -> str:
         """Format web search citations as markdown."""

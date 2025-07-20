@@ -65,7 +65,9 @@ python scripts/run_pipeline.py --skip-enrichment
 - **Advanced Analysis**: Multi-step reasoning with story structures and evidence-based classification
 - **Intelligent Tagging**: AI-generated topical and domain tags with consistency-first approach
 - **Smart Deduplication**: SHA-256 hashing prevents duplicate content
-- **Structured Storage**: Rich Notion database with metadata and formatted content blocks
+- **Enhanced Notion Formatting**: Rich text with headers, callouts, toggles, and visual hierarchy
+- **Dynamic Prompt Management**: Notion-based prompt editing without code changes
+- **Quality Scoring**: Automated content quality assessment (0-100%)
 
 ### Performance & Architecture  
 - **Priority-Based System**: Google Drive as primary source, others as secondary
@@ -135,6 +137,23 @@ from src.core.config import PipelineConfig
 config = PipelineConfig.from_env()
 ```
 
+### Enhanced Features Configuration
+
+Enable advanced formatting and dynamic prompts:
+
+```bash
+# Enhanced Notion formatting (recommended)
+USE_ENHANCED_FORMATTING=true
+
+# Dynamic prompt management (optional)
+USE_ENHANCED_PROMPTS=true
+NOTION_API_KEY=secret_your_key_here
+NOTION_PROMPTS_DATABASE_ID=your_database_id
+
+# Quality assessment
+ENABLE_QUALITY_SCORING=true
+```
+
 ### Local PDF Processing Configuration
 
 Enable automatic processing of PDFs in your Downloads folder:
@@ -156,6 +175,9 @@ See [docs/README.md](docs/README.md) for complete documentation navigation.
 
 ### Quick Links
 - [Quick Start](docs/getting-started/quick-start.md) - Get running in 5 minutes
+- [Notion Database Setup](docs/setup/notion-prompt-database-setup.md) - Dynamic prompt configuration
+- [Migration Guide](docs/guides/migration-to-enhanced-prompts.md) - Upgrade to enhanced features
+- [Configuration Guide](docs/guides/prompt-configuration-guide.md) - Advanced prompt management
 - [Architecture Overview](docs/reference/architecture.md) - System design and data flow
 - [API Reference](docs/reference/api.md) - Complete API documentation
 - [Testing Guide](docs/reference/testing.md) - Test suite documentation

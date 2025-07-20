@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0200f2da-ba98-4297-afb5-4c517d38ef60" name="Changes" comment="Basic Pipeline Setup">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/guides/prompt-configuration-guide.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/prompt-configuration-guide.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/reference/architecture.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/reference/architecture.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/prompt_config_enhanced.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/prompt_config_enhanced.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/enrichment/enhanced_insights.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enrichment/enhanced_insights.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/enrichment/pipeline_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enrichment/pipeline_processor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/notion_formatter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/notion_formatter.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;kerbadaloosh&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:kerbadaloosh/knowledge-pipeline.git&quot;,
+    &quot;accountId&quot;: &quot;e7fe06bb-4f47-42aa-bc96-606400d80385&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2xY30nk5nHXLUsnl8HdHmNUOCAc" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python.capture_websites.executor": "Run",
+    "Python.enrich_consolidated.executor": "Run",
+    "Python.python scripts/run_pipeline.py.executor": "Run",
+    "Python.setup_notion.executor": "Run",
+    "Python.shell.executor": "Run",
+    "Python.whoami.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "swarm-formatting-and-prompt-configuration-improvements-try-1",
+    "last_opened_file_path": "/Users/riverscornelson/PycharmProjects/knowledge-pipeline",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/docs/guides" />
+      <recent name="$PROJECT_DIR$/gmail_credentials" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="python scripts/run_pipeline.py" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="knowledge-pipeline" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="scripts/run_pipeline.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.python scripts/run_pipeline.py" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0200f2da-ba98-4297-afb5-4c517d38ef60" name="Changes" comment="" />
+      <created>1748100959048</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748100959048</updated>
+      <workItem from="1748100960291" duration="23858000" />
+      <workItem from="1748125714431" duration="15678000" />
+      <workItem from="1748174847080" duration="52530000" />
+      <workItem from="1749685322458" duration="11412000" />
+      <workItem from="1749942613039" duration="391000" />
+      <workItem from="1749943012913" duration="10991000" />
+      <workItem from="1750647039747" duration="20889000" />
+      <workItem from="1750967243812" duration="16187000" />
+      <workItem from="1751248842071" duration="3183000" />
+      <workItem from="1751283480389" duration="600000" />
+      <workItem from="1751942790193" duration="3628000" />
+      <workItem from="1752114958977" duration="94000" />
+      <workItem from="1752189065846" duration="3371000" />
+      <workItem from="1752333985475" duration="4695000" />
+      <workItem from="1752434251188" duration="75444000" />
+      <workItem from="1752802363280" duration="412000" />
+      <workItem from="1752803405634" duration="9000" />
+      <workItem from="1752806558119" duration="21127000" />
+      <workItem from="1752926498610" duration="32083000" />
+    </task>
+    <task id="LOCAL-00001" summary="Basic Pipeline Setup">
+      <option name="closed" value="true" />
+      <created>1748114329966</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1748114329966</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Basic Pipeline Setup" />
+    <option name="LAST_COMMIT_MESSAGE" value="Basic Pipeline Setup" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/knowledge_pipeline$enrich_consolidated.coverage" NAME="enrich_consolidated Coverage Results" MODIFIED="1751208464712" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/knowledge_pipeline$python_scripts_run_pipeline_py.coverage" NAME="python scripts/run_pipeline.py Coverage Results" MODIFIED="1752810790530" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/knowledge_pipeline$whoami.coverage" NAME="whoami Coverage Results" MODIFIED="1748104919065" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/knowledge_pipeline$setup_notion.coverage" NAME="setup_notion Coverage Results" MODIFIED="1748104858806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/knowledge_pipeline$shell.coverage" NAME="shell Coverage Results" MODIFIED="1748110667753" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/knowledge_pipeline$capture_websites.coverage" NAME="capture_websites Coverage Results" MODIFIED="1750896054289" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

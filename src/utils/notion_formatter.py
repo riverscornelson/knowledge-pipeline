@@ -25,11 +25,16 @@ class NotionFormatter:
             "insights": "💡",
             "strategic_implications": "🔮",
             "opportunities": "🚀",
+            "strategic_opportunities": "🚀",
             "risks": "⚠️",
+            "risk_factors": "⚠️",
             "challenges": "⚠️",
             "recommendations": "🎯",
             "actions": "⚡",
+            "immediate_actions": "⚡",
             "next_steps": "⚡",
+            "market_implications": "📰",
+            "innovation_potential": "🚀",
             "methodology": "🔬",
             "technical": "🔧",
             "analysis": "📊",
@@ -253,7 +258,7 @@ class NotionFormatter:
             
             if bullet_match:
                 if current_list_type == "numbered" and current_list_items:
-                    blocks.append(self._create_list_block(current_list_items, numbered=True))
+                    blocks.extend(self._create_list_block(current_list_items, numbered=True))
                     current_list_items = []
                 
                 current_list_type = "bulleted"
@@ -262,7 +267,7 @@ class NotionFormatter:
                 
             elif number_match:
                 if current_list_type == "bulleted" and current_list_items:
-                    blocks.append(self._create_list_block(current_list_items, numbered=False))
+                    blocks.extend(self._create_list_block(current_list_items, numbered=False))
                     current_list_items = []
                 
                 current_list_type = "numbered"
@@ -272,7 +277,7 @@ class NotionFormatter:
             else:
                 # Non-list content - flush current list
                 if current_list_items:
-                    blocks.append(self._create_list_block(
+                    blocks.extend(self._create_list_block(
                         current_list_items, 
                         numbered=(current_list_type == "numbered")
                     ))
@@ -285,7 +290,7 @@ class NotionFormatter:
         
         # Flush remaining list
         if current_list_items:
-            blocks.append(self._create_list_block(
+            blocks.extend(self._create_list_block(
                 current_list_items, 
                 numbered=(current_list_type == "numbered")
             ))
@@ -405,7 +410,8 @@ class NotionFormatter:
                     }
                     child_blocks.append(child_block)
                 
-                block["children"] = child_blocks
+                # Children go inside the list item property
+                block[list_type]["children"] = child_blocks
             
             blocks.append(block)
         
@@ -440,15 +446,21 @@ class NotionFormatter:
         # Header row
         header_cells = []
         for header in headers:
-            header_cells.append([{"type": "text", "text": {"content": header, "bold": True}}])
-        table_rows.append({"cells": header_cells})
+            header_cells.append([{"type": "text", "text": {"content": header}, "annotations": {"bold": True}}])
+        table_rows.append({
+            "type": "table_row",
+            "table_row": {"cells": header_cells}
+        })
         
         # Data rows
         for row in normalized_rows:
             cells = []
             for cell in row:
                 cells.append([{"type": "text", "text": {"content": str(cell)}}])
-            table_rows.append({"cells": cells})
+            table_rows.append({
+                "type": "table_row", 
+                "table_row": {"cells": cells}
+            })
         
         return {
             "type": "table",
@@ -475,6 +487,20 @@ class NotionFormatter:
     
     def _parse_inline_formatting(self, text: str) -> List[Dict[str, Any]]:
         """Parse inline markdown formatting to Notion rich text."""
+        # Notion has a 2000 character limit per text content
+        MAX_TEXT_LENGTH = 2000
+        
+        # If text is too long and has no formatting, chunk it
+        if len(text) > MAX_TEXT_LENGTH and not re.search(r'(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))', text):
+            rich_text = []
+            for i in range(0, len(text), MAX_TEXT_LENGTH):
+                chunk = text[i:i + MAX_TEXT_LENGTH]
+                rich_text.append({
+                    "type": "text",
+                    "text": {"content": chunk}
+                })
+            return rich_text
+        
         rich_text = []
         
         # Pattern for inline formatting
@@ -486,43 +512,73 @@ class NotionFormatter:
             # Add text before the match
             if match.start() > last_end:
                 plain_text = text[last_end:match.start()]
-                rich_text.append({
-                    "type": "text",
-                    "text": {"content": plain_text}
-                })
+                # Chunk plain text if needed
+                for i in range(0, len(plain_text), MAX_TEXT_LENGTH):
+                    chunk = plain_text[i:i + MAX_TEXT_LENGTH]
+                    rich_text.append({
+                        "type": "text",
+                        "text": {"content": chunk}
+                    })
             
             # Process the match
             if match.group(2):  # Bold
-                rich_text.append({
-                    "type": "text",
-                    "text": {"content": match.group(2)},
-                    "annotations": {"bold": True}
-                })
+                content = match.group(2)
+                # Chunk if needed
+                for i in range(0, len(content), MAX_TEXT_LENGTH):
+                    chunk = content[i:i + MAX_TEXT_LENGTH]
+                    rich_text.append({
+                        "type": "text",
+                        "text": {"content": chunk},
+                        "annotations": {"bold": True}
+                    })
             elif match.group(3):  # Italic
-                rich_text.append({
-                    "type": "text",
-                    "text": {"content": match.group(3)},
-                    "annotations": {"italic": True}
-                })
+                content = match.group(3)
+                for i in range(0, len(content), MAX_TEXT_LENGTH):
+                    chunk = content[i:i + MAX_TEXT_LENGTH]
+                    rich_text.append({
+                        "type": "text",
+                        "text": {"content": chunk},
+                        "annotations": {"italic": True}
+                    })
             elif match.group(4):  # Code
-                rich_text.append({
-                    "type": "text",
-                    "text": {"content": match.group(4)},
-                    "annotations": {"code": True}
-                })
+                content = match.group(4)
+                for i in range(0, len(content), MAX_TEXT_LENGTH):
+                    chunk = content[i:i + MAX_TEXT_LENGTH]
+                    rich_text.append({
+                        "type": "text",
+                        "text": {"content": chunk},
+                        "annotations": {"code": True}
+                    })
             elif match.group(5) and match.group(6):  # Link
-                rich_text.append({
-                    "type": "text",
-                    "text": {"content": match.group(5), "link": {"url": match.group(6)}}
+                content = match.group(5)
+                url = match.group(6)
+                for i in range(0, len(content), MAX_TEXT_LENGTH):
+                    chunk = content[i:i + MAX_TEXT_LENGTH]
+                    rich_text.append({
+                        "type": "text",
+                        "text": {"content": chunk, "link": {"url": url}}
                 })
             
             last_end = match.end()
         
         # Add remaining text
         if last_end < len(text):
-            rich_text.append({
-                "type": "text",
-                "text": {"content": text[last_end:]}
-            })
+            remaining_text = text[last_end:]
+            # Chunk remaining text if needed
+            for i in range(0, len(remaining_text), MAX_TEXT_LENGTH):
+                chunk = remaining_text[i:i + MAX_TEXT_LENGTH]
+                rich_text.append({
+                    "type": "text",
+                    "text": {"content": chunk}
+                })
         
-        return rich_text if rich_text else [{"type": "text", "text": {"content": text}}]
+        # Handle empty rich_text - chunk if needed
+        if not rich_text:
+            for i in range(0, len(text), MAX_TEXT_LENGTH):
+                chunk = text[i:i + MAX_TEXT_LENGTH]
+                rich_text.append({
+                    "type": "text",
+                    "text": {"content": chunk}
+                })
+        
+        return rich_text

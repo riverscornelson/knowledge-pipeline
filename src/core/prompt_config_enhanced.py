@@ -38,6 +38,8 @@ class EnhancedPromptConfig:
         self.notion_prompts_cache = {}
         self.cache_ttl = timedelta(minutes=5)  # 5-minute cache
         self.last_cache_update = None
+        self.notion_error_count = 0
+        self.max_notion_errors = 3  # Stop trying after 3 consecutive errors
         
         # Initialize Notion client if credentials available
         if self.notion_token and self.notion_db_id:
@@ -124,6 +126,11 @@ class EnhancedPromptConfig:
         if not self.notion_client:
             return
             
+        # Skip if too many consecutive errors
+        if self.notion_error_count >= self.max_notion_errors:
+            self.logger.debug(f"Skipping Notion refresh due to {self.notion_error_count} consecutive errors")
+            return
+            
         try:
             self.logger.info("Refreshing Notion prompts cache...")
             
@@ -139,14 +146,22 @@ class EnhancedPromptConfig:
             for page in response.get("results", []):
                 props = page.get("properties", {})
                 
-                # Extract prompt data
-                content_type = self._get_property_value(props.get("Content Type"))
-                analyzer_type = self._get_property_value(props.get("Analyzer Type"))
-                system_prompt = self._get_property_value(props.get("System Prompt"))
-                formatting_instructions = self._get_property_value(props.get("Formatting Instructions"))
-                temperature = self._get_property_value(props.get("Temperature"), default=0.3)
-                web_search = self._get_property_value(props.get("Web Search"), default=False)
-                version = self._get_property_value(props.get("Version"), default=1.0)
+                try:
+                    # Extract prompt data
+                    content_type = self._get_property_value(props.get("Content Type"))
+                    # Try both "Analyzer Type" and "Analyzer" for backwards compatibility
+                    analyzer_type = self._get_property_value(props.get("Analyzer Type"))
+                    if not analyzer_type:
+                        analyzer_type = self._get_property_value(props.get("Analyzer"))
+                    system_prompt = self._get_property_value(props.get("System Prompt"))
+                    formatting_instructions = self._get_property_value(props.get("Formatting Instructions"))
+                    temperature = self._get_property_value(props.get("Temperature"), default=0.3)
+                    web_search = self._get_property_value(props.get("Web Search"), default=False)
+                    version = self._get_property_value(props.get("Version"), default=1.0)
+                except Exception as prop_error:
+                    self.logger.error(f"Error extracting properties from page {page.get('id', 'unknown')}: {prop_error}")
+                    self.logger.debug(f"Page properties: {props}")
+                    continue
                 
                 if content_type and analyzer_type and system_prompt:
                     # Combine system prompt with formatting instructions
@@ -154,8 +169,9 @@ class EnhancedPromptConfig:
                     if formatting_instructions:
                         full_prompt = f"{system_prompt}\n\n{formatting_instructions}"
                     
-                    # Store in cache
-                    cache_key = f"{content_type.lower()}_{analyzer_type.lower()}"
+                    # Store in cache - normalize content type key by replacing spaces with underscores
+                    cache_key = f"{content_type.lower().replace(' ', '_')}_{analyzer_type.lower()}"
+                    self.logger.debug(f"Processing prompt: {cache_key} (v{version})")
                     
                     # Keep highest version if multiple exist
                     if cache_key not in new_cache or version > new_cache[cache_key].get("version", 0):
@@ -170,10 +186,46 @@ class EnhancedPromptConfig:
             
             self.notion_prompts_cache = new_cache
             self.last_cache_update = datetime.now()
+            self.notion_error_count = 0  # Reset error count on success
             self.logger.info(f"Cached {len(new_cache)} prompts from Notion")
             
+            # Log details about cached prompts
+            if new_cache:
+                self.logger.debug("Cached prompts by content type:")
+                content_types = {}
+                for key, prompt in new_cache.items():
+                    # Extract content type from the cache key (everything before the last underscore)
+                    parts = key.rsplit('_', 1)
+                    if len(parts) == 2:
+                        content_type = parts[0]
+                        analyzer = parts[1]
+                    else:
+                        content_type = key
+                        analyzer = 'unknown'
+                    
+                    if content_type not in content_types:
+                        content_types[content_type] = []
+                    content_types[content_type].append(f"{analyzer}")
+                
+                for ct, analyzers in sorted(content_types.items()):
+                    self.logger.debug(f"  - {ct}: {', '.join(analyzers)}")
+                    
+                # Also log all cache keys for debugging
+                self.logger.debug("All cache keys:")
+                for key in sorted(new_cache.keys()):
+                    self.logger.debug(f"  - {key}")
+            
         except Exception as e:
-            self.logger.error(f"Failed to refresh Notion cache: {e}")
+            self.notion_error_count += 1
+            self.logger.error(f"Failed to refresh Notion cache (attempt {self.notion_error_count}/{self.max_notion_errors}): {e}")
+            self.logger.debug(f"Error type: {type(e).__name__}")
+            import traceback
+            self.logger.debug(f"Traceback: {traceback.format_exc()}")
+            
+            # Update cache timestamp even on error to prevent immediate retry
+            if self.notion_error_count >= self.max_notion_errors:
+                self.last_cache_update = datetime.now()
+                self.logger.warning("Disabling Notion cache refresh due to repeated errors")
     
     def _get_property_value(self, prop: Optional[Dict], default: Any = None) -> Any:
         """Extract value from Notion property."""
@@ -189,7 +241,10 @@ class EnhancedPromptConfig:
             texts = prop.get("rich_text", [])
             return texts[0].get("plain_text", "") if texts else default
         elif prop_type == "select":
-            return prop.get("select", {}).get("name", default)
+            select_value = prop.get("select")
+            if select_value and isinstance(select_value, dict):
+                return select_value.get("name", default)
+            return default
         elif prop_type == "number":
             return prop.get("number", default)
         elif prop_type == "checkbox":
@@ -233,6 +288,16 @@ class EnhancedPromptConfig:
             cache_key = f"{content_type.lower().replace(' ', '_')}_{analyzer}"
             notion_prompt = self.notion_prompts_cache.get(cache_key)
             
+            # Debug logging for cache lookup
+            self.logger.debug(f"Looking for Notion prompt with key: {cache_key}")
+            
+            # If not found, also try without replacing spaces (for backward compatibility)
+            if not notion_prompt:
+                alt_cache_key = f"{content_type.lower()}_{analyzer}"
+                notion_prompt = self.notion_prompts_cache.get(alt_cache_key)
+                if notion_prompt:
+                    self.logger.debug(f"Found prompt with alternate key: {alt_cache_key}")
+            
             if notion_prompt:
                 config = notion_prompt.copy()
                 config["source"] = "notion"
@@ -246,12 +311,40 @@ class EnhancedPromptConfig:
                 if not self.web_search_enabled:
                     config["web_search"] = False
                 
-                self.logger.info(f"Using Notion prompt for {analyzer}/{content_type} (v{config.get('version')})")
+                # Log detailed prompt usage information
+                page_id = config.get('page_id', 'unknown')
+                version = config.get('version', '1.0')
+                temperature = config.get('temperature', 'default')
+                web_search = config.get('web_search', False)
+                
+                self.logger.info(f"Using Notion prompt for {analyzer}/{content_type}")
+                self.logger.info(f"  └─ Page ID: {page_id}")
+                self.logger.info(f"  └─ Notion URL: https://www.notion.so/{page_id.replace('-', '')}")
+                self.logger.info(f"  └─ Version: {version}")
+                self.logger.info(f"  └─ Temperature: {temperature}")
+                self.logger.info(f"  └─ Web Search: {web_search}")
+                self.logger.debug(f"  └─ Prompt preview: {config.get('system', '')[:100]}...")
+                
                 return config
         
         # Fall back to YAML prompts
         config = self._get_yaml_prompt(analyzer, content_type)
         config["source"] = "yaml"
+        
+        # Log YAML prompt usage with diagnostic info
+        self.logger.info(f"Using YAML prompt for {analyzer}/{content_type if content_type else 'default'}")
+        self.logger.info(f"  └─ Temperature: {config.get('temperature', 'default')}")
+        self.logger.info(f"  └─ Web Search: {config.get('web_search', False)}")
+        self.logger.debug(f"  └─ Prompt preview: {config.get('system', '')[:100]}...")
+        
+        # Log diagnostic info about why Notion wasn't used
+        if self.notion_client and content_type:
+            matching_keys = [k for k in self.notion_prompts_cache.keys() if analyzer in k]
+            if matching_keys:
+                self.logger.debug(f"  └─ Found {len(matching_keys)} prompts for {analyzer} in Notion cache: {matching_keys}")
+            else:
+                self.logger.debug(f"  └─ No prompts found for {analyzer} in Notion cache")
+        
         return config
     
     def _get_yaml_prompt(self, analyzer: str, content_type: Optional[str] = None) -> Dict[str, Any]:

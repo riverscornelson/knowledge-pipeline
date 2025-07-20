@@ -70,22 +70,29 @@ class EnhancedInsightsGenerator(BaseAnalyzer):
 
 ---
 
-Generate strategic insights following this structure:
+Generate strategic insights organized into the following sections. Use proper markdown headers (###) for each section:
 
-1. **Immediate Actions**: What should be done right now?
-2. **Strategic Opportunities**: What long-term advantages are revealed?
-3. **Risk Factors**: What threats or challenges are identified?
-4. **Market Implications**: How does this affect the competitive landscape?
-5. **Innovation Potential**: What new possibilities does this enable?
+### Immediate Actions
+What should be done right now? List 2-3 concrete, actionable steps.
 
-Provide 3-5 actionable insights that a decision-maker can act upon.
-Each insight should be:
+### Strategic Opportunities  
+What long-term advantages are revealed? List 2-3 strategic opportunities.
+
+### Risk Factors
+What threats or challenges are identified? List 2-3 key risks.
+
+### Market Implications
+How does this affect the competitive landscape? List 2-3 market impacts.
+
+### Innovation Potential
+What new possibilities does this enable? List 2-3 innovation opportunities.
+
+For each section, provide bullet points that are:
 - Specific and concrete (not vague)
 - Action-oriented (starts with a verb)
 - Strategic (not just a summary of facts)
 - Relevant to business/technical decision-making
-
-Format as a bulleted list with no more than 2 sentences per insight.
+- Maximum 2 sentences per point
 """
         return prompt
     
