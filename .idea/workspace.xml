@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0200f2da-ba98-4297-afb5-4c517d38ef60" name="Changes" comment="Basic Pipeline Setup">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/guides/prompt-configuration-guide.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/prompt-configuration-guide.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/reference/architecture.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/reference/architecture.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/prompt_config_enhanced.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/prompt_config_enhanced.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/enrichment/enhanced_insights.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enrichment/enhanced_insights.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/enrichment/pipeline_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enrichment/pipeline_processor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/notion_formatter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/notion_formatter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,7 +141,7 @@
       <workItem from="1752802363280" duration="412000" />
       <workItem from="1752803405634" duration="9000" />
       <workItem from="1752806558119" duration="21127000" />
-      <workItem from="1752926498610" duration="32083000" />
+      <workItem from="1752926498610" duration="35266000" />
     </task>
     <task id="LOCAL-00001" summary="Basic Pipeline Setup">
       <option name="closed" value="true" />
