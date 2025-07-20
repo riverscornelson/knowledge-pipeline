@@ -597,7 +597,6 @@ class PipelineProcessor:
         # Update properties
         properties = {
             "Status": {"select": {"name": "Enriched"}},
-            "Summary": {"rich_text": [{"text": {"content": result.core_summary[:200]}}]},
             "Content-Type": {"select": {"name": result.content_type}},
         }
         

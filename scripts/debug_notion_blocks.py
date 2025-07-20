@@ -26,7 +26,7 @@ def debug_page_blocks(notion_client: NotionClient, page_id: str):
         print(f"📊 Properties:")
         
         # Show key properties
-        for prop_name in ["Status", "Content-Type", "AI-Primitive", "Vendor", "Summary"]:
+        for prop_name in ["Status", "Content-Type", "AI-Primitive", "Vendor"]:
             prop = page["properties"].get(prop_name, {})
             if prop.get("type") == "select" and prop.get("select"):
                 print(f"   {prop_name}: {prop['select']['name']}")

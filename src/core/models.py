@@ -32,7 +32,6 @@ class SourceContent:
     article_url: Optional[str] = None
     created_date: Optional[datetime] = None
     raw_content: Optional[str] = None
-    summary: Optional[str] = None
     vendor: Optional[str] = None
     ai_primitives: Optional[List[str]] = None
     notion_page_id: Optional[str] = None
@@ -53,9 +52,6 @@ class SourceContent:
         
         if self.created_date:
             props["Created Date"] = {"date": {"start": self.created_date.isoformat()}}
-        
-        if self.summary:
-            props["Summary"] = {"rich_text": [{"text": {"content": self.summary[:2000]}}]}
         
         if self.vendor:
             props["Vendor"] = {"select": {"name": self.vendor}}

@@ -24,7 +24,6 @@ def mock_notion_client(mocker):
                 "Status": {"select": {"name": "Inbox"}},
                 "Hash": {"rich_text": [{"text": {"content": "abc123"}}]},
                 "Drive URL": {"url": "https://drive.google.com/file/123"},
-                "Summary": {"rich_text": []},
                 "Content-Type": {"select": None},
                 "AI-Primitive": {"multi_select": []},
             }
@@ -127,7 +126,6 @@ def sample_source_content():
         article_url=None,
         content_type=ContentType.PDF,
         created_date=datetime(2024, 1, 1),
-        summary=None,
         ai_primitives=None,
         vendor=None,
         notion_page_id=None
@@ -144,7 +142,6 @@ def sample_notion_page():
             "Status": {"select": {"name": "Inbox"}},
             "Drive URL": {"url": "https://drive.google.com/file/123"},
             "Hash": {"rich_text": [{"text": {"content": "hash123"}}]},
-            "Summary": {"rich_text": []},
             "Content-Type": {"select": None},
             "AI-Primitive": {"multi_select": []},
         }

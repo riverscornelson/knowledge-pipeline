@@ -95,7 +95,6 @@ def display_enriched_content(pages: List[Dict[str, Any]], notion_client: NotionC
         
         # Extract basic properties
         title = extract_property_value(properties, "Title", "title")
-        summary = extract_property_value(properties, "Summary", "rich_text")
         content_type = extract_property_value(properties, "Content-Type", "select")
         ai_primitives = extract_property_value(properties, "AI-Primitive", "multi_select")
         vendor = extract_property_value(properties, "Vendor", "select")
@@ -112,9 +111,6 @@ def display_enriched_content(pages: List[Dict[str, Any]], notion_client: NotionC
         print(f"📝 Type: {content_type or 'Unknown'}")
         print(f"🤖 AI Primitives: {', '.join(ai_primitives) if ai_primitives else 'None'}")
         print(f"🏢 Vendor: {vendor or 'None'}")
-        
-        print(f"\n📋 BRIEF SUMMARY:")
-        print(f"   {summary or 'No summary available'}")
         
         if detailed:
             print(f"\n🔍 DETAILED ANALYSIS:")

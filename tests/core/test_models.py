@@ -41,7 +41,6 @@ class TestSourceContent:
             article_url=None,
             content_type=ContentType.PDF,
             created_date=datetime(2024, 1, 1),
-            summary="Short summary",
             ai_primitives=["Classification", "Analysis"],
             vendor="OpenAI"
         )
@@ -55,7 +54,6 @@ class TestSourceContent:
         assert properties["Hash"]["rich_text"][0]["text"]["content"] == "abc123"
         
         # Check optional properties
-        assert properties["Summary"]["rich_text"][0]["text"]["content"] == "Short summary"
         assert properties["Vendor"]["select"]["name"] == "OpenAI"
         
         # Check date formatting - should be ISO format
@@ -94,14 +92,12 @@ class TestSourceContent:
             drive_url=None,
             article_url="https://example.com",
             content_type=ContentType.WEBSITE,
-            summary="Short summary under 200 chars",
             ai_primitives=["Classification", "Analysis"]
         )
         
         properties = content.to_notion_properties()
         
         # Check enrichment properties
-        assert properties["Summary"]["rich_text"][0]["text"]["content"] == "Short summary under 200 chars"
         # Content-Type is stored based on the content_type field
         if "Content-Type" in properties:
             assert properties["Content-Type"]["select"]["name"] == "Website"
