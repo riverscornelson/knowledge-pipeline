@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.10] - 2025-01-20
+
 ### Removed
 - **Summary field** from Notion properties - resolves 200-character truncation issue
   - Full summaries remain available in "📋 Core Summary" toggle blocks
