@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="0200f2da-ba98-4297-afb5-4c517d38ef60" name="Changes" comment="Basic Pipeline Setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/enrichment/prompt_aware_blocks.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/cross_prompt_intelligence.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,27 +50,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.capture_websites.executor": "Run",
-    "Python.enrich_consolidated.executor": "Run",
-    "Python.python scripts/run_pipeline.py.executor": "Run",
-    "Python.setup_notion.executor": "Run",
-    "Python.shell.executor": "Run",
-    "Python.whoami.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "swarm-formatting-and-prompt-configuration-improvements-try-1",
-    "last_opened_file_path": "/Users/riverscornelson/PycharmProjects/knowledge-pipeline",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.capture_websites.executor&quot;: &quot;Run&quot;,
+    &quot;Python.enrich_consolidated.executor&quot;: &quot;Run&quot;,
+    &quot;Python.python scripts/run_pipeline.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.setup_notion.executor&quot;: &quot;Run&quot;,
+    &quot;Python.shell.executor&quot;: &quot;Run&quot;,
+    &quot;Python.whoami.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;swarm-formatting-and-prompt-configuration-improvements-try-1&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/riverscornelson/PycharmProjects/knowledge-pipeline&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/docs" />
