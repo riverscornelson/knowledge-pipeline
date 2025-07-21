@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2025-01-21
+
+This is a major release introducing comprehensive prompt attribution, enhanced Notion formatting, and significant architectural improvements.
+
+### Added
+- **Prompt Attribution System**
+  - Full tracking of AI prompts, versions, and metadata
+  - Collapsible attribution section in Notion pages (single toggle design)
+  - Dual-source prompt management (Notion database + YAML fallback)
+  - Token usage and processing time tracking
+  - Quality scoring with visual indicators (⭐/✓/•/!)
+
+- **Enhanced Notion Formatting**
+  - Mobile-optimized content rendering with responsive design
+  - Executive dashboard with structured insights and action items
+  - Quality indicators integrated throughout content
+  - Smart text chunking respecting 2000 character limits
+  - Nested toggles for better content organization
+  - Semantic markdown parsing for proper block types
+
+- **Prompt Database Integration**
+  - New Notion database schema for prompt management
+  - Version control and active/inactive prompt states
+  - Content-type specific prompt selection
+  - Temperature and token limit configuration per prompt
+  - Web search capability flags per prompt
+
+- **Core Architecture Updates**
+  - `EnhancedPromptConfig` for dual-source prompt loading
+  - `PromptAwareNotionFormatter` as primary formatter
+  - Enhanced `PipelineProcessor` with attribution tracking
+  - Improved validation pipeline preventing API errors
+  - Automatic text truncation for Notion limits
+
+- **Performance Improvements**
+  - 5-minute prompt caching reducing API calls
+  - Tag caching for content tagger (10-minute TTL)
+  - Batch processing with configurable sizes (10-50 items)
+  - Smart retry logic with exponential backoff
+  - Memory-efficient document chunking
+
+### Changed
+- Default formatter is now `PromptAwareNotionFormatter`
+- Pipeline processor tracks all prompt usage
+- Error messages automatically truncated to fit Notion limits
+- Text chunking now preserves markdown structure
+- Quality scoring algorithm enhanced with multiple factors
+
+### Fixed
+- Notion API validation errors with empty children arrays
+- Quote blocks no longer include children property
+- Text content exceeding 2000 character limit
+- Toggle blocks properly structured with valid children
+- Error recovery during batch processing
+
+### Technical Notes
+- No parallel processing implemented (sequential batch processing only)
+- Backward compatible with v3.x YAML prompts
+- All v4.0 features can be disabled via environment variables
+- Migration is largely automatic with optional enhancements
+
 ## [3.0.10] - 2025-01-20
 
 ### Removed
