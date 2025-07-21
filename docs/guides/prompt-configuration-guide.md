@@ -286,41 +286,63 @@ analyzers:
       | {category} | {H/M/L} | ${amount} | {strategy} |
 ```
 
-## Enhanced Prompt System with Notion Integration
+## Dual-Source Prompt System (v4.0 Standard)
 
 ### Overview
 
-The Knowledge Pipeline now supports dynamic prompt management through Notion, allowing you to update prompts without code changes. The system uses a hierarchical approach:
+The Knowledge Pipeline v4.0 uses a robust dual-source prompt management system by default, combining the flexibility of Notion-based prompts with the reliability of YAML fallbacks. This ensures continuous operation even if Notion is unavailable.
 
-1. **YAML Base Prompts** - Default prompts stored in `config/prompts.yaml`
-2. **Notion Dynamic Prompts** - Override YAML prompts when available
-3. **Automatic Caching** - 5-minute cache for performance
+### Prompt Loading Architecture
 
-### Notion Integration Setup
+```mermaid
+graph TD
+    A[Content Processing] --> B{Prompt Request}
+    B --> C[Check Notion Database]
+    C -->|Found & Active| D[Use Notion Prompt]
+    C -->|Not Found| E[Use YAML Prompt]
+    C -->|Notion Error| E
+    
+    D --> F[Apply Overrides]
+    E --> F
+    
+    F --> G[Cache Result]
+    G --> H[Process Content]
+    
+    H --> I[Track Attribution]
+    I --> J[Store Metadata]
+    
+    style C fill:#fcf,stroke:#333,stroke-width:4px
+    style I fill:#cff,stroke:#333,stroke-width:4px
+```
 
-To enable Notion-based prompt management:
-
-1. **Create Notion Database** - See [Notion Database Setup Guide](../setup/notion-prompt-database-setup.md)
-2. **Configure Environment Variables**:
+### Default Configuration (v4.0)
 
 ```bash
-# Notion API Configuration
+# Dual-source prompts are ENABLED by default
+USE_ENHANCED_PROMPTS=true          # Default in v4.0
+
+# Notion integration (primary source)
 NOTION_API_KEY=your_integration_token_here
 NOTION_PROMPTS_DATABASE_ID=your_database_id_here
 
-# Optional: Force enhanced prompt system
-USE_ENHANCED_PROMPTS=true
+# Attribution tracking (enabled by default)
+USE_ENHANCED_ATTRIBUTION=true      # Default in v4.0
+
+# Performance settings
+PROMPT_CACHE_DURATION=300          # 5 minutes
 ```
 
-### Prompt Loading Hierarchy
+### Prompt Source Priority
 
-```
-1. Check Notion database for matching prompt
-   └─> If found: Use Notion prompt
-   └─> If not found: Fall back to YAML prompt
-2. Apply content-type-specific overrides
-3. Apply environment variable overrides
-```
+1. **Primary**: Notion database (when configured)
+   - Live updates without code changes
+   - Version tracking and A/B testing
+   - Rich formatting support
+   
+2. **Fallback**: YAML configuration
+   - Always available locally
+   - No external dependencies
+   - Version controlled with code
 
 ### Enhanced Features
 
@@ -329,6 +351,29 @@ USE_ENHANCED_PROMPTS=true
 - **Live Updates** - Changes reflect immediately (after cache expires)
 - **Web Search Control** - Per-prompt web search configuration
 - **Rich Formatting** - Use Notion's text editor for complex prompts
+- **Prompt Attribution** - Track which prompts generated each piece of content
+- **Quality Scoring** - Automatic assessment of content value (0-100%)
+
+### Prompt Attribution (v4.0)
+
+Every AI-generated content block includes metadata about its origin:
+
+```yaml
+# Attribution metadata stored with content
+attribution:
+  prompt_id: "summary_research"
+  prompt_source: "notion"  # or "yaml"
+  prompt_version: "2.1"
+  generation_timestamp: "2024-11-12T10:30:00Z"
+  quality_score: 85
+  model_used: "gpt-4o"
+```
+
+This attribution enables:
+- Performance analysis of different prompts
+- Debugging content generation issues
+- Compliance and audit trails
+- Prompt optimization based on quality scores
 
 ## Environment Variable Configuration
 

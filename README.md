@@ -37,7 +37,7 @@ python scripts/run_pipeline.py
 
 ## 🚀 Running the Pipeline
 
-The v3.0 pipeline is now the production standard:
+The v4.0 pipeline with prompt attribution and enhanced formatting is now the production standard:
 
 ```bash
 # Full pipeline with local PDF processing (RECOMMENDED)
@@ -62,12 +62,13 @@ python scripts/run_pipeline.py --skip-enrichment
 - **Multi-Source Ingestion**: Google Drive PDFs and local Downloads folder scanning
 - **Local PDF Upload**: Automatically upload PDFs from Downloads to Drive
 - **AI-Powered Enrichment**: Automated summarization, classification, and insight extraction using GPT-4.1
+- **Prompt Attribution System**: Track which prompts generated each piece of content (v4.0.0)
 - **Advanced Analysis**: Multi-step reasoning with story structures and evidence-based classification
 - **Intelligent Tagging**: AI-generated topical and domain tags with consistency-first approach
 - **Smart Deduplication**: SHA-256 hashing prevents duplicate content
-- **Enhanced Notion Formatting**: Rich text with headers, callouts, toggles, and visual hierarchy
-- **Dynamic Prompt Management**: Notion-based prompt editing without code changes
-- **Quality Scoring**: Automated content quality assessment (0-100%)
+- **Enhanced Notion Formatting**: Rich text with headers, callouts, toggles, attribution blocks, and visual hierarchy
+- **Dual-Source Prompt Management**: Notion-based dynamic prompts with YAML fallback for reliability
+- **Quality Scoring**: Automated content quality assessment (0-100%) with detailed metrics
 
 ### Performance & Architecture  
 - **Priority-Based System**: Google Drive as primary source, others as secondary
@@ -137,21 +138,23 @@ from src.core.config import PipelineConfig
 config = PipelineConfig.from_env()
 ```
 
-### Enhanced Features Configuration
+### Core Features Configuration (v4.0.0)
 
-Enable advanced formatting and dynamic prompts:
+The pipeline includes comprehensive prompt attribution, quality scoring, and enhanced formatting by default:
 
 ```bash
-# Enhanced Notion formatting (recommended)
-USE_ENHANCED_FORMATTING=true
+# Core features (enabled by default in v4.0.0)
+USE_ENHANCED_FORMATTING=true       # Advanced Notion formatting with attribution
+USE_ENHANCED_PROMPTS=true          # Dual-source prompt management (Notion + YAML)
+ENABLE_QUALITY_SCORING=true        # AI-powered quality assessment
 
-# Dynamic prompt management (optional)
-USE_ENHANCED_PROMPTS=true
+# Notion integration for dynamic prompts (recommended)
 NOTION_API_KEY=secret_your_key_here
 NOTION_PROMPTS_DATABASE_ID=your_database_id
 
-# Quality assessment
-ENABLE_QUALITY_SCORING=true
+# Optional: Disable features if needed
+# USE_ENHANCED_FORMATTING=false    # Revert to basic formatting
+# USE_ENHANCED_PROMPTS=false       # Use YAML prompts only
 ```
 
 ### Local PDF Processing Configuration
@@ -174,14 +177,14 @@ LOCAL_UPLOAD_FOLDER_ID=your_folder_id_here
 See [docs/README.md](docs/README.md) for complete documentation navigation.
 
 ### Quick Links
-- [Quick Start](docs/getting-started/quick-start.md) - Get running in 5 minutes
+- [Quick Start](docs/getting-started/quick-start.md) - Get running in 5 minutes with v4.0
+- [v4.0.0 Release Notes](docs/v4.0.0/release-notes.md) - What's new in v4.0
+- [Prompt Attribution Guide](docs/v4.0.0/prompt-attribution.md) - Understanding content attribution
+- [Quality Scoring Guide](docs/v4.0.0/quality-scoring.md) - How quality assessment works
 - [Notion Database Setup](docs/setup/notion-prompt-database-setup.md) - Dynamic prompt configuration
-- [Migration Guide](docs/guides/migration-to-enhanced-prompts.md) - Upgrade to enhanced features
-- [Configuration Guide](docs/guides/prompt-configuration-guide.md) - Advanced prompt management
-- [Architecture Overview](docs/reference/architecture.md) - System design and data flow
-- [API Reference](docs/reference/api.md) - Complete API documentation
-- [Testing Guide](docs/reference/testing.md) - Test suite documentation
-- [Deployment Guide](docs/operations/deployment.md) - Production deployment options
+- [Migration to v4.0](docs/v4.0.0-migration-guide.md) - Upgrade from v3.x
+- [Configuration Guide](docs/guides/prompt-configuration-guide.md) - Dual-source prompt management
+- [Architecture Overview](docs/v4.0.0-technical-architecture.md) - v4.0 system design
 - [Troubleshooting](docs/operations/troubleshooting.md) - Common issues and solutions
 
 ## 🧪 Testing

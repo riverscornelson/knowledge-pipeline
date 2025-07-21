@@ -115,7 +115,7 @@ sequenceDiagram
 - Applies smart filters to exclude promotional content
 - Extracts article links and summaries from emails
 
-### Stage 4: AI-Powered Enrichment
+### Stage 4: AI-Powered Enrichment (v4.0)
 
 ```mermaid
 graph TB
@@ -124,48 +124,59 @@ graph TB
     B -->|Website| D[Fetch Full Article]
     B -->|Email| E[Process Email Content]
     
-    C --> F[AI Analysis]
-    D --> F
-    E --> F
+    C --> P[Prompt Selection]
+    D --> P
+    E --> P
     
+    P --> F[AI Analysis]
     F --> G[Generate Summary]
     F --> H[Extract Insights]
     F --> I[Classify Content]
     F --> T[Generate Tags]
+    F --> Q[Quality Score]
     
-    G --> J[Update Notion Page]
-    H --> J
-    I --> J
-    T --> J
+    G --> AT[Attribution Tracking]
+    H --> AT
+    I --> AT
+    T --> AT
+    Q --> AT
     
+    AT --> J[Update Notion Page]
     J --> K[Status: Enriched]
     
     style A fill:#ffd,stroke:#333,stroke-width:2px
+    style P fill:#fcf,stroke:#333,stroke-width:4px
     style F fill:#f9f,stroke:#333,stroke-width:4px
+    style AT fill:#cff,stroke:#333,stroke-width:4px
     style K fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
-**What happens:**
+**What happens (v4.0 Enhanced):**
 - Processes all items with Status="Inbox"
-- Makes 4 parallel AI calls per document:
-  1. **Core Summary**: Comprehensive analysis of key points
-  2. **Key Insights**: Actionable intelligence and implications
+- **NEW: Prompt Selection**: Dual-source system checks Notion database first, falls back to YAML
+- **NEW: Attribution Tracking**: Records which prompt generated each piece of content
+- Makes 5 parallel AI calls per document:
+  1. **Core Summary**: Comprehensive analysis with prompt attribution
+  2. **Key Insights**: Actionable intelligence with source tracking
   3. **Smart Classification**: Content type, AI capabilities, vendor
   4. **Intelligent Tags**: Topical tags (3-5) and domain tags (2-4) with consistency focus
-- Updates Notion pages with structured analysis blocks
+  5. **NEW: Quality Score**: 0-100% assessment of content value and relevance
+- Updates Notion pages with enhanced formatting including attribution blocks
 - Changes status to "Enriched" when complete
 
-## AI Processing Details
+## AI Processing Details (v4.0 Enhanced)
 
-The enrichment phase uses GPT-4 to transform raw content into structured intelligence:
+The enrichment phase uses GPT-4 with advanced prompt attribution and quality scoring:
 
 ```mermaid
 flowchart LR
-    A[Raw Content] --> B[AI Processing]
+    A[Raw Content] --> PS[Prompt Selection]
+    PS --> B[AI Processing]
     B --> C[Core Summary]
     B --> D[Key Insights]
     B --> E[Classification]
     B --> T[Tags]
+    B --> Q[Quality Score]
     
     C --> C1[Main Points]
     C --> C2[Key Themes]
@@ -182,7 +193,20 @@ flowchart LR
     T --> T1[Topical Tags]
     T --> T2[Domain Tags]
     
+    Q --> Q1[Relevance Score]
+    Q --> Q2[Completeness]
+    Q --> Q3[Actionability]
+    
+    PS --> AT[Attribution]
+    C --> AT
+    D --> AT
+    E --> AT
+    T --> AT
+    Q --> AT
+    
+    style PS fill:#fcf,stroke:#333,stroke-width:4px
     style B fill:#f9f,stroke:#333,stroke-width:4px
+    style AT fill:#cff,stroke:#333,stroke-width:4px
 ```
 
 ### Classification Taxonomy
@@ -205,6 +229,52 @@ The pipeline automatically classifies content into:
 - Data Analysis
 - Workflow Automation
 - And more...
+
+## v4.0 Enhanced Features
+
+### Prompt Attribution System
+
+Every piece of AI-generated content now includes attribution metadata:
+
+```mermaid
+graph LR
+    A[Content Type] --> B[Prompt Selection]
+    B --> C{Source}
+    C -->|Primary| D[Notion Database]
+    C -->|Fallback| E[YAML Config]
+    
+    D --> F[AI Processing]
+    E --> F
+    
+    F --> G[Generated Content]
+    G --> H[Attribution Block]
+    
+    H --> I[Prompt ID]
+    H --> J[Prompt Version]
+    H --> K[Generation Timestamp]
+    H --> L[Quality Score]
+    
+    style B fill:#fcf,stroke:#333,stroke-width:4px
+    style H fill:#cff,stroke:#333,stroke-width:4px
+```
+
+### Quality Scoring
+
+Each document receives a comprehensive quality assessment:
+
+- **Relevance (0-40 points)**: How well content matches research interests
+- **Completeness (0-30 points)**: Depth and thoroughness of information
+- **Actionability (0-30 points)**: Practical insights and next steps
+
+### Enhanced Notion Formatting
+
+v4.0 introduces rich formatting with visual hierarchy:
+
+- **Headers**: Clear section organization
+- **Callouts**: Important insights highlighted
+- **Toggle Blocks**: Collapsible sections for details
+- **Attribution Blocks**: Transparent prompt tracking
+- **Quote Blocks**: Key excerpts preserved
 
 ## Data Flow and Storage
 

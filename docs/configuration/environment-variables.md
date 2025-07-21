@@ -26,13 +26,17 @@ Complete reference for all environment variables in Knowledge Pipeline v4.0.0.
 
 ## Feature Flags
 
-### v4.0 Features
+### v4.0 Core Features (Enabled by Default)
 | Variable | Default | Options | Description |
 |----------|---------|---------|-------------|
-| `USE_ENHANCED_FORMATTING` | `true` | `true`/`false` | Enable rich Notion formatting |
-| `USE_ENHANCED_ATTRIBUTION` | `true` | `true`/`false` | Enable prompt attribution |
-| `ENABLE_PROMPT_CACHING` | `true` | `true`/`false` | Cache prompt configurations |
-| `ENABLE_WEB_SEARCH` | `false` | `true`/`false` | Allow web search in prompts |
+| `USE_ENHANCED_FORMATTING` | `true` | `true`/`false` | Rich Notion formatting with visual hierarchy (v4.0 standard) |
+| `USE_ENHANCED_ATTRIBUTION` | `true` | `true`/`false` | Prompt attribution tracking (v4.0 standard) |
+| `USE_ENHANCED_PROMPTS` | `true` | `true`/`false` | Dual-source prompt system (v4.0 standard) |
+| `ENABLE_QUALITY_SCORING` | `true` | `true`/`false` | Content quality assessment (v4.0 standard) |
+| `ENABLE_PROMPT_CACHING` | `true` | `true`/`false` | Performance optimization via caching |
+| `ENABLE_WEB_SEARCH` | `false` | `true`/`false` | Allow web search in prompts (optional) |
+
+**Note**: In v4.0, these features are enabled by default. Set to `false` only if you need legacy behavior.
 
 ## Performance Tuning
 
@@ -105,11 +109,15 @@ OPENAI_API_KEY=sk-proj-aBcDeFgHiJkLmNoPqRsTuVwXyZ
 GOOGLE_DRIVE_FOLDER_ID=1ABC2DEF3GHI4JKL5MNO6PQR7STU8VWX
 GOOGLE_SERVICE_ACCOUNT_FILE=credentials/service-account.json
 
-# Feature Flags (v4.0)
-USE_ENHANCED_FORMATTING=true
-USE_ENHANCED_ATTRIBUTION=true
-ENABLE_PROMPT_CACHING=true
-ENABLE_WEB_SEARCH=false
+# v4.0 Core Features (enabled by default, shown for reference)
+# USE_ENHANCED_FORMATTING=true      # Already enabled by default
+# USE_ENHANCED_ATTRIBUTION=true     # Already enabled by default  
+# USE_ENHANCED_PROMPTS=true         # Already enabled by default
+# ENABLE_QUALITY_SCORING=true       # Already enabled by default
+# ENABLE_PROMPT_CACHING=true        # Already enabled by default
+
+# Optional Features
+ENABLE_WEB_SEARCH=false             # Enable if needed for research
 
 # Performance Tuning
 BATCH_SIZE=20
