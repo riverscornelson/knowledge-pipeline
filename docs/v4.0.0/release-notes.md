@@ -81,12 +81,6 @@ USE_ENHANCED_PROMPTS=false
 
 ## 🆕 New Capabilities
 
-### Swarm Intelligence Integration
-
-- Parallel processing with intelligent coordination
-- Multi-agent analysis for complex documents
-- Automatic workload distribution
-
 ### Advanced Analytics
 
 - Prompt performance metrics
