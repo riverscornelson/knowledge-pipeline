@@ -53,6 +53,9 @@ class BaseAnalyzer(ABC):
             # Get configuration for this analyzer and content type
             prompt_config = self.prompt_config.get_prompt(self.analyzer_name, content_type)
             
+            # Track prompt source
+            prompt_source = prompt_config.get("source", "yaml")
+            
             # Determine if we should use web search
             config_web_search = prompt_config.get("web_search", False)
             
@@ -85,9 +88,18 @@ class BaseAnalyzer(ABC):
             
             # Perform analysis
             if use_web_search:
-                return self._analyze_with_web_search(user_prompt, prompt_config)
+                result = self._analyze_with_web_search(user_prompt, prompt_config)
             else:
-                return self._analyze_standard(user_prompt, prompt_config)
+                result = self._analyze_standard(user_prompt, prompt_config)
+            
+            # Add prompt source and page ID to result
+            if result.get("success"):
+                result["prompt_source"] = prompt_source
+                # Add page ID if available
+                if prompt_config.get("page_id"):
+                    result["prompt_page_id"] = prompt_config.get("page_id")
+            
+            return result
                 
         except Exception as e:
             self.logger.error(f"Analysis failed for '{title}': {e}")

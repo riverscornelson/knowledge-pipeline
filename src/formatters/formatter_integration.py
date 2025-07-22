@@ -11,6 +11,7 @@ from .prompt_aware_notion_formatter import (
     PromptMetadata, 
     TrackedAnalyzerResult
 )
+from .enhanced_attribution_formatter import EnhancedAttributionFormatter
 from ..utils.logging import setup_logger
 
 
@@ -28,10 +29,16 @@ class FormatterIntegration:
             prompt_db_id=pipeline_processor.prompt_config.notion_db_id if hasattr(pipeline_processor.prompt_config, 'notion_db_id') else None
         )
         
+        # Initialize enhanced attribution formatter
+        self.attribution_formatter = EnhancedAttributionFormatter(
+            prompt_config=pipeline_processor.prompt_config
+        )
+        
         # Track formatting preferences
         self.use_legacy_formatting = False
         self.enable_mobile_optimization = True
         self.enable_cross_insights = True
+        self.enable_enhanced_attribution = True
         
     def format_enrichment_result(self, 
                                 result: EnrichmentResult, 
@@ -42,13 +49,25 @@ class FormatterIntegration:
         # Convert EnrichmentResult to TrackedAnalyzerResults
         tracked_results = self._convert_to_tracked_results(result, item)
         
+        # Track prompt sources
+        prompt_sources = self._track_prompt_sources(result, tracked_results)
+        
         # Create executive dashboard if multiple analyses
         blocks = []
         
         if len(tracked_results) > 1 and not self.use_legacy_formatting:
-            # Add executive dashboard
-            dashboard_blocks = self.prompt_formatter.create_executive_dashboard(tracked_results)
-            blocks.extend(dashboard_blocks)
+            if self.enable_enhanced_attribution:
+                # Add enhanced attribution dashboard
+                attribution_blocks = self.attribution_formatter.create_attribution_dashboard(
+                    tracked_results,
+                    result.processing_time,
+                    prompt_sources
+                )
+                blocks.extend(attribution_blocks)
+            else:
+                # Add standard executive dashboard
+                dashboard_blocks = self.prompt_formatter.create_executive_dashboard(tracked_results)
+                blocks.extend(dashboard_blocks)
             
             # Add divider
             blocks.append({"type": "divider", "divider": {}})
@@ -171,13 +190,20 @@ class FormatterIntegration:
                         citations=analysis.get("web_citations", [])
                     )
                     
-                    tracked_results.append(TrackedAnalyzerResult(
+                    # Create tracked result with prompt source info
+                    tracked_result = TrackedAnalyzerResult(
                         analyzer_name=analyzer_name,
                         content=analysis.get("analysis", ""),
                         metadata=add_metadata,
                         timestamp=datetime.now(),
                         raw_response=analysis
-                    ))
+                    )
+                    
+                    # Add prompt source if available
+                    if hasattr(analysis, "prompt_source"):
+                        tracked_result.prompt_source = analysis.prompt_source
+                    
+                    tracked_results.append(tracked_result)
         
         return tracked_results
     
@@ -234,6 +260,34 @@ class FormatterIntegration:
             lines.append(f"\n**Reasoning**: {result.classification_reasoning}")
             
         return "\n".join(lines)
+    
+    def _track_prompt_sources(self, result: EnrichmentResult, tracked_results: List[TrackedAnalyzerResult]) -> Dict[str, str]:
+        """Track which prompts came from Notion vs YAML."""
+        prompt_sources = {}
+        
+        # Check if we have prompt source info in the result
+        if hasattr(result, "prompt_sources"):
+            prompt_sources.update(result.prompt_sources)
+        
+        # Check each tracked result for source info
+        for tracked in tracked_results:
+            analyzer_key = tracked.analyzer_name.lower().replace(" ", "_")
+            
+            # Check if result has prompt_source attribute
+            if hasattr(tracked, "prompt_source"):
+                prompt_sources[analyzer_key] = tracked.prompt_source
+            # Check if metadata indicates Notion source
+            elif hasattr(tracked.metadata, "prompt_source"):
+                prompt_sources[analyzer_key] = tracked.metadata.prompt_source
+            # Check if raw response has source info
+            elif hasattr(tracked, "raw_response") and tracked.raw_response:
+                if tracked.raw_response.get("prompt_source"):
+                    prompt_sources[analyzer_key] = tracked.raw_response.get("prompt_source")
+            else:
+                # Default to YAML if no source info
+                prompt_sources[analyzer_key] = "yaml"
+        
+        return prompt_sources
     
     def _create_raw_content_toggle(self, raw_content: str) -> List[Dict[str, Any]]:
         """Create toggle for raw content (from original implementation)."""

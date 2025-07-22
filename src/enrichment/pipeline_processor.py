@@ -19,6 +19,7 @@ from .content_tagger import ContentTagger
 from ..utils.notion_formatter import NotionFormatter  # Enhanced formatting
 from ..core.prompt_config import PromptConfig
 from ..core.prompt_config_enhanced import EnhancedPromptConfig
+# Import enhanced attribution formatter later to avoid circular import
 from ..drive.pdf_processor import PDFProcessor
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
@@ -48,6 +49,14 @@ class PipelineProcessor:
         # Initialize Notion formatter for enhanced content presentation
         self.notion_formatter = NotionFormatter()
         self.use_enhanced_formatting = os.getenv('USE_ENHANCED_FORMATTING', 'true').lower() == 'true'
+        
+        # Initialize enhanced attribution formatter (import here to avoid circular import)
+        try:
+            from ..formatters.enhanced_attribution_formatter import EnhancedAttributionFormatter
+            self.attribution_formatter = EnhancedAttributionFormatter(prompt_config=self.prompt_config)
+        except ImportError:
+            self.logger.warning("Enhanced attribution formatter not available")
+            self.attribution_formatter = None
         if self.use_enhanced_formatting:
             self.logger.info("Enhanced Notion formatting enabled")
         
@@ -394,6 +403,20 @@ class PipelineProcessor:
         if additional_analyses:
             result.additional_analyses = additional_analyses
         
+        # Track prompt sources and page IDs from analyzer results
+        if summary_result and summary_result.get('prompt_source'):
+            result.summary_prompt_source = summary_result['prompt_source']
+            if summary_result.get('prompt_page_id'):
+                result.summary_prompt_page_id = summary_result['prompt_page_id']
+        if insights_result and insights_result.get('prompt_source'):
+            result.insights_prompt_source = insights_result['prompt_source']
+            if insights_result.get('prompt_page_id'):
+                result.insights_prompt_page_id = insights_result['prompt_page_id']
+        if tag_result and tag_result.get('prompt_source'):
+            result.tagger_prompt_source = tag_result['prompt_source']
+            if tag_result.get('prompt_page_id'):
+                result.tagger_prompt_page_id = tag_result['prompt_page_id']
+        
         # Add tag results if available
         if tag_result and tag_result.get("success"):
             result.topical_tags = tag_result.get("topical_tags", [])
@@ -667,6 +690,29 @@ class PipelineProcessor:
     def _create_content_blocks(self, result: EnrichmentResult, raw_content: str) -> List[Dict]:
         """Create Notion blocks for enriched content with quality indicators."""
         blocks = []
+        
+        # Add enhanced attribution dashboard
+        if hasattr(self, 'attribution_formatter'):
+            try:
+                # Create analyzer results for attribution
+                analyzer_results = self._create_analyzer_results_for_attribution(result)
+                
+                # Track prompt sources and page IDs
+                prompt_sources = self._track_prompt_sources_from_result(result)
+                notion_page_ids = self._track_notion_page_ids_from_result(result)
+                
+                # Create attribution dashboard with hyperlinks
+                attribution_blocks = self.attribution_formatter.create_attribution_dashboard(
+                    analyzer_results,
+                    result.processing_time,
+                    prompt_sources,
+                    notion_page_ids
+                )
+                blocks.extend(attribution_blocks)
+                blocks.append({"type": "divider", "divider": {}})
+                self.logger.info("Added enhanced attribution dashboard")
+            except Exception as e:
+                self.logger.error(f"Failed to create attribution dashboard: {e}")
         
         # Try enhanced formatting if enabled
         if self.use_enhanced_formatting:
@@ -1009,6 +1055,92 @@ class PipelineProcessor:
         # Use the existing chunk method that respects Notion's character limits
         # This will create far fewer blocks by putting ~1900 chars in each block
         return self._chunk_text_to_blocks(markdown, max_length=1900)
+    
+    def _create_analyzer_results_for_attribution(self, result: EnrichmentResult) -> List[Any]:
+        """Create analyzer results list for attribution formatter."""
+        analyzer_results = []
+        
+        # Create a simple object that has the required attributes
+        class AnalyzerResult:
+            def __init__(self, name, quality, time, tokens, source="yaml"):
+                self.analyzer_name = name
+                self.quality_score = quality
+                self.processing_time = time
+                self.token_usage = {"total_tokens": tokens}
+                self.prompt_source = source
+        
+        # Add summarizer result
+        if result.core_summary:
+            analyzer_results.append(AnalyzerResult(
+                "summarizer",
+                getattr(result, 'summary_quality_score', result.quality_score),
+                result.processing_time / 3,
+                result.token_usage.get('total_tokens', 0) // 3,
+                getattr(result, 'summary_prompt_source', 'yaml')
+            ))
+        
+        # Add insights result
+        if result.key_insights:
+            analyzer_results.append(AnalyzerResult(
+                "insights", 
+                getattr(result, 'insights_quality_score', result.quality_score),
+                result.processing_time / 3,
+                result.token_usage.get('total_tokens', 0) // 3,
+                getattr(result, 'insights_prompt_source', 'yaml')
+            ))
+        
+        # Add classifier/tagger result
+        if hasattr(result, 'topical_tags') or hasattr(result, 'domain_tags'):
+            analyzer_results.append(AnalyzerResult(
+                "tagger",
+                getattr(result, 'tagger_quality_score', result.quality_score),
+                result.processing_time / 3,
+                result.token_usage.get('total_tokens', 0) // 3,
+                getattr(result, 'tagger_prompt_source', 'yaml')
+            ))
+        
+        return analyzer_results
+    
+    def _track_prompt_sources_from_result(self, result: EnrichmentResult) -> Dict[str, str]:
+        """Extract prompt source information from enrichment result."""
+        sources = {}
+        
+        # Check for prompt source attributes
+        if hasattr(result, 'prompt_sources') and isinstance(result.prompt_sources, dict):
+            sources.update(result.prompt_sources)
+        
+        # Individual analyzer sources
+        if hasattr(result, 'summary_prompt_source'):
+            sources['summarizer'] = result.summary_prompt_source
+        if hasattr(result, 'insights_prompt_source'):
+            sources['insights'] = result.insights_prompt_source
+        if hasattr(result, 'tagger_prompt_source'):
+            sources['tagger'] = result.tagger_prompt_source
+            
+        # Default to yaml if no source found
+        for analyzer in ['summarizer', 'insights', 'tagger']:
+            if analyzer not in sources:
+                sources[analyzer] = 'yaml'
+                
+        return sources
+    
+    def _track_notion_page_ids_from_result(self, result: EnrichmentResult) -> Dict[str, str]:
+        """Extract Notion page IDs for prompts used in enrichment."""
+        page_ids = {}
+        
+        # Check for page ID attributes
+        if hasattr(result, 'prompt_page_ids') and isinstance(result.prompt_page_ids, dict):
+            page_ids.update(result.prompt_page_ids)
+        
+        # Individual analyzer page IDs
+        if hasattr(result, 'summary_prompt_page_id'):
+            page_ids['summarizer'] = result.summary_prompt_page_id
+        if hasattr(result, 'insights_prompt_page_id'):
+            page_ids['insights'] = result.insights_prompt_page_id
+        if hasattr(result, 'tagger_prompt_page_id'):
+            page_ids['tagger'] = result.tagger_prompt_page_id
+            
+        return page_ids
     
     def _create_quality_validation_report(self, result: EnrichmentResult, raw_content: str) -> str:
         """Create a detailed quality control and validation report."""
