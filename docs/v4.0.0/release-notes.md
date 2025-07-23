@@ -108,7 +108,6 @@ python scripts/run_pipeline.py
 
 1. Review the [Migration Guide](../v4.0.0-migration-guide.md)
 2. Update your `.env` file with new settings
-3. Run migration script: `python scripts/migrate_to_v4.py`
 
 ## 🔍 Breaking Changes
 
@@ -158,9 +157,10 @@ Thanks to all contributors who made v4.0.0 possible through testing, feedback, a
 
 ## 📞 Support
 
-- GitHub Issues: [Report bugs or request features](https://github.com/yourusername/knowledge-pipeline/issues)
+- GitHub Issues: [Report bugs or request features](https://github.com/riverscornelson/knowledge-pipeline/issues)
 - Documentation: [Full documentation](../README.md)
-- Email: support@example.com
+- Email: rivers.cornelson@gmail.com
+- LinkedIn: [Rivers Cornelson](https://www.linkedin.com/in/rivers-cornelson/)
 
 ---
 

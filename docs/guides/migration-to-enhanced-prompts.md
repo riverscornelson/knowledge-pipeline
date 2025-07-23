@@ -253,8 +253,8 @@ python scripts/run_pipeline.py
 ## Support Resources
 
 - **Documentation**: Review updated guides in `/docs`
-- **Examples**: See `/tests/formatting-scenarios/`
-- **Issues**: Report at [GitHub Issues](https://github.com/your-repo/issues)
+- **Examples**: See `/docs/testing/formatting-scenarios/`
+- **Issues**: Report at [GitHub Issues](https://github.com/riverscornelson/knowledge-pipeline/issues)
 - **Community**: Join discussions in Slack/Discord
 
 ## Next Steps

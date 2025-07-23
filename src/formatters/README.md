@@ -58,7 +58,7 @@ metadata = PromptMetadata(
     quality_score=0.85,
     processing_time=5.2,
     token_usage={"total_tokens": 1500},
-    citations=[{"title": "Source", "url": "https://example.com"}]
+    citations=[{"title": "Source", "url": "https://github.com/riverscornelson/knowledge-pipeline"}]
 )
 
 # Format content with attribution

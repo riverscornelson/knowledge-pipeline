@@ -6,8 +6,9 @@ RESTful API for managing prompts, viewing analytics, and handling feedback
 in the prompt-aware content assembly system.
 """
 
-from fastapi import FastAPI, HTTPException, Query, Body
+from fastapi import FastAPI, HTTPException, Query, Body, Depends, Security
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional, Any
 from datetime import datetime
@@ -86,13 +87,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware
+# CORS middleware - Configure allowed origins from environment
+cors_origins = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+cors_origins = [origin.strip() for origin in cors_origins]  # Clean up whitespace
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=cors_origins,  # Only allow specific origins
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Only necessary methods
+    allow_headers=["Authorization", "Content-Type"],  # Only necessary headers
 )
 
 # Global instances
@@ -100,6 +104,36 @@ logger = setup_logger(__name__)
 pipeline_config = PipelineConfig()
 notion_client = NotionClient(pipeline_config.notion)
 enrichment_pipeline = PromptAwareEnrichmentPipeline(pipeline_config, notion_client)
+
+# Log security configuration
+logger.info(f"CORS configured with allowed origins: {cors_origins}")
+logger.info(f"API authentication required: {os.getenv('REQUIRE_API_AUTH', 'false')}")
+
+# Authentication setup
+security = HTTPBearer()
+API_SECRET_KEY = os.getenv("API_SECRET_KEY", "")
+REQUIRE_API_AUTH = os.getenv("REQUIRE_API_AUTH", "false").lower() == "true"
+
+async def verify_api_key(credentials: HTTPAuthorizationCredentials = Security(security)) -> str:
+    """Verify API key if authentication is required."""
+    if not REQUIRE_API_AUTH:
+        return "anonymous"
+    
+    if not API_SECRET_KEY:
+        logger.error("API_SECRET_KEY not configured but authentication is required")
+        raise HTTPException(status_code=500, detail="Authentication not properly configured")
+    
+    if credentials.credentials != API_SECRET_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    
+    return "authenticated"
+
+# Create dependency for optional auth
+def get_current_user():
+    """Get current user, with optional authentication."""
+    if REQUIRE_API_AUTH:
+        return Depends(verify_api_key)
+    return lambda: "anonymous"
 
 
 # API Endpoints
@@ -186,7 +220,7 @@ async def get_prompt(prompt_id: str):
 
 
 @app.post("/prompts")
-async def create_prompt(request: PromptCreateRequest):
+async def create_prompt(request: PromptCreateRequest, user: str = Depends(get_current_user())):
     """Create a new prompt."""
     try:
         # Create in Notion
@@ -261,7 +295,7 @@ async def update_prompt(prompt_id: str, request: PromptUpdateRequest):
 
 
 @app.post("/prompts/{prompt_id}/duplicate")
-async def duplicate_prompt(prompt_id: str, new_name: str = Body(...)):
+async def duplicate_prompt(prompt_id: str, new_name: str = Body(...), user: str = Depends(get_current_user())):
     """Create a copy of an existing prompt."""
     try:
         # Get original prompt
@@ -369,7 +403,7 @@ async def query_analytics(query: AnalyticsQuery):
 # Feedback Endpoints
 
 @app.post("/feedback")
-async def submit_feedback(feedback: FeedbackRequest):
+async def submit_feedback(feedback: FeedbackRequest, user: str = Depends(get_current_user())):
     """Submit user feedback for an analysis."""
     try:
         enrichment_pipeline.collect_user_feedback(
@@ -395,7 +429,7 @@ async def submit_feedback(feedback: FeedbackRequest):
 # A/B Testing Endpoints
 
 @app.post("/ab_tests")
-async def create_ab_test(test: ABTestRequest):
+async def create_ab_test(test: ABTestRequest, user: str = Depends(get_current_user())):
     """Create a new A/B test."""
     try:
         test_id = f"test_{datetime.now().timestamp()}"

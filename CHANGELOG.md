@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- Removed unused `pipeline_processor_enhanced.py` - v4.0 features already integrated in base processor
+- Removed unused `pipeline_processor_enhanced_formatting.py` - v4.0 features already integrated in base processor
+- Removed unused `notion_formatter_enhanced.py` - functionality consolidated in base formatter
+- Simplified `migrate_to_prompt_aware_formatter.py` - migration not needed as v4.0 features are in base processor
+
+### Changed
+- Clarified that all v4.0 features (prompt attribution, enhanced formatting, quality scoring) are integrated in the base `PipelineProcessor`
+- Moved `docs/ux-design/implementation-code.py` to `src/examples/ux_design_implementation_example.py` (proper location for example code)
+- Moved `tests/formatting-scenarios/*.md` to `docs/testing/formatting-scenarios/` (proper location for test documentation)
+- Updated references to reflect new locations
+
 ## [4.0.0] - 2025-01-21
 
 This is a major release introducing comprehensive prompt attribution, enhanced Notion formatting, and significant architectural improvements.

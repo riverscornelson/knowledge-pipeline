@@ -1,6 +1,6 @@
-# Knowledge Pipeline v3.0 - API Reference
+# Knowledge Pipeline v4.0.0 - API Reference
 
-This document provides comprehensive API documentation for the Knowledge Pipeline v3.0 Google Drive-focused architecture.
+This document provides comprehensive API documentation for the Knowledge Pipeline v4.0.0 architecture with prompt attribution and enhanced formatting.
 
 ## Table of Contents
 

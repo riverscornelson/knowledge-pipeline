@@ -59,7 +59,7 @@ Successfully designed and implemented solutions to resolve AI content formatting
   - Dynamic prompt management
 
 ### 7. Testing Framework
-- **Location**: `/tests/formatting-scenarios/`
+- **Location**: `/docs/testing/formatting-scenarios/`
 - **Components**:
   - `test-scenarios.md` - Comprehensive test cases
   - `research-paper-example.md` - Before/after examples

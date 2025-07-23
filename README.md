@@ -1,4 +1,4 @@
-# Knowledge Pipeline v3.0
+# Knowledge Pipeline v4.0.0
 
 *A personal automation system for staying ahead on market news. Focuses on efficient loading of information to a Notion second-brain notetaking system.*
 
@@ -227,6 +227,14 @@ See [Testing Guide](docs/reference/testing.md) for detailed testing documentatio
 
 ### Beyond Notion
 The structured data in Notion isn't locked away or trapped with Notion AI, though the goal is to use Notion AI as the RAG-bot to avoid the need to build it as part of this codebase. MCP servers allow Claude Desktop, Claude Code, and other MCP-ready applications to connect to the Notion in sophisticated ways.
+
+## 👤 Author
+
+**Rivers Cornelson**
+- GitHub: [@riverscornelson](https://github.com/riverscornelson)
+- LinkedIn: [Rivers Cornelson](https://www.linkedin.com/in/rivers-cornelson/)
+- Email: rivers.cornelson@gmail.com
+
 ## 📋 Requirements
 
 - Python 3.8+ (3.11+ recommended for performance)

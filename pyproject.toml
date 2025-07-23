@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "knowledge-pipeline"
-version = "3.0.10"
+version = "4.0.0"
 description = "AI-powered knowledge pipeline for content ingestion and enrichment"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.8"
 authors = [
-    {name = "Rivers Cornelson", email = "rivers.cornelson@crowe.com"}
+    {name = "Rivers Cornelson", email = "rivers.cornelson@gmail.com"}
 ]
 keywords = [
     "knowledge-management",
@@ -49,10 +49,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://riverscornelson.com/knowledge-pipeline"
+Homepage = "https://github.com/riverscornelson/knowledge-pipeline"
 Repository = "https://github.com/riverscornelson/knowledge-pipeline"
 Issues = "https://github.com/riverscornelson/knowledge-pipeline/issues"
 Documentation = "https://github.com/riverscornelson/knowledge-pipeline/tree/main/docs"
+LinkedIn = "https://www.linkedin.com/in/rivers-cornelson/"
 
 [project.optional-dependencies]
 dev = [

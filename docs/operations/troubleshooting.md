@@ -1,4 +1,4 @@
-# Knowledge Pipeline v3.0 - Troubleshooting Guide
+# Knowledge Pipeline v4.0.0 - Troubleshooting Guide
 
 This guide helps diagnose and resolve common issues with the Knowledge Pipeline.
 

@@ -1,4 +1,4 @@
-# Knowledge Pipeline v3.0 - Deployment Guide
+# Knowledge Pipeline v4.0.0 - Deployment Guide
 
 This guide covers deployment options for the Knowledge Pipeline in various environments.
 
@@ -43,7 +43,7 @@ This guide covers deployment options for the Knowledge Pipeline in various envir
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/your-org/knowledge-pipeline.git
+git clone https://github.com/riverscornelson/knowledge-pipeline.git
 cd knowledge-pipeline
 ```
 
@@ -118,7 +118,7 @@ sudo su - pipeline
 #### 2. Application Installation
 ```bash
 # Clone repository
-git clone https://github.com/your-org/knowledge-pipeline.git ~/knowledge-pipeline
+git clone https://github.com/riverscornelson/knowledge-pipeline.git ~/knowledge-pipeline
 cd ~/knowledge-pipeline
 
 # Create virtual environment
@@ -452,7 +452,7 @@ Add to cron job:
 ```bash
 0 */4 * * * cd /home/pipeline/knowledge-pipeline && \
   /home/pipeline/knowledge-pipeline/venv/bin/python scripts/run_pipeline.py || \
-  echo "Pipeline failed at $(date)" | mail -s "Knowledge Pipeline Alert" admin@example.com
+  echo "Pipeline failed at $(date)" | mail -s "Knowledge Pipeline Alert" rivers.cornelson@gmail.com
 ```
 
 #### Slack Notifications

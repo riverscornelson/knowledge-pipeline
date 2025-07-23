@@ -23,7 +23,7 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/knowledge-pipeline.git
+   git clone https://github.com/riverscornelson/knowledge-pipeline.git
    cd knowledge-pipeline
    ```
 3. **Add upstream remote**:

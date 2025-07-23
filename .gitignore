@@ -161,10 +161,12 @@ cython_debug/
 
 # Google API credentials
 credentials.json
+credentials.json.backup
 token.json
 token.pickle
 .token.pickle
 *_secret.json
+*_credentials.json
 
 # VS Code
 .vscode/
