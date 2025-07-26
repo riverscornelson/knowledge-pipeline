@@ -160,6 +160,7 @@ cython_debug/
 #.idea/
 
 # Google API credentials
+credentials/
 credentials.json
 credentials.json.backup
 token.json

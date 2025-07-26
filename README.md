@@ -110,7 +110,7 @@ knowledge-pipeline/
 │   ├── core/              # Core functionality  
 │   ├── drive/             # PRIMARY: Drive ingestion
 │   ├── enrichment/        # AI processing
-│   ├── secondary_sources/ # Reserved for future integrations
+│   ├── templates/        # Code templates and guides
 │   └── utils/             # Shared utilities
 ├── scripts/               # Executable scripts
 ├── tests/                 # Organized test suite

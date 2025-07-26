@@ -205,7 +205,7 @@ WEB_SEARCH_TIMEOUT_SECONDS=30
 
 To add a new content source:
 
-1. Create module in `src/secondary_sources/`
+1. Create module in `src/` with appropriate subdirectory
 2. Implement base ingester interface
 3. Add configuration to `PipelineConfig`
 4. Update `run_pipeline.py` to include new source

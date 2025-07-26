@@ -8,12 +8,16 @@ from .prompt_aware_notion_formatter import (
     TrackedAnalyzerResult
 )
 from .formatter_integration import FormatterIntegration
+from .enhanced_attribution_formatter import EnhancedAttributionFormatter
 from .performance_optimizer import FormatPerformanceOptimizer
+from . import attribution_shared
 
 __all__ = [
     "PromptAwareNotionFormatter",
     "PromptMetadata", 
     "TrackedAnalyzerResult",
     "FormatterIntegration",
-    "FormatPerformanceOptimizer"
+    "FormatPerformanceOptimizer",
+    "EnhancedAttributionFormatter",
+    "attribution_shared"
 ]

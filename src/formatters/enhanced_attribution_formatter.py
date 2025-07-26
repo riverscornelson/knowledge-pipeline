@@ -4,6 +4,11 @@ Enhanced attribution formatter that properly scales quality scores and shows Not
 from typing import Dict, List, Any, Optional, Tuple, Union
 from datetime import datetime
 from ..utils.logging import setup_logger
+from .attribution_shared import (
+    get_quality_level, get_quality_indicator, get_quality_color,
+    scale_quality_score, create_metrics_summary, format_attribution_footer,
+    QUALITY_INDICATORS, QUALITY_THRESHOLDS
+)
 
 
 class EnhancedAttributionFormatter:
@@ -14,20 +19,8 @@ class EnhancedAttributionFormatter:
         self.logger = setup_logger(__name__)
         self.prompt_config = prompt_config
         
-        # Quality thresholds for 0-10 scale
-        self.quality_thresholds = {
-            "excellent": 9.0,
-            "good": 7.0, 
-            "acceptable": 5.0,
-            "poor": 0
-        }
-        
-        self.quality_indicators = {
-            "excellent": "🌟",
-            "good": "✅",
-            "acceptable": "⚠️",
-            "poor": "❌"
-        }
+        # Use shared quality indicators
+        self.quality_indicators = QUALITY_INDICATORS
         
     def create_attribution_dashboard(self, 
                                    analysis_results: List[Any],
@@ -44,7 +37,13 @@ class EnhancedAttributionFormatter:
         blocks.append(self._create_main_header(metrics, processing_time))
         
         # Metrics summary with scaled quality
-        blocks.append(self._create_metrics_summary(metrics, prompt_sources))
+        blocks.append(create_metrics_summary(
+            metrics["total_prompts"],
+            metrics["avg_quality_raw"],
+            metrics["total_tokens"],
+            processing_time,
+            prompt_sources
+        ))
         
         # Prompt details showing Notion vs YAML sources with hyperlinks
         blocks.append(self._create_prompt_details(analysis_results, prompt_sources, notion_page_ids))
@@ -53,7 +52,11 @@ class EnhancedAttributionFormatter:
         blocks.append(self._create_performance_timeline(analysis_results))
         
         # Quality footer with prompt flow description
-        blocks.append(self._create_quality_footer(metrics, analysis_results, prompt_sources))
+        blocks.append(format_attribution_footer(
+            metrics["avg_quality_raw"],
+            metrics["total_prompts"],
+            prompt_sources
+        ))
         
         return blocks
     
@@ -68,7 +71,7 @@ class EnhancedAttributionFormatter:
         avg_quality_scaled = avg_quality_raw * 10  # Scale to 0-10
         
         # Get quality level and indicator
-        quality_level = self._get_quality_level(avg_quality_scaled)
+        quality_level = get_quality_level(avg_quality_scaled)
         quality_indicator = self.quality_indicators[quality_level]
         
         # Count Notion vs YAML prompts
@@ -127,7 +130,7 @@ class EnhancedAttributionFormatter:
                     }
                 }],
                 "icon": {"type": "emoji", "emoji": "📊"},
-                "color": self._get_quality_color(metrics["quality_level"])
+                "color": get_quality_color(metrics["quality_level"])
             }
         }
     
@@ -139,7 +142,7 @@ class EnhancedAttributionFormatter:
             analyzer_name = getattr(result, 'analyzer_name', 'Unknown')
             quality_raw = getattr(result, 'quality_score', 0.5)
             quality_scaled = quality_raw * 10
-            quality_indicator = self.quality_indicators[self._get_quality_level(quality_scaled)]
+            quality_indicator = self.quality_indicators[get_quality_level(quality_scaled)]
             
             # Get prompt source
             prompt_source = prompt_sources.get(analyzer_name.lower(), "yaml")
@@ -288,27 +291,14 @@ class EnhancedAttributionFormatter:
                     }
                 }],
                 "icon": {"type": "emoji", "emoji": "🤖"},
-                "color": self._get_quality_color(metrics["quality_level"])
+                "color": get_quality_color(metrics["quality_level"])
             }
         }
     
     def _get_quality_level(self, scaled_score: float) -> str:
         """Get quality level based on scaled score (0-10)."""
-        if scaled_score >= self.quality_thresholds["excellent"]:
-            return "excellent"
-        elif scaled_score >= self.quality_thresholds["good"]:
-            return "good"
-        elif scaled_score >= self.quality_thresholds["acceptable"]:
-            return "acceptable"
-        else:
-            return "poor"
+        return get_quality_level(scaled_score)
     
     def _get_quality_color(self, quality_level: str) -> str:
         """Get Notion color for quality level."""
-        colors = {
-            "excellent": "green_background",
-            "good": "blue_background",
-            "acceptable": "yellow_background",
-            "poor": "red_background"
-        }
-        return colors.get(quality_level, "gray_background")
+        return get_quality_color(quality_level)

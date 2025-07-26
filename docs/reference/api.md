@@ -352,7 +352,7 @@ Generates list of key actionable insights.
 
 ## Future Integrations
 
-The `src/secondary_sources/` package structure is preserved for future integrations. See `FUTURE_FEATURES.md` for planned Gmail and web content integrations with detailed implementation notes.
+Future integrations for Gmail and web content are planned. See `FUTURE_FEATURES.md` for detailed implementation notes.
 
 ## Utilities
 

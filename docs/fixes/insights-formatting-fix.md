@@ -45,7 +45,7 @@ The test script confirms:
 1. `/src/enrichment/enhanced_insights.py` - Updated prompt structure
 2. `/src/enrichment/pipeline_processor.py` - Improved parsing and added structured insights
 3. `/src/utils/notion_formatter.py` - Added emoji mappings for new sections
-4. `/tests/test_insights_formatting.py` - Created test to verify fix
+4. `/tests/test_insights_formatting.py` - Created test to verify fix (now removed)
 
 ## Impact
 - Insights now display with proper visual hierarchy in Notion

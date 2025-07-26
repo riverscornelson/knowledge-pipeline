@@ -61,8 +61,7 @@ tests/
 │   └── test_summarizer.py   # Content summarizer tests (4 tests)
 ├── fixtures/                # Test data files
 │   └── test.pdf            # Sample PDF for testing
-├── test_integration.py      # End-to-end integration tests (3 tests)
-└── test_simple_integration.py # Simple integration tests (4 tests)
+└── test_integration.py      # End-to-end integration tests (3 tests)
 ```
 
 ## Key Test Fixtures
