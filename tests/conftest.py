@@ -164,6 +164,7 @@ def mock_env_vars(mocker):
         "GOOGLE_APP_CREDENTIALS": "/path/to/test-creds.json",
         "MODEL_SUMMARY": "gpt-4",
         "MODEL_CLASSIFIER": "gpt-4",
+        "RATE_LIMIT_DELAY": "0.3",  # Override .env file value for consistent testing
     }
     mocker.patch.dict("os.environ", env_vars)
     return env_vars

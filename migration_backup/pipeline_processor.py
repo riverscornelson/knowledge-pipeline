@@ -10,7 +10,9 @@ from ..core.config import PipelineConfig
 from ..core.models import SourceContent, EnrichmentResult, ContentStatus
 from ..core.notion_client import NotionClient
 from ..utils.logging import setup_logger
+from .advanced_summarizer import AdvancedContentSummarizer
 from .advanced_classifier import AdvancedContentClassifier
+from .advanced_insights import AdvancedInsightsGenerator
 from .enhanced_summarizer import EnhancedContentSummarizer
 from .enhanced_insights import EnhancedInsightsGenerator
 from .content_tagger import ContentTagger
@@ -58,14 +60,19 @@ class PipelineProcessor:
         if self.use_enhanced_formatting:
             self.logger.info("Enhanced Notion formatting enabled")
         
-        # Initialize enhanced analyzers with full capabilities
-        self.logger.info("Using enhanced analyzers with dynamic configuration support")
-        self.summarizer = EnhancedContentSummarizer(config, self.prompt_config)
-        self.insights_generator = EnhancedInsightsGenerator(config, self.prompt_config)
-        
-        # Maintain compatibility aliases
-        self.enhanced_summarizer = self.summarizer
-        self.enhanced_insights = self.insights_generator
+        # Initialize advanced AI components with backward compatibility
+        # Use enhanced versions if web search is enabled, otherwise use original
+        if self.prompt_config.web_search_enabled:
+            self.logger.info("Using enhanced analyzers with web search capability")
+            self.enhanced_summarizer = EnhancedContentSummarizer(config, self.prompt_config)
+            self.summarizer = self.enhanced_summarizer  # For backward compatibility
+            self.enhanced_insights = EnhancedInsightsGenerator(config, self.prompt_config)
+            self.insights_generator = self.enhanced_insights  # For backward compatibility
+        else:
+            self.summarizer = AdvancedContentSummarizer(config.openai)
+            self.enhanced_summarizer = None
+            self.insights_generator = AdvancedInsightsGenerator(config.openai)
+            self.enhanced_insights = None
             
         self.classifier = AdvancedContentClassifier(config.openai, self._load_taxonomy())
         
@@ -244,22 +251,49 @@ class PipelineProcessor:
             # Log the content type being used
             self.logger.info(f"Using semantic content type '{semantic_content_type}' for analyses (was: {existing_content_type})")
             
-            # Enhanced multi-step summarization with semantic content type
-            summary_result = self.summarizer.analyze(content, title, semantic_content_type)
-            if summary_result.get("success"):
-                core_summary = summary_result.get("analysis", "")
+            # Advanced multi-step summarization with semantic content type
+            summary_result = None
+            if self.enhanced_summarizer:
+                # Get full result to capture web citations
+                summary_result = self.enhanced_summarizer.analyze(content, title, semantic_content_type)
+                core_summary = summary_result.get("analysis", "") if summary_result.get("success") else ""
+                if not core_summary:
+                    core_summary = self.summarizer.generate_summary(content, title)
             else:
-                # Fallback to generate_summary method
-                core_summary = self.summarizer.generate_summary(content, title, semantic_content_type)
+                core_summary = self.summarizer.generate_summary(content, title)
             
-            # Enhanced strategic insights with semantic content type
-            insights_result = self.insights_generator.analyze(content, title, semantic_content_type)
-            if insights_result.get("success"):
-                # Use the enhanced insights generator's parsing logic
-                key_insights = self.insights_generator.generate_insights(content, title, semantic_content_type)
+            # Strategic insights with semantic content type
+            insights_result = None
+            if self.enhanced_insights:
+                # Get full result to capture web citations
+                insights_result = self.enhanced_insights.analyze(content, title, semantic_content_type)
+                key_insights = []
+                if insights_result.get("success") and insights_result.get("analysis"):
+                    # Parse insights from the analysis text
+                    insights_text = insights_result["analysis"]
+                    # Extract bullet points or numbered items, but skip section headers
+                    import re
+                    # Split by lines and process each line
+                    lines = insights_text.split('\n')
+                    for line in lines:
+                        line = line.strip()
+                        # Skip empty lines and markdown headers
+                        if not line or line.startswith('#'):
+                            continue
+                        # Extract bullet point content
+                        bullet_match = re.match(r'^[•\-\*]\s*(.+)$', line)
+                        if bullet_match:
+                            insight = bullet_match.group(1).strip()
+                            # Skip if it looks like a section header (ends with colon or contains "Actions", "Opportunities", etc.)
+                            if not (insight.endswith(':') or 
+                                    any(header in insight for header in ['Immediate Actions', 'Strategic Opportunities', 
+                                                                         'Risk Factors', 'Market Implications', 
+                                                                         'Innovation Potential'])):
+                                key_insights.append(insight)
+                if not key_insights:
+                    key_insights = self.insights_generator.generate_insights(content, title)
             else:
-                # Fallback to direct generation
-                key_insights = self.insights_generator.generate_insights(content, title, semantic_content_type)
+                key_insights = self.insights_generator.generate_insights(content, title)
             
             # Generate content tags if enabled
             tag_result = None
@@ -349,7 +383,7 @@ class PipelineProcessor:
         
         # Add detailed quality validation metadata
         result.temperature = getattr(self.summarizer, 'temperature', 0.3)
-        result.web_search_used = summary_result.get('web_search_used', False) or insights_result.get('web_search_used', False)
+        result.web_search_used = getattr(self.enhanced_summarizer, 'web_search_enabled', False) if self.enhanced_summarizer else False
         
         # Add web citations from analyzer results
         result.summary_web_citations = summary_result.get("web_citations", []) if summary_result else []

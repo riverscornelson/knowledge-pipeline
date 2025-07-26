@@ -97,9 +97,9 @@ class TestPipelineIntegration:
                         with patch('src.enrichment.pipeline_processor.NotionClient') as mock_notion_class2:
                             mock_notion_class2.return_value = mock_notion_client
                             
-                            with patch('src.enrichment.pipeline_processor.AdvancedContentSummarizer'):
+                            with patch('src.enrichment.pipeline_processor.EnhancedContentSummarizer'):
                                 with patch('src.enrichment.pipeline_processor.AdvancedContentClassifier'):
-                                    with patch('src.enrichment.pipeline_processor.AdvancedInsightsGenerator'):
+                                    with patch('src.enrichment.pipeline_processor.EnhancedInsightsGenerator'):
                                         with patch.object(PipelineProcessor, '_load_taxonomy', return_value={'content_types': [], 'ai_primitives': [], 'vendors': []}):
                                             processor = PipelineProcessor(mock_config, mock_notion_client)
                                             # Mock extract_content to return something
@@ -206,9 +206,9 @@ class TestPipelineIntegration:
                     with patch('src.enrichment.pipeline_processor.NotionClient') as mock_notion_class2:
                         mock_notion_class2.return_value = mock_notion_client
                         
-                        with patch('src.enrichment.pipeline_processor.AdvancedContentSummarizer'):
+                        with patch('src.enrichment.pipeline_processor.EnhancedContentSummarizer'):
                             with patch('src.enrichment.pipeline_processor.AdvancedContentClassifier'):
-                                with patch('src.enrichment.pipeline_processor.AdvancedInsightsGenerator'):
+                                with patch('src.enrichment.pipeline_processor.EnhancedInsightsGenerator'):
                                     with patch.object(PipelineProcessor, '_load_taxonomy', return_value={'content_types': [], 'ai_primitives': [], 'vendors': []}):
                                         processor = PipelineProcessor(mock_config, mock_notion_client)
                                         enrich_stats = processor.process_batch()

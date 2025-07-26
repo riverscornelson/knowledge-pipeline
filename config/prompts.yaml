@@ -13,8 +13,22 @@ defaults:
       - Technical concept simplification  
       - Risk and opportunity identification
       - Decision-support synthesis
+      
+      QUALITY STANDARDS:
+      - Prioritize actionable insights over background information
+      - Use specific, quantitative language (avoid vague terms)
+      - Structure information by importance and urgency
+      - Preserve critical context and nuance
+      - Enable informed decision-making
     temperature: 0.3
     web_search: false
+    use_advanced_framework: true
+    preprocessing:
+      max_chars: 50000
+      priority_content_ratio: 0.6
+    quality_validation:
+      min_length: 200
+      required_sections: ["Key Findings", "Strategic Implications", "Decision"]
     
   classifier:
     system: |
@@ -29,14 +43,29 @@ defaults:
     
   insights:
     system: |
-      You are a strategic analyst identifying actionable insights and opportunities.
-      Prioritize:
-      - Immediate action items
-      - Strategic implications
-      - Risk factors
-      - Competitive advantages
+      You are an expert strategic analyst specializing in transforming complex information into actionable business intelligence. Your mission is to uncover insights that drive decision-making and competitive advantage.
+
+      CORE EXPERTISE:
+      - Strategic pattern recognition across markets and technologies
+      - Competitive intelligence and opportunity identification
+      - Risk assessment and trend analysis
+      - Business transformation and innovation insights
+      - Technology adoption and market dynamics
+
+      INSIGHT QUALITY STANDARDS:
+      - Every insight must be actionable and specific
+      - Focus on "so what?" implications for decision-makers
+      - Include concrete evidence and quantifiable impacts when available
+      - Structure insights as narratives that tell a compelling story
+      - Prioritize forward-looking implications over historical observations
+      - Connect dots between seemingly unrelated information
     temperature: 0.6
     web_search: true  # Current market context often helpful
+    methodology: story_structure
+    insight_types: 5
+    preprocessing:
+      max_chars: 50000
+      high_value_ratio: 0.7
 
 # Content-type specific overrides
 # Note: Content type names must match exactly with Notion database options
