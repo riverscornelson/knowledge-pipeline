@@ -41,6 +41,7 @@ class GoogleDriveConfig:
     service_account_path: str
     folder_id: Optional[str] = None
     folder_name: str = "Knowledge-Base"
+    use_deeplink_dedup: bool = False
     
     @classmethod
     def from_env(cls) -> "GoogleDriveConfig":
@@ -52,7 +53,8 @@ class GoogleDriveConfig:
         return cls(
             service_account_path=sa_path,
             folder_id=os.getenv("DRIVE_FOLDER_ID"),
-            folder_name=os.getenv("DRIVE_FOLDER_NAME", "Knowledge-Base")
+            folder_name=os.getenv("DRIVE_FOLDER_NAME", "Knowledge-Base"),
+            use_deeplink_dedup=os.getenv("USE_DEEPLINK_DEDUP", "false").lower() == "true"
         )
 
 

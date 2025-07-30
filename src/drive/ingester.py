@@ -2,7 +2,7 @@
 Google Drive content ingestion module.
 """
 import time
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Set
 from datetime import datetime
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -24,7 +24,7 @@ class DriveIngester:
         self.drive_config = config.google_drive
         self.notion_client = notion_client
         self.pdf_processor = PDFProcessor()
-        self.dedup_service = DeduplicationService()
+        self.dedup_service = DeduplicationService(use_deeplink_dedup=config.google_drive.use_deeplink_dedup)
         self.logger = setup_logger(__name__)
         
         # Initialize Drive API client
@@ -73,12 +73,22 @@ class DriveIngester:
         
         return response.get("files", [])
     
-    def process_file(self, file_info: Dict[str, Any]) -> Optional[SourceContent]:
-        """Process a single Drive file."""
+    def process_file(self, file_info: Dict[str, Any], skip_hash_calculation: bool = False) -> Optional[SourceContent]:
+        """Process a single Drive file.
+        
+        Args:
+            file_info: Drive file metadata
+            skip_hash_calculation: If True, skip expensive hash calculation (used with deeplink dedup)
+        """
         file_id = file_info["id"]
         
-        # Calculate file hash
-        file_hash = self.dedup_service.calculate_drive_file_hash(self.drive, file_id)
+        # Calculate file hash only if needed
+        if skip_hash_calculation or self.config.google_drive.use_deeplink_dedup:
+            # Use file ID as a placeholder hash when using deeplink deduplication
+            file_hash = f"drive_id:{file_id}"
+        else:
+            # Traditional hash-based deduplication
+            file_hash = self.dedup_service.calculate_drive_file_hash(self.drive, file_id)
         
         # Parse created date
         created_date = None
@@ -116,11 +126,20 @@ class DriveIngester:
             return stats
         
         # Get existing files if skip_existing is True
-        known_ids, known_hashes = set(), set()
+        known_ids, known_hashes, known_urls = set(), set(), set()
         if skip_existing:
-            known_ids, known_hashes = self.notion_client.get_existing_drive_files()
-            if known_ids:
-                print(f"Found {len(known_ids)} files already in Notion")
+            if self.config.google_drive.use_deeplink_dedup:
+                # For deeplink deduplication, we need URLs
+                known_ids, known_hashes = self.notion_client.get_existing_drive_files()
+                # Extract URLs from the Notion data
+                known_urls = self._get_existing_drive_urls()
+                if known_urls:
+                    print(f"Found {len(known_urls)} files already in Notion (using deeplink deduplication)")
+            else:
+                # Traditional hash-based deduplication
+                known_ids, known_hashes = self.notion_client.get_existing_drive_files()
+                if known_ids:
+                    print(f"Found {len(known_ids)} files already in Notion")
         
         # Get all files from Drive
         files = self.get_folder_files()
@@ -130,20 +149,28 @@ class DriveIngester:
         # Process each file
         for file_info in files:
             file_id = file_info["id"]
+            drive_url = file_info.get("webViewLink", "")
             
-            # Skip if already processed
-            if file_id in known_ids:
-                stats["skipped"] += 1
-                continue
+            # Check for duplicates based on deduplication mode
+            if self.config.google_drive.use_deeplink_dedup:
+                # Deeplink-based deduplication
+                if self.dedup_service.is_duplicate_by_deeplink(drive_url, known_urls):
+                    stats["skipped"] += 1
+                    continue
+            else:
+                # Traditional ID-based check
+                if file_id in known_ids:
+                    stats["skipped"] += 1
+                    continue
             
             try:
-                # Process the file
-                content = self.process_file(file_info)
+                # Process the file (skip hash calculation if using deeplink dedup)
+                content = self.process_file(file_info, skip_hash_calculation=self.config.google_drive.use_deeplink_dedup)
                 if not content:
                     continue
                 
-                # Skip if hash already exists
-                if content.hash in known_hashes:
+                # Skip if hash already exists (only for hash-based dedup)
+                if not self.config.google_drive.use_deeplink_dedup and content.hash in known_hashes:
                     stats["skipped"] += 1
                     print(f"Skipping duplicate: {file_info['name']}")
                     continue
@@ -153,7 +180,10 @@ class DriveIngester:
                 print(f"✓ Added: {file_info['name']}")
                 
                 stats["new"] += 1
-                known_hashes.add(content.hash)
+                if self.config.google_drive.use_deeplink_dedup:
+                    known_urls.add(content.drive_url)
+                else:
+                    known_hashes.add(content.hash)
                 
                 # Rate limiting
                 time.sleep(self.config.rate_limit_delay)
@@ -164,6 +194,59 @@ class DriveIngester:
         
         print(f"\n✅ Drive ingestion complete: {stats['new']} new files added")
         return stats
+    
+    def _get_existing_drive_urls(self) -> Set[str]:
+        """Get all existing Drive URLs from Notion database.
+        
+        Note: For very large databases, consider implementing a generator pattern
+        to reduce memory usage. Current implementation is suitable for databases
+        with up to ~10,000 documents.
+        
+        Returns:
+            Set of Drive URLs currently in the database
+        """
+        try:
+            # For performance, we batch-load URLs as the typical use case
+            # has hundreds to low thousands of documents
+            urls = set()
+            
+            # Use generator to iterate through pages
+            for drive_url in self._iter_drive_urls():
+                urls.add(drive_url)
+            
+            return urls
+            
+        except Exception as e:
+            self.logger.error(f"Error fetching existing Drive URLs: {e}")
+            return set()
+    
+    def _iter_drive_urls(self):
+        """Generator that yields Drive URLs from the Notion database.
+        
+        This method uses pagination to avoid loading all URLs into memory at once.
+        
+        Yields:
+            Drive URLs one at a time
+        """
+        filter_obj = {"property": "Drive URL", "url": {"is_not_empty": True}}
+        kwargs = {
+            "database_id": self.notion_client.db_id,
+            "filter": filter_obj,
+            "page_size": 100
+        }
+        
+        while True:
+            response = self.notion_client.client.databases.query(**kwargs)
+            
+            for page in response.get("results", []):
+                drive_url_prop = page.get("properties", {}).get("Drive URL", {})
+                if drive_url_prop and drive_url_prop.get("url"):
+                    yield drive_url_prop["url"]
+            
+            if not response.get("has_more"):
+                break
+                
+            kwargs["start_cursor"] = response.get("next_cursor")
     
     def upload_local_file(self, filepath: str, cleaned_name: str) -> str:
         """

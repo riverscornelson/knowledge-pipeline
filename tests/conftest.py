@@ -182,7 +182,8 @@ def mock_config():
         google_drive=GoogleDriveConfig(
             service_account_path="/path/to/test-creds.json",
             folder_id=None,
-            folder_name="Knowledge-Base"
+            folder_name="Knowledge-Base",
+            use_deeplink_dedup=False
         ),
         openai=OpenAIConfig(
             api_key="test-openai-key",
