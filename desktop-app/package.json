@@ -1,0 +1,71 @@
+{
+  "name": "knowledge-pipeline-desktop",
+  "version": "0.1.0",
+  "description": "Desktop application for Knowledge Pipeline - AI-powered research automation",
+  "main": ".webpack/main",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx .",
+    "test": "jest",
+    "compile": "electron-forge compile"
+  },
+  "keywords": [
+    "knowledge-pipeline",
+    "research-automation",
+    "notion",
+    "ai"
+  ],
+  "author": "Knowledge Pipeline Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-dmg": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+    "@electron-forge/plugin-webpack": "^7.2.0",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "css-loader": "^6.8.1",
+    "electron": "^28.1.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-import": "^2.29.1",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "jest": "^29.7.0",
+    "node-loader": "^2.0.0",
+    "style-loader": "^3.3.3",
+    "ts-jest": "^29.1.1",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.2",
+    "@mui/material": "^5.15.2",
+    "electron-log": "^5.0.3",
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "build": {
+    "appId": "com.knowledgepipeline.desktop",
+    "productName": "Knowledge Pipeline",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "assets/icon.icns"
+    }
+  }
+}

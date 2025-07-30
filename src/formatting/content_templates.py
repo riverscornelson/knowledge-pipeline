@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 
 from .models import ActionItem, EnrichedContent, Insight
 from .templates import ContentTemplate, TemplateRegistry
+from .text_utils import TextChunker
 
 
 class GeneralContentTemplate(ContentTemplate):
@@ -59,17 +60,14 @@ class GeneralContentTemplate(ContentTemplate):
         blocks = []
         
         for point in summary[:5]:  # Max 5 points
-            blocks.append({
-                "type": "bulleted_list_item",
-                "bulleted_list_item": {
-                    "rich_text": [
-                        {
-                            "type": "text",
-                            "text": {"content": point}
-                        }
-                    ]
-                }
-            })
+            # Use text chunker to handle long points
+            chunked_blocks = TextChunker.create_chunked_blocks(
+                text=point,
+                block_type="bulleted_list_item",
+                block_key="bulleted_list_item",
+                prefix="... "  # Continuation prefix
+            )
+            blocks.extend(chunked_blocks)
         
         return blocks
     
@@ -83,32 +81,25 @@ class GeneralContentTemplate(ContentTemplate):
             if insight.confidence < 0.8:
                 text += f" (confidence: {insight.confidence:.0%})"
             
-            blocks.append({
-                "type": "numbered_list_item",
-                "numbered_list_item": {
-                    "rich_text": [
-                        {
-                            "type": "text",
-                            "text": {"content": text}
-                        }
-                    ]
-                }
-            })
+            # Use text chunker for insights
+            chunked_blocks = TextChunker.create_chunked_blocks(
+                text=text,
+                block_type="numbered_list_item",
+                block_key="numbered_list_item",
+                prefix="... "
+            )
+            blocks.extend(chunked_blocks)
             
             # Add supporting evidence if available
             if insight.supporting_evidence:
-                blocks.append({
-                    "type": "bulleted_list_item",
-                    "bulleted_list_item": {
-                        "rich_text": [
-                            {
-                                "type": "text",
-                                "text": {"content": f"Evidence: {insight.supporting_evidence}"},
-                                "annotations": {"italic": True, "color": "gray"}
-                            }
-                        ]
-                    }
-                })
+                evidence_blocks = TextChunker.create_chunked_blocks(
+                    text=f"Evidence: {insight.supporting_evidence}",
+                    block_type="bulleted_list_item",
+                    block_key="bulleted_list_item",
+                    annotations={"italic": True, "color": "gray"},
+                    prefix="... "
+                )
+                blocks.extend(evidence_blocks)
         
         return blocks
     
@@ -139,18 +130,29 @@ class GeneralContentTemplate(ContentTemplate):
                 if action.due_date:
                     text += f" (Due: {action.due_date.strftime('%Y-%m-%d')})"
                 
-                blocks.append({
-                    "type": "to_do",
-                    "to_do": {
-                        "rich_text": [
-                            {
-                                "type": "text",
-                                "text": {"content": text}
-                            }
-                        ],
-                        "checked": False
-                    }
-                })
+                # Use text chunker for long action items
+                # Note: to_do blocks can't be split, so we convert long ones to bullet points
+                if len(text) > TextChunker.SAFE_TEXT_LENGTH:
+                    chunked_blocks = TextChunker.create_chunked_blocks(
+                        text=text,
+                        block_type="bulleted_list_item",
+                        block_key="bulleted_list_item",
+                        prefix="... "
+                    )
+                    blocks.extend(chunked_blocks)
+                else:
+                    blocks.append({
+                        "type": "to_do",
+                        "to_do": {
+                            "rich_text": [
+                                {
+                                    "type": "text",
+                                    "text": {"content": text}
+                                }
+                            ],
+                            "checked": False
+                        }
+                    })
         
         return blocks
     
@@ -241,49 +243,68 @@ class GeneralContentTemplate(ContentTemplate):
         
         if isinstance(content, list):
             for item in content:
-                blocks.append({
-                    "type": "paragraph",
-                    "paragraph": {
-                        "rich_text": [
-                            {
-                                "type": "text",
-                                "text": {"content": str(item)}
-                            }
-                        ]
-                    }
-                })
+                # Use text chunker for list items
+                chunked_blocks = TextChunker.create_chunked_blocks(
+                    text=str(item),
+                    block_type="paragraph",
+                    block_key="paragraph",
+                    prefix="... "
+                )
+                blocks.extend(chunked_blocks)
         elif isinstance(content, dict):
             # Format as key-value pairs
             for key, value in content.items():
-                blocks.append({
-                    "type": "paragraph",
-                    "paragraph": {
-                        "rich_text": [
-                            {
-                                "type": "text",
-                                "text": {"content": f"{key}: "},
-                                "annotations": {"bold": True}
-                            },
-                            {
-                                "type": "text",
-                                "text": {"content": str(value)}
-                            }
-                        ]
-                    }
-                })
+                text = f"{key}: {str(value)}"
+                
+                # Check if the combined text is too long
+                if len(text) > TextChunker.SAFE_TEXT_LENGTH:
+                    # Split key and value
+                    blocks.append({
+                        "type": "paragraph",
+                        "paragraph": {
+                            "rich_text": [
+                                {
+                                    "type": "text",
+                                    "text": {"content": f"{key}:"},
+                                    "annotations": {"bold": True}
+                                }
+                            ]
+                        }
+                    })
+                    # Add value as separate blocks
+                    value_blocks = TextChunker.create_chunked_blocks(
+                        text=str(value),
+                        block_type="paragraph",
+                        block_key="paragraph",
+                        prefix="... "
+                    )
+                    blocks.extend(value_blocks)
+                else:
+                    blocks.append({
+                        "type": "paragraph",
+                        "paragraph": {
+                            "rich_text": [
+                                {
+                                    "type": "text",
+                                    "text": {"content": f"{key}: "},
+                                    "annotations": {"bold": True}
+                                },
+                                {
+                                    "type": "text",
+                                    "text": {"content": str(value)}
+                                }
+                            ]
+                        }
+                    })
         else:
             # Single paragraph
-            blocks.append({
-                "type": "paragraph",
-                "paragraph": {
-                    "rich_text": [
-                        {
-                            "type": "text",
-                            "text": {"content": str(content)}
-                        }
-                    ]
-                }
-            })
+            chunked_blocks = TextChunker.create_chunked_blocks(
+                text=str(content),
+                block_type="paragraph",
+                block_key="paragraph",
+                prefix="... "
+            )
+            blocks.extend(chunked_blocks)
         
         return blocks
 
