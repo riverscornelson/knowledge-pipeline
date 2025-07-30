@@ -16,12 +16,26 @@ export class ConfigService {
   }
   
   /**
+   * Get a configuration value from storage
+   */
+  get<T = any>(key: string, defaultValue?: T): T {
+    return this.store.get(key, defaultValue) as T;
+  }
+  
+  /**
+   * Set a configuration value in storage
+   */
+  set(key: string, value: any): void {
+    this.store.set(key, value);
+  }
+  
+  /**
    * Load configuration from .env file
    */
   async loadConfig(): Promise<PipelineConfiguration> {
     try {
       // Get the last used config path or use default
-      const lastPath = this.store.get(STORAGE_KEYS.LAST_CONFIG_PATH, this.configPath);
+      const lastPath = this.store.get(STORAGE_KEYS.LAST_CONFIG_PATH, this.configPath) as string;
       if (fs.existsSync(lastPath)) {
         this.configPath = lastPath;
       }
@@ -30,12 +44,26 @@ export class ConfigService {
       const envContent = fs.readFileSync(this.configPath, 'utf-8');
       const config = this.parseEnvFile(envContent);
       
-      // Merge with defaults
-      return { ...DEFAULT_CONFIG, ...config };
+      // Merge with defaults and ensure required fields are present
+      const mergedConfig = { ...DEFAULT_CONFIG, ...config };
+      
+      // Ensure required fields have values (use empty string as fallback for testing)
+      if (!mergedConfig.notionToken) mergedConfig.notionToken = '';
+      if (!mergedConfig.notionDatabaseId) mergedConfig.notionDatabaseId = '';
+      if (!mergedConfig.openaiApiKey) mergedConfig.openaiApiKey = '';
+      if (!mergedConfig.googleServiceAccountPath) mergedConfig.googleServiceAccountPath = '';
+      
+      return mergedConfig as PipelineConfiguration;
     } catch (error) {
       console.error('Failed to load config:', error);
-      // Return defaults if no config exists
-      return DEFAULT_CONFIG as PipelineConfiguration;
+      // Return defaults with required fields
+      return {
+        ...DEFAULT_CONFIG,
+        notionToken: '',
+        notionDatabaseId: '',
+        openaiApiKey: '',
+        googleServiceAccountPath: ''
+      } as PipelineConfiguration;
     }
   }
   
