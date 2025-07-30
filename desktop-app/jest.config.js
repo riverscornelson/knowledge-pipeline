@@ -21,6 +21,7 @@ module.exports = {
   // Mock Electron modules
   moduleNameMapper: {
     'electron': '<rootDir>/tests/__mocks__/electron.js',
-    'electron-store': '<rootDir>/tests/__mocks__/electron-store.js'
+    'electron-store': '<rootDir>/tests/__mocks__/electron-store.js',
+    'electron-log': '<rootDir>/tests/__mocks__/electron-log.js'
   }
 };

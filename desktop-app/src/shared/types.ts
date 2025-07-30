@@ -55,6 +55,24 @@ export enum IPCChannel {
   PIPELINE_ERROR = 'pipeline:error',
   PIPELINE_COMPLETE = 'pipeline:complete',
   
+  // Notion specific
+  NOTION_CONNECT = 'notion:connect',
+  NOTION_VALIDATE_SCHEMA = 'notion:validateSchema',
+  NOTION_QUERY = 'notion:query',
+  NOTION_CREATE_PAGE = 'notion:createPage',
+  NOTION_BATCH_CREATE = 'notion:batchCreate',
+  NOTION_PROGRESS = 'notion:progress',
+  
+  // Google Drive
+  DRIVE_LIST_FILES = 'drive:listFiles',
+  DRIVE_DOWNLOAD_FILE = 'drive:downloadFile',
+  DRIVE_SEARCH_FILES = 'drive:searchFiles',
+  DRIVE_START_MONITORING = 'drive:startMonitoring',
+  DRIVE_STOP_MONITORING = 'drive:stopMonitoring',
+  DRIVE_GET_FOLDER_ID = 'drive:getFolderId',
+  DRIVE_DOWNLOAD_PROGRESS = 'drive:downloadProgress',
+  DRIVE_NEW_FILE_DETECTED = 'drive:newFileDetected',
+  
   // Utilities
   CLIPBOARD_WRITE = 'clipboard:write',
   SHOW_NOTIFICATION = 'notification:show'
@@ -105,4 +123,48 @@ export interface AppSettings {
   theme?: 'light' | 'dark' | 'system';
   autoScroll?: boolean;
   showNotifications?: boolean;
+}
+
+// Google Drive types
+export interface DriveFileMetadata {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  createdTime: string;
+  modifiedTime: string;
+  webViewLink?: string;
+  webContentLink?: string;
+  parents?: string[];
+  md5Checksum?: string;
+}
+
+export interface DriveDownloadProgress {
+  fileId: string;
+  fileName: string;
+  bytesDownloaded: number;
+  totalBytes: number;
+  percentage: number;
+  speed: number;
+  estimatedTimeRemaining: number;
+}
+
+export interface DriveMonitoringOptions {
+  folderId: string;
+  mimeTypes?: string[];
+  pollInterval?: number;
+}
+
+export interface DriveListOptions {
+  folderId?: string;
+  mimeTypes?: string[];
+  pageSize?: number;
+  orderBy?: string;
+}
+
+export interface DriveSearchOptions {
+  query: string;
+  folderId?: string;
+  mimeTypes?: string[];
+  pageSize?: number;
 }

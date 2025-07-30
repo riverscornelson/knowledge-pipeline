@@ -3,7 +3,12 @@ import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import { app } from 'electron';
-import { PipelineStatus, PipelineOutputEvent, PipelineCompleteEvent, IPCChannel } from '../shared/types';
+import { 
+  PipelineStatus, 
+  PipelineOutputEvent, 
+  PipelineCompleteEvent, 
+  IPCChannel 
+} from '../shared/types';
 import { PIPELINE_SCRIPT_PATH } from '../shared/constants';
 import {
   detectPython,
@@ -17,7 +22,10 @@ import {
   DEFAULT_RETRY_CONFIG
 } from './pythonDetector';
 
-export class PipelineExecutor {
+/**
+ * Improved Pipeline Executor with robust Python handling
+ */
+export class ImprovedPipelineExecutor {
   private process: ChildProcess | null = null;
   private status: PipelineStatus = PipelineStatus.IDLE;
   private startTime: number = 0;
@@ -77,7 +85,7 @@ export class PipelineExecutor {
   }
   
   /**
-   * Start the pipeline execution
+   * Start the pipeline execution with robust error handling
    */
   async start(): Promise<void> {
     if (this.isRunning()) {
@@ -200,12 +208,13 @@ export class PipelineExecutor {
       
     } catch (error) {
       this.status = PipelineStatus.ERROR;
+      this.cleanup();
       throw error;
     }
   }
   
   /**
-   * Stop the pipeline execution
+   * Stop the pipeline execution gracefully
    */
   async stop(): Promise<void> {
     if (!this.isRunning() || !this.process) {
@@ -240,7 +249,7 @@ export class PipelineExecutor {
             }
           } else {
             // On Unix, kill the process group
-            if (this.process && this.process.pid) {
+            if (this.process.pid) {
               try {
                 process.kill(-this.process.pid, 'SIGKILL');
               } catch {
@@ -313,55 +322,55 @@ export class PipelineExecutor {
             
             try {
               const log = JSON.parse(jsonStr);
-            
-            // Check for completion stats
-            if (log.message?.includes('Pipeline completed') && log.stats) {
-              const event: PipelineCompleteEvent = {
-                success: true,
-                stats: log.stats,
-                duration: Date.now() - this.startTime
-              };
               
-              this.mainWindow?.webContents.send(IPCChannel.PIPELINE_COMPLETE, event);
+              // Check for completion stats
+              if (log.message?.includes('Pipeline completed') && log.stats) {
+                const event: PipelineCompleteEvent = {
+                  success: true,
+                  stats: log.stats,
+                  duration: Date.now() - this.startTime
+                };
+                
+                this.mainWindow?.webContents.send(IPCChannel.PIPELINE_COMPLETE, event);
+              }
+              
+              // Check for progress updates
+              if (log.type === 'progress' && log.current && log.total) {
+                this.sendOutput('stdout', `Progress: ${log.current}/${log.total} (${Math.round(log.current / log.total * 100)}%)\n`);
+              }
+            } catch {
+              // Ignore JSON parse errors for this specific string
             }
-            
-            // Check for progress updates
-            if (log.type === 'progress' && log.current && log.total) {
-              this.sendOutput('stdout', `Progress: ${log.current}/${log.total} (${Math.round(log.current / log.total * 100)}%)\n`);
-            }
-          } catch {
-            // Ignore JSON parse errors for this specific string
           }
         }
       }
+    } catch (error) {
+      // Ignore parsing errors
+      console.error('Error parsing structured log:', error);
     }
-  } catch (error) {
-    // Ignore parsing errors
-    console.error('Error parsing structured log:', error);
   }
-}
-
-/**
- * Get diagnostic information for debugging
- */
-async getDiagnostics(): Promise<any> {
-  const pythonInfo = await detectPython();
-  const scriptPath = getResolvedScriptPath(PIPELINE_SCRIPT_PATH);
   
-  return {
-    python: pythonInfo,
-    scriptPath,
-    scriptExists: validateScriptPath(scriptPath),
-    workingDirectory: path.dirname(scriptPath),
-    platform: process.platform,
-    appPath: app.getAppPath(),
-    isPackaged: app.isPackaged,
-    resourcesPath: process.resourcesPath,
-    env: {
-      PATH: process.env.PATH,
-      PYTHONPATH: process.env.PYTHONPATH,
-      PYTHONHOME: process.env.PYTHONHOME
-    }
-  };
-}
+  /**
+   * Get diagnostic information for debugging
+   */
+  async getDiagnostics(): Promise<any> {
+    const pythonInfo = await detectPython();
+    const scriptPath = getResolvedScriptPath(PIPELINE_SCRIPT_PATH);
+    
+    return {
+      python: pythonInfo,
+      scriptPath,
+      scriptExists: validateScriptPath(scriptPath),
+      workingDirectory: path.dirname(scriptPath),
+      platform: process.platform,
+      appPath: app.getAppPath(),
+      isPackaged: app.isPackaged,
+      resourcesPath: process.resourcesPath,
+      env: {
+        PATH: process.env.PATH,
+        PYTHONPATH: process.env.PYTHONPATH,
+        PYTHONHOME: process.env.PYTHONHOME
+      }
+    };
+  }
 }

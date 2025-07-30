@@ -1,7 +1,8 @@
-import { ipcMain, BrowserWindow } from 'electron';
+import { ipcMain, BrowserWindow, clipboard } from 'electron';
 import { ConfigService } from './config';
 import { PipelineExecutor } from './executor';
 import { IPCChannel } from '../shared/types';
+import { setupNotionIPCHandlers } from './ipc-notion';
 
 /**
  * Set up IPC handlers for communication between main and renderer processes
@@ -65,4 +66,23 @@ export function setupIPCHandlers(
   ipcMain.handle(IPCChannel.PIPELINE_STATUS, async () => {
     return pipelineExecutor.getStatus();
   });
+  
+  // Utility handlers
+  ipcMain.handle(IPCChannel.CLIPBOARD_WRITE, async (_, text) => {
+    clipboard.writeText(text);
+    return { success: true };
+  });
+  
+  // Diagnostics handler for debugging Python issues
+  ipcMain.handle('pipeline:diagnostics', async () => {
+    try {
+      return await pipelineExecutor.getDiagnostics();
+    } catch (error) {
+      console.error('Failed to get diagnostics:', error);
+      throw error;
+    }
+  });
+  
+  // Set up Notion-specific handlers
+  setupNotionIPCHandlers(mainWindow);
 }
