@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 import { PipelineStatus, IPCChannel, PipelineCompleteEvent } from '../../shared/types';
 import { PythonDiagnostics } from '../components/PythonDiagnostics';
+import { getElectronAPI } from '../utils/electronAPI';
 
 interface DashboardProps {
   pipelineStatus: PipelineStatus;
@@ -53,12 +54,13 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
   const [loading, setLoading] = useState(true);
   const [lastError, setLastError] = useState<string | null>(null);
   const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const electronAPI = getElectronAPI();
 
   useEffect(() => {
     // Load saved stats from storage
     const loadStats = async () => {
       try {
-        const savedStats = await window.electron.store.get('pipelineStats');
+        const savedStats = await electronAPI.store.get('pipelineStats');
         if (savedStats) {
           setStats({
             ...savedStats,
@@ -86,7 +88,7 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
         };
         setStats(newStats);
         // Save to storage
-        window.electron.store.set('pipelineStats', {
+        electronAPI.store.set('pipelineStats', {
           ...newStats,
           lastRunDate: newStats.lastRunDate.toISOString(),
         });
@@ -99,7 +101,7 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
       }
     };
 
-    window.electron.ipcRenderer.on(IPCChannel.PIPELINE_COMPLETE, handleCompletion);
+    electronAPI.ipcRenderer.on(IPCChannel.PIPELINE_COMPLETE, handleCompletion);
 
     // Listen for pipeline errors
     const handleError = (_event: any, error: string) => {
@@ -109,13 +111,13 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
       }
     };
 
-    window.electron.ipcRenderer.on(IPCChannel.PIPELINE_ERROR, handleError);
+    electronAPI.ipcRenderer.on(IPCChannel.PIPELINE_ERROR, handleError);
 
     return () => {
-      window.electron.ipcRenderer.removeListener(IPCChannel.PIPELINE_COMPLETE, handleCompletion);
-      window.electron.ipcRenderer.removeListener(IPCChannel.PIPELINE_ERROR, handleError);
+      electronAPI.ipcRenderer.removeAllListeners(IPCChannel.PIPELINE_COMPLETE);
+      electronAPI.ipcRenderer.removeAllListeners(IPCChannel.PIPELINE_ERROR);
     };
-  }, [stats.totalDocuments]);
+  }, [stats.totalDocuments, electronAPI]);
 
   const formatDuration = (ms: number) => {
     const seconds = Math.floor(ms / 1000);
@@ -300,7 +302,7 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
               fullWidth
               variant="outlined"
               startIcon={<InfoIcon />}
-              onClick={() => window.electron.shell.openExternal('https://github.com/ruvnet/knowledge-pipeline')}
+              onClick={() => window.electron.shell.openExternal('https://github.com/riverscornelson/knowledge-pipeline')}
             >
               Documentation
             </Button>
@@ -310,7 +312,21 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
               fullWidth
               variant="outlined"
               startIcon={<CheckIcon />}
-              onClick={() => window.electron.ipcRenderer.send(IPCChannel.CONFIG_TEST)}
+              onClick={async () => {
+                try {
+                  const results = await window.electron.ipcRenderer.invoke(IPCChannel.CONFIG_TEST);
+                  // Show results in a notification or alert
+                  const failedServices = results.filter((r: any) => !r.success);
+                  if (failedServices.length === 0) {
+                    await electronAPI.showNotification('Services Test', 'All services connected successfully!');
+                  } else {
+                    await electronAPI.showNotification('Services Test', `${failedServices.length} service(s) failed. Check Configuration for details.`);
+                  }
+                } catch (error) {
+                  console.error('Failed to test services:', error);
+                  await electronAPI.showNotification('Services Test', 'Failed to test services. Check console for details.');
+                }
+              }}
               disabled={isRunning}
             >
               Test Services
@@ -321,7 +337,10 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
               fullWidth
               variant="outlined"
               startIcon={<StorageIcon />}
-              onClick={() => window.electron.shell.showItemInFolder(window.electron.app.getPath('userData'))}
+              onClick={async () => {
+                const userDataPath = await window.electron.app.getPath('userData');
+                window.electron.shell.showItemInFolder(userDataPath);
+              }}
             >
               Open Data Folder
             </Button>
@@ -331,7 +350,7 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
               fullWidth
               variant="outlined"
               startIcon={<ErrorIcon />}
-              onClick={() => window.electron.shell.showItemInFolder(window.electron.app.getPath('logs'))}
+              onClick={() => window.location.href = '#/logs'}
             >
               View Logs
             </Button>

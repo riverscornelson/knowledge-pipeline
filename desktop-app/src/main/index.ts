@@ -6,19 +6,17 @@ import { PipelineExecutor } from './executor';
 import { setupIPCHandlers } from './ipc';
 import { IPCChannel } from '../shared/types';
 
+// This will be injected by webpack
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string | undefined;
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string | undefined;
+
 // Keep a global reference of the window object
 let mainWindow: BrowserWindow | null = null;
 let windowManager: WindowManager;
 let configService: ConfigService;
 let pipelineExecutor: PipelineExecutor;
 
-// Enable live reload for Electron in development
-if (process.env.NODE_ENV === 'development') {
-  require('electron-reload')(__dirname, {
-    electron: path.join(__dirname, '..', '..', 'node_modules', '.bin', 'electron'),
-    hardResetMethod: 'exit'
-  });
-}
+// Live reload removed - causing webpack issues
 
 function createWindow() {
   // Initialize services
@@ -38,11 +36,25 @@ function createWindow() {
   });
   
   // Load the renderer
-  const startUrl = process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000'
-    : `file://${path.join(__dirname, '../renderer/index.html')}`;
-    
-  mainWindow.loadURL(startUrl);
+  console.log('Loading URL:', MAIN_WINDOW_WEBPACK_ENTRY);
+  console.log('Preload path:', MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY);
+  
+  // Just use the webpack dev server URL
+  if (MAIN_WINDOW_WEBPACK_ENTRY) {
+    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  } else {
+    console.error('No webpack entry URL available');
+  }
+  
+  // Log when the page finishes loading
+  mainWindow.webContents.on('did-finish-load', () => {
+    console.log('Page loaded successfully');
+  });
+  
+  // Log any load failures
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    console.error('Failed to load:', errorCode, errorDescription);
+  });
   
   // Open DevTools in development
   if (process.env.NODE_ENV === 'development') {
@@ -89,18 +101,7 @@ app.on('before-quit', async (event) => {
   }
 });
 
-// Handle IPC for clipboard
-ipcMain.handle(IPCChannel.CLIPBOARD_WRITE, async (_, text: string) => {
-  const { clipboard } = require('electron');
-  clipboard.writeText(text);
-  return true;
-});
-
-// Handle IPC for notifications
-ipcMain.handle(IPCChannel.SHOW_NOTIFICATION, async (_, title: string, body: string) => {
-  new Notification({ title, body }).show();
-  return true;
-});
+// IPC handlers are set up in setupIPCHandlers function
 
 // Prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();

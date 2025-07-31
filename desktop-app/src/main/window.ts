@@ -10,6 +10,9 @@ import {
 } from '../shared/constants';
 import { AppSettings } from '../shared/types';
 
+// This will be injected by webpack
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string | undefined;
+
 export class WindowManager {
   private store: Store<{ [STORAGE_KEYS.APP_SETTINGS]: AppSettings }>;
   
@@ -35,7 +38,7 @@ export class WindowManager {
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js')
+        preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY || path.join(__dirname, '../../.webpack/renderer/main_window/preload.js')
       },
       show: false,
       backgroundColor: '#ffffff',

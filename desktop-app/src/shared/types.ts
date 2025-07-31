@@ -7,6 +7,7 @@ export interface PipelineConfiguration {
   // Notion configuration
   notionToken: string;
   notionDatabaseId: string;
+  notionPromptsDbId?: string;
   notionCreatedDateProp?: string;
   
   // OpenAI configuration

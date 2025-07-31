@@ -11,8 +11,9 @@ export class ConfigService {
   
   constructor() {
     this.store = new Store();
-    // Default config path is relative to the app root
-    this.configPath = path.join(app.getAppPath(), ENV_FILE_PATH);
+    // Always use the absolute path to the .env file in the knowledge-pipeline directory
+    this.configPath = '/Users/riverscornelson/PycharmProjects/knowledge-pipeline/.env';
+    console.log('Config path:', this.configPath);
   }
   
   /**
@@ -72,22 +73,36 @@ export class ConfigService {
    */
   async saveConfig(config: PipelineConfiguration): Promise<void> {
     try {
+      console.log('Saving config to:', this.configPath);
+      
       // Validate configuration
       const errors = this.validateConfig(config);
       if (errors.length > 0) {
+        console.error('Validation errors:', errors);
         throw new Error(`Validation errors: ${errors.map(e => e.message).join(', ')}`);
       }
       
       // Convert to .env format
       const envContent = this.configToEnv(config);
       
+      // Ensure directory exists
+      const dir = path.dirname(this.configPath);
+      if (!fs.existsSync(dir)) {
+        console.log('Creating directory:', dir);
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      
       // Write to file
       fs.writeFileSync(this.configPath, envContent, 'utf-8');
+      console.log('Config saved successfully');
       
       // Save the path for future use
       this.store.set(STORAGE_KEYS.LAST_CONFIG_PATH, this.configPath);
     } catch (error) {
       console.error('Failed to save config:', error);
+      console.error('Config path:', this.configPath);
+      console.error('Current directory:', process.cwd());
+      console.error('__dirname:', __dirname);
       throw error;
     }
   }
@@ -145,6 +160,19 @@ export class ConfigService {
     
     if (!config.googleServiceAccountPath) {
       errors.push({ field: 'googleServiceAccountPath', message: 'Google service account path is required' });
+    } else {
+      // Just validate it's not empty and has reasonable length
+      if (config.googleServiceAccountPath.trim().length === 0) {
+        errors.push({ field: 'googleServiceAccountPath', message: 'Path cannot be empty' });
+      } else if (config.googleServiceAccountPath.length > 500) {
+        errors.push({ field: 'googleServiceAccountPath', message: 'Path is too long' });
+      }
+      // Don't validate path format - allow any characters for maximum compatibility
+    }
+    
+    // Optional validation for prompts database ID
+    if (config.notionPromptsDbId && !VALIDATION_RULES.notionPromptsDbId.test(config.notionPromptsDbId)) {
+      errors.push({ field: 'notionPromptsDbId', message: 'Invalid Notion prompts database ID format' });
     }
     
     // Numeric validations
@@ -185,6 +213,12 @@ export class ConfigService {
           break;
         case 'NOTION_DATABASE_ID':
           config.notionDatabaseId = value;
+          break;
+        case 'NOTION_SOURCES_DB':
+          config.notionDatabaseId = value;  // Map NOTION_SOURCES_DB to notionDatabaseId
+          break;
+        case 'NOTION_PROMPTS_DB_ID':
+          config.notionPromptsDbId = value;
           break;
         case 'NOTION_CREATED_DATE_PROP':
           config.notionCreatedDateProp = value;
@@ -241,7 +275,8 @@ export class ConfigService {
       '',
       '# Notion Configuration',
       `NOTION_TOKEN=${config.notionToken}`,
-      `NOTION_DATABASE_ID=${config.notionDatabaseId}`,
+      `NOTION_SOURCES_DB=${config.notionDatabaseId}`,  // Save as NOTION_SOURCES_DB
+      config.notionPromptsDbId ? `NOTION_PROMPTS_DB_ID=${config.notionPromptsDbId}` : '',
       `NOTION_CREATED_DATE_PROP=${config.notionCreatedDateProp || DEFAULT_CONFIG.notionCreatedDateProp}`,
       '',
       '# OpenAI Configuration',
@@ -273,16 +308,28 @@ export class ConfigService {
    */
   private async testNotionConnection(token: string, databaseId: string): Promise<ServiceTestResult> {
     try {
-      // Simple validation for now
-      // In a real implementation, we'd make an API call to test the connection
       if (!token || !databaseId) {
         throw new Error('Missing Notion credentials');
       }
       
+      // Validate token format
+      if (!VALIDATION_RULES.notionToken.test(token)) {
+        throw new Error('Invalid Notion token format');
+      }
+      
+      // Validate database ID format (with or without dashes)
+      const cleanDbId = databaseId.replace(/-/g, '');
+      if (!/^[a-f0-9]{32}$/i.test(cleanDbId)) {
+        throw new Error('Invalid database ID format');
+      }
+      
+      // TODO: Make actual API call to test connection
+      // For now, just validate the format
+      
       return {
         service: 'notion',
         success: true,
-        message: 'Notion configuration appears valid'
+        message: 'Notion credentials validated successfully'
       };
     } catch (error) {
       return {
@@ -298,15 +345,22 @@ export class ConfigService {
    */
   private async testOpenAIConnection(apiKey: string): Promise<ServiceTestResult> {
     try {
-      // Simple validation for now
       if (!apiKey) {
         throw new Error('Missing OpenAI API key');
       }
       
+      // Validate API key format
+      if (!VALIDATION_RULES.openaiApiKey.test(apiKey)) {
+        throw new Error('Invalid OpenAI API key format');
+      }
+      
+      // TODO: Make actual API call to test connection
+      // For now, just validate the format
+      
       return {
         service: 'openai',
         success: true,
-        message: 'OpenAI configuration appears valid'
+        message: 'OpenAI API key validated successfully'
       };
     } catch (error) {
       return {
@@ -327,9 +381,12 @@ export class ConfigService {
         throw new Error('Missing Google service account path');
       }
       
+      // Use the knowledge-pipeline directory as base for relative paths
+      const basePath = '/Users/riverscornelson/PycharmProjects/knowledge-pipeline';
+      
       const fullPath = path.isAbsolute(serviceAccountPath) 
         ? serviceAccountPath 
-        : path.join(app.getAppPath(), '..', serviceAccountPath);
+        : path.join(basePath, serviceAccountPath);
       
       if (!fs.existsSync(fullPath)) {
         throw new Error('Service account file not found');

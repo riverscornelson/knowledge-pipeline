@@ -1,14 +1,9 @@
 const rules = require('./webpack.rules');
 
 module.exports = {
+  entry: './src/main/preload.ts',
   module: {
-    rules: [
-      ...rules,
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      }
-    ]
+    rules
   },
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json']

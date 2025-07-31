@@ -32,9 +32,10 @@ export const DEFAULT_CONFIG = {
 
 // Validation rules
 export const VALIDATION_RULES = {
-  notionToken: /^secret_[a-zA-Z0-9]{43}$/,
-  notionDatabaseId: /^[a-f0-9]{32}$/,
-  openaiApiKey: /^sk-[a-zA-Z0-9]{48}$/,
+  notionToken: /^secret_[a-zA-Z0-9_-]{40,}$/,  // More flexible - at least 40 chars
+  notionDatabaseId: /^[a-f0-9]{8}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{12}$/i,  // Allow with or without dashes, case insensitive
+  notionPromptsDbId: /^[a-f0-9]{8}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{12}$/i,  // Allow with or without dashes, case insensitive
+  openaiApiKey: /^sk-[a-zA-Z0-9_-]{40,}$/,  // More flexible - at least 40 chars after sk-
   rateLimitDelay: { min: 0.1, max: 10 },
   processingTimeout: { min: 60, max: 3600 }
 };

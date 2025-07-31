@@ -106,10 +106,17 @@ function Configuration() {
     setTestResults([]);
 
     try {
-      const results = await window.electron.ipcRenderer.invoke(IPCChannel.CONFIG_TEST, config);
+      // Don't pass config - the handler will load it from the saved file
+      const results = await window.electron.ipcRenderer.invoke(IPCChannel.CONFIG_TEST);
+      console.log('Test results:', results);
       setTestResults(results);
     } catch (error) {
       console.error('Failed to test services:', error);
+      setTestResults([
+        { service: 'notion', success: false, message: 'Failed to test' },
+        { service: 'openai', success: false, message: 'Failed to test' },
+        { service: 'google-drive', success: false, message: 'Failed to test' }
+      ]);
     } finally {
       setTesting(false);
     }
@@ -210,7 +217,11 @@ function Configuration() {
       )}
 
       {testResults.length > 0 && (
-        <Paper sx={{ p: 2, mb: 3 }}>
+        <Alert 
+          severity={testResults.every(r => r.success) ? 'success' : 'warning'} 
+          sx={{ mb: 3 }}
+          onClose={() => setTestResults([])}
+        >
           <Typography variant="h6" sx={{ mb: 2 }}>Service Test Results</Typography>
           <Grid container spacing={2}>
             {testResults.map((result) => (
@@ -222,10 +233,10 @@ function Configuration() {
                     <ErrorIcon color="error" />
                   )}
                   <Typography variant="body1" sx={{ textTransform: 'capitalize' }}>
-                    {result.service}
+                    {result.service.replace('-', ' ')}
                   </Typography>
                   <Chip
-                    label={result.success ? 'Connected' : 'Failed'}
+                    label={result.success ? 'Valid' : 'Invalid'}
                     size="small"
                     color={result.success ? 'success' : 'error'}
                   />
@@ -236,7 +247,7 @@ function Configuration() {
               </Grid>
             ))}
           </Grid>
-        </Paper>
+        </Alert>
       )}
 
       <Paper sx={{ p: 3 }}>
@@ -276,11 +287,11 @@ function Configuration() {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Notion Database ID"
+                label="Notion Sources Database ID"
                 value={config.notionDatabaseId}
                 onChange={(e) => handleFieldChange('notionDatabaseId', e.target.value)}
                 error={!!getFieldError('notionDatabaseId')}
-                helperText={getFieldError('notionDatabaseId') || 'The ID of your Notion database'}
+                helperText={getFieldError('notionDatabaseId') || 'The ID of your Notion sources database (NOTION_SOURCES_DB)'}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -291,6 +302,27 @@ function Configuration() {
                       </Tooltip>
                     </InputAdornment>
                   ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Notion Prompts Database ID"
+                value={config.notionPromptsDbId || ''}
+                onChange={(e) => handleFieldChange('notionPromptsDbId', e.target.value)}
+                helperText="Optional: The ID of your Notion prompts database"
+                placeholder="e.g. 2366d7f523bc81759eb0c7449c8bdc9b"
+                InputProps={{
+                  endAdornment: config.notionPromptsDbId ? (
+                    <InputAdornment position="end">
+                      <Tooltip title="Copy to clipboard">
+                        <IconButton onClick={() => copyToClipboard(config.notionPromptsDbId || '')} edge="end">
+                          <CopyIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </InputAdornment>
+                  ) : null,
                 }}
               />
             </Grid>
@@ -324,7 +356,7 @@ function Configuration() {
               <TextField
                 fullWidth
                 label="OpenAI Model"
-                value={config.openaiModel || 'gpt-4-turbo-preview'}
+                value={config.openaiModel || 'gpt-4o'}
                 onChange={(e) => handleFieldChange('openaiModel', e.target.value)}
                 helperText="Model to use for AI processing"
               />

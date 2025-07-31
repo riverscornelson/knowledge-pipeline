@@ -5,34 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0200f2da-ba98-4297-afb5-4c517d38ef60" name="Changes" comment="Basic Pipeline Setup">
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" afterPath="$PROJECT_DIR$/CONTRIBUTING.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/guides/migration-to-enhanced-prompts.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/guides/migration-to-enhanced-prompts.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/implementation-summary.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/implementation-summary.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/operations/deployment.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/operations/deployment.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/operations/troubleshooting.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/operations/troubleshooting.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/reference/api.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/reference/api.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/ux-design/implementation-code.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/v4.0.0-migration-guide.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/v4.0.0-migration-guide.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/v4.0.0/release-notes.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/v4.0.0/release-notes.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/migrate_to_prompt_aware_formatter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/migrate_to_prompt_aware_formatter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/prompt_management_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/prompt_management_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/enrichment/pipeline_processor_enhanced.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/enrichment/pipeline_processor_enhanced_formatting.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/formatters/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/formatters/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/notion_formatter_enhanced.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/formatting-scenarios/prompt-testing-framework.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/formatting-scenarios/research-paper-example.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/formatting-scenarios/success-criteria.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/formatting-scenarios/test-scenarios.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/formatting-scenarios/user-testing-protocols.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/formatting-scenarios/vendor-capability-example.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/forge.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/forge.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/ipc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/ipc.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/preload.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/preload.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/window.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/window.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/hooks/useIPC.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/hooks/useIPC.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/hooks/usePipelineStatus.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/hooks/usePipelineStatus.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/screens/Configuration.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/screens/Configuration.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/screens/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/screens/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/shared/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/shared/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/shared/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/shared/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/webpack.main.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/webpack.main.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/webpack.renderer.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/webpack.renderer.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,28 +64,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.capture_websites.executor": "Run",
-    "Python.enrich_consolidated.executor": "Run",
-    "Python.python scripts/run_pipeline.py --process-local.executor": "Run",
-    "Python.python scripts/run_pipeline.py.executor": "Run",
-    "Python.setup_notion.executor": "Run",
-    "Python.shell.executor": "Run",
-    "Python.whoami.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/riverscornelson/PycharmProjects/knowledge-pipeline",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.capture_websites.executor&quot;: &quot;Run&quot;,
+    &quot;Python.enrich_consolidated.executor&quot;: &quot;Run&quot;,
+    &quot;Python.python scripts/run_pipeline.py --process-local.executor&quot;: &quot;Run&quot;,
+    &quot;Python.python scripts/run_pipeline.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.setup_notion.executor&quot;: &quot;Run&quot;,
+    &quot;Python.shell.executor&quot;: &quot;Run&quot;,
+    &quot;Python.whoami.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/mac-desktop-app&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/riverscornelson/PycharmProjects/knowledge-pipeline&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/docs" />
@@ -105,7 +94,7 @@
       <recent name="$PROJECT_DIR$/gmail_credentials" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.python scripts/run_pipeline.py --process-local">
+  <component name="RunManager" selected="Python.python scripts/run_pipeline.py">
     <configuration name="python scripts/run_pipeline.py --process-local" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="knowledge-pipeline" />
       <option name="ENV_FILES" value="" />
@@ -154,8 +143,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.python scripts/run_pipeline.py --process-local" />
         <item itemvalue="Python.python scripts/run_pipeline.py" />
+        <item itemvalue="Python.python scripts/run_pipeline.py --process-local" />
       </list>
     </recent_temporary>
   </component>
@@ -194,7 +183,8 @@
       <workItem from="1752803405634" duration="9000" />
       <workItem from="1752806558119" duration="21127000" />
       <workItem from="1752926498610" duration="35266000" />
-      <workItem from="1753183387636" duration="22133000" />
+      <workItem from="1753183387636" duration="27175000" />
+      <workItem from="1753848845959" duration="29194000" />
     </task>
     <task id="LOCAL-00001" summary="Basic Pipeline Setup">
       <option name="closed" value="true" />
@@ -227,7 +217,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/knowledge_pipeline$enrich_consolidated.coverage" NAME="enrich_consolidated Coverage Results" MODIFIED="1751208464712" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/knowledge_pipeline$python_scripts_run_pipeline_py.coverage" NAME="python scripts/run_pipeline.py Coverage Results" MODIFIED="1753211754937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/knowledge_pipeline$python_scripts_run_pipeline_py.coverage" NAME="python scripts/run_pipeline.py Coverage Results" MODIFIED="1753829473757" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/knowledge_pipeline$whoami.coverage" NAME="whoami Coverage Results" MODIFIED="1748104919065" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/knowledge_pipeline$setup_notion.coverage" NAME="setup_notion Coverage Results" MODIFIED="1748104858806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/knowledge_pipeline$shell.coverage" NAME="shell Coverage Results" MODIFIED="1748110667753" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

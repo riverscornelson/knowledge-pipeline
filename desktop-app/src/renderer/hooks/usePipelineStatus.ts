@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { IPCChannel, PipelineOutputEvent } from '../../shared/types';
 import { useIPC } from './useIPC';
+import { getElectronAPI } from '../utils/electronAPI';
 
 interface LogEntry {
   id: string;
@@ -16,12 +17,13 @@ interface LogEntry {
 export function usePipelineStatus() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const { subscribe, unsubscribe } = useIPC();
+  const electronAPI = getElectronAPI();
 
   useEffect(() => {
     // Load saved logs from storage
     const loadLogs = async () => {
       try {
-        const savedLogs = await window.electron.store.get('pipelineLogs');
+        const savedLogs = await electronAPI.store.get('pipelineLogs');
         if (savedLogs && Array.isArray(savedLogs)) {
           setLogs(savedLogs.map((log: any) => ({
             ...log,
