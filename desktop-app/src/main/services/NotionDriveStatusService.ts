@@ -2,6 +2,8 @@
  * NotionDriveStatusService - Handles Drive file status checking against Notion database
  */
 
+import { EventEmitter } from 'events';
+import { BrowserWindow } from 'electron';
 import { NotionService, QueryOptions } from './NotionService';
 import { DriveFile } from '../../shared/types';
 import log from 'electron-log';
@@ -19,13 +21,29 @@ interface CacheEntry {
   timestamp: number;
 }
 
-export class NotionDriveStatusService {
+export class NotionDriveStatusService extends EventEmitter {
   private notionService: NotionService;
   private cache: Map<string, CacheEntry> = new Map();
   private cacheTimeout: number = 5 * 60 * 1000; // 5 minutes
   
   constructor(notionService: NotionService) {
+    super();
     this.notionService = notionService;
+  }
+
+  /**
+   * Get current service status
+   */
+  async getStatus(): Promise<{ hasUpdates: boolean }> {
+    // Simple status check - could be enhanced later
+    return { hasUpdates: false };
+  }
+
+  /**
+   * Set main window for communication
+   */
+  setMainWindow(window: BrowserWindow): void {
+    // Store window reference if needed
   }
 
   /**

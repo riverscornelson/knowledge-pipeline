@@ -8,6 +8,7 @@ import log from 'electron-log';
 import { GraphIntegrationService } from './services/GraphIntegrationService';
 import { Graph3DConfigManager, defaultGraph3DConfig } from './config/graph3d.config';
 import { PipelineConfiguration } from '../shared/types';
+import { DataIntegrationService } from './services/DataIntegrationService';
 
 export interface Graph3DIntegrationOptions {
   config: PipelineConfiguration;
@@ -64,14 +65,18 @@ export class Graph3DIntegration {
    */
   async initialize(): Promise<void> {
     if (this.isInitialized || this.isDestroyed) {
+      log.info('Graph3D already initialized or destroyed, skipping');
       return;
     }
 
     try {
       log.info('Initializing 3D graph system...');
+      console.log('Graph3DIntegration.initialize() called');
 
       // Start integration services
+      log.info('Starting integration services...');
       await this.integrationService.start();
+      log.info('Integration services started');
 
       // Setup event forwarding
       this.setupEventForwarding();
@@ -80,6 +85,7 @@ export class Graph3DIntegration {
       this.isInitialized = true;
 
       log.info('3D graph system initialized successfully');
+      console.log('Graph3D system initialized successfully');
 
       // Notify renderer if window is available
       if (this.mainWindow) {
@@ -91,6 +97,8 @@ export class Graph3DIntegration {
 
     } catch (error) {
       log.error('Failed to initialize 3D graph system:', error);
+      console.error('Graph3D initialization error:', error);
+      console.error('Error details:', error.message, error.stack);
       
       if (this.mainWindow) {
         this.mainWindow.webContents.send('graph3d:initialized', {
@@ -118,6 +126,21 @@ export class Graph3DIntegration {
       syncStatus: this.isInitialized ? this.integrationService.getSyncStatus() : null,
       config: this.configManager.getConfig()
     };
+  }
+
+  /**
+   * Check if the integration is ready
+   */
+  isReady(): boolean {
+    return this.isInitialized && !this.isDestroyed;
+  }
+
+  /**
+   * Get the DataIntegrationService instance
+   */
+  getDataIntegrationService(): DataIntegrationService | null {
+    // Access the dataService through the GraphIntegrationService
+    return this.integrationService ? (this.integrationService as any).dataService : null;
   }
 
   /**

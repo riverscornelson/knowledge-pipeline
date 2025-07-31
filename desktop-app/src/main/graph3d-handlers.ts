@@ -54,6 +54,12 @@ function setupRealTimeListeners() {
  * Register all graph-related IPC handlers
  */
 export function registerGraph3DHandlers() {
+  // Debug handler to test if registration works
+  ipcMain.handle('graph3d:test', async () => {
+    console.log('Graph3D test handler called');
+    return { success: true, message: 'Graph3D handlers are registered!' };
+  });
+
   // Query graph with options
   ipcMain.handle(IPCChannel.GRAPH_QUERY, async (event, params) => {
     try {
@@ -170,6 +176,49 @@ export function registerGraph3DHandlers() {
         success: false,
         error: error instanceof Error ? error.message : 'Graph filter failed'
       };
+    }
+  });
+
+  // Enhanced handlers for new features
+  ipcMain.handle('graph3d:getData', async () => {
+    try {
+      if (!dataIntegrationService) {
+        throw new Error('DataIntegrationService not initialized');
+      }
+
+      const graph = await dataIntegrationService.transformToGraph();
+      return graph;
+    } catch (error) {
+      log.error('Failed to get graph data:', error);
+      return null;
+    }
+  });
+
+  ipcMain.handle('graph3d:refresh', async () => {
+    try {
+      if (!dataIntegrationService) {
+        throw new Error('DataIntegrationService not initialized');
+      }
+
+      const graph = await dataIntegrationService.refreshGraph();
+      return graph;
+    } catch (error) {
+      log.error('Failed to refresh graph:', error);
+      return null;
+    }
+  });
+
+  ipcMain.handle('graph3d:getMetrics', async () => {
+    try {
+      if (!dataIntegrationService) {
+        return null;
+      }
+
+      const metrics = dataIntegrationService.getMetrics();
+      return metrics;
+    } catch (error) {
+      log.error('Failed to get metrics:', error);
+      return null;
     }
   });
 

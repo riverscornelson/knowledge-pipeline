@@ -26,22 +26,56 @@ export function setupIPCHandlers(
   // Set the main window for the executor
   pipelineExecutor.setMainWindow(mainWindow);
   
-  // Initialize Graph3D integration
-  graph3dIntegration = new Graph3DIntegration(mainWindow);
+  // Graph3D integration will be initialized when config is loaded
+  // to avoid the undefined config error
   
   // Configuration handlers
   ipcMain.handle(IPCChannel.CONFIG_LOAD, async () => {
     try {
+      console.log('Loading configuration...');
       const config = await configService.loadConfig();
+      console.log('Configuration loaded:', config ? 'Success' : 'Failed');
       
       // Initialize Graph3D integration if config is available and not already initialized
-      if (config && graph3dIntegration && !graph3dIntegration.isReady()) {
+      if (config && !graph3dIntegration) {
+        console.log('Initializing Graph3D integration...');
         try {
-          await graph3dIntegration.initialize(config);
+          // Clean up any existing Graph3D integration first
+          if (graph3dIntegration) {
+            graph3dIntegration.destroy();
+            graph3dIntegration = null;
+          }
+          
+          graph3dIntegration = new Graph3DIntegration({
+            config,
+            mainWindow,
+            enableRealTimeUpdates: true,
+            performanceProfile: 'balanced'
+          });
+          await graph3dIntegration.initialize();
           console.log('Graph3D integration initialized with loaded configuration');
+          
+          // Register Graph3D handlers
+          const { registerGraph3DHandlers, initializeGraph3DHandlers, cleanupGraph3DHandlers } = require('./graph3d-handlers');
+          
+          // Clean up any existing handlers first
+          cleanupGraph3DHandlers();
+          
+          const dataService = graph3dIntegration.getDataIntegrationService();
+          console.log('DataIntegrationService available:', !!dataService);
+          if (dataService) {
+            initializeGraph3DHandlers(mainWindow, dataService);
+            registerGraph3DHandlers();
+            console.log('Graph3D handlers registered successfully');
+          } else {
+            console.error('DataIntegrationService not available');
+          }
         } catch (error) {
-          console.warn('Failed to initialize Graph3D integration:', error);
+          console.error('Failed to initialize Graph3D integration:', error);
+          console.error('Error stack:', error.stack);
         }
+      } else if (graph3dIntegration) {
+        console.log('Graph3D integration already initialized');
       }
       
       return config;
@@ -56,13 +90,52 @@ export function setupIPCHandlers(
       await configService.saveConfig(config);
       
       // Initialize or reinitialize Graph3D integration
-      if (graph3dIntegration) {
+      if (!graph3dIntegration) {
+        // Create new instance
+        try {
+          graph3dIntegration = new Graph3DIntegration({
+            config,
+            mainWindow,
+            enableRealTimeUpdates: true,
+            performanceProfile: 'balanced'
+          });
+          await graph3dIntegration.initialize();
+          console.log('Graph3D integration initialized with configuration');
+          
+          // Register Graph3D handlers
+          const { registerGraph3DHandlers, initializeGraph3DHandlers } = require('./graph3d-handlers');
+          const dataService = graph3dIntegration.getDataIntegrationService();
+          if (dataService) {
+            initializeGraph3DHandlers(mainWindow, dataService);
+            registerGraph3DHandlers();
+            console.log('Graph3D handlers registered');
+          }
+        } catch (error) {
+          console.warn('Failed to initialize Graph3D integration:', error);
+        }
+      } else {
+        // Reinitialize existing instance
         try {
           if (graph3dIntegration.isReady()) {
             graph3dIntegration.destroy();
           }
-          await graph3dIntegration.initialize(config);
+          graph3dIntegration = new Graph3DIntegration({
+            config,
+            mainWindow,
+            enableRealTimeUpdates: true,
+            performanceProfile: 'balanced'
+          });
+          await graph3dIntegration.initialize();
           console.log('Graph3D integration reinitialized with new configuration');
+          
+          // Register Graph3D handlers
+          const { registerGraph3DHandlers, initializeGraph3DHandlers } = require('./graph3d-handlers');
+          const dataService = graph3dIntegration.getDataIntegrationService();
+          if (dataService) {
+            initializeGraph3DHandlers(mainWindow, dataService);
+            registerGraph3DHandlers();
+            console.log('Graph3D handlers registered');
+          }
         } catch (error) {
           console.warn('Failed to reinitialize Graph3D integration:', error);
         }

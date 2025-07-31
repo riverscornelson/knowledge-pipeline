@@ -7,6 +7,8 @@ import { EventEmitter } from 'events';
 import log from 'electron-log';
 import { NotionService, NotionPage } from './NotionService';
 import { PipelineConfiguration } from '../../shared/types';
+import { EdgeFilteringService } from './EdgeFilteringService';
+import { ClusteringService, Cluster } from './ClusteringService';
 
 // Core data structures for 3D visualization
 export interface Node3D {
@@ -14,6 +16,10 @@ export interface Node3D {
   label: string;
   type: 'document' | 'insight' | 'tag' | 'person' | 'concept' | 'source';
   position: Vector3D;
+  // Convenience properties for easier access
+  x: number;
+  y: number;
+  z: number;
   properties: Record<string, any>;
   size: number;
   color: string;
@@ -48,6 +54,7 @@ export interface Vector3D {
 export interface Graph3D {
   nodes: Node3D[];
   edges: Edge3D[];
+  clusters?: Cluster[];
   metadata: {
     totalNodes: number;
     totalEdges: number;
@@ -188,6 +195,8 @@ class AdvancedCache {
  */
 export class DataIntegrationService extends EventEmitter {
   private notionService: NotionService;
+  private edgeFilteringService: EdgeFilteringService;
+  private clusteringService: ClusteringService;
   private cache: AdvancedCache;
   private currentGraph: Graph3D | null = null;
   private isTransforming = false;
@@ -200,11 +209,32 @@ export class DataIntegrationService extends EventEmitter {
   constructor(config: PipelineConfiguration) {
     super();
     
+    console.log('DataIntegrationService constructor called');
+    console.log('Config available:', !!config);
+    console.log('Notion token available:', !!config?.notionToken);
+    
     // Initialize Notion service
     this.notionService = new NotionService({
       token: config.notionToken,
       databaseId: config.notionDatabaseId,
       rateLimitDelay: config.rateLimitDelay || 334
+    });
+
+    // Initialize edge filtering service
+    this.edgeFilteringService = new EdgeFilteringService({
+      maxEdgesPerNode: 10,
+      minEdgeWeight: 0.3,
+      clusteringEnabled: true,
+      preserveRecentConnections: true
+    });
+
+    // Initialize clustering service
+    this.clusteringService = new ClusteringService({
+      method: 'semantic',
+      maxClusters: 10,
+      minClusterSize: 3,
+      considerTags: true,
+      considerDates: true
     });
 
     // Initialize cache
@@ -270,19 +300,64 @@ export class DataIntegrationService extends EventEmitter {
       
       // Transform to nodes and edges
       const nodes = await this.transformToNodes(pages, defaultOptions);
-      const edges = await this.computeEdges(nodes, pages, defaultOptions);
+      const rawEdges = await this.computeEdges(nodes, pages, defaultOptions);
       
-      // Apply layout algorithm
-      const positionedNodes = await this.applyLayout(nodes, edges, defaultOptions.layout);
+      // Apply intelligent edge filtering to reduce edge count
+      log.info(`Filtering ${rawEdges.length} edges...`);
+      const edges = this.edgeFilteringService.filterEdges(nodes, rawEdges);
+      log.info(`Edges reduced from ${rawEdges.length} to ${edges.length}`);
       
-      // Create graph structure
+      // Final validation - ensure all edges reference valid nodes
+      const nodeIdSet = new Set(nodes.map(n => n.id));
+      const validEdges = edges.filter(edge => {
+        const isValid = nodeIdSet.has(edge.source) && nodeIdSet.has(edge.target);
+        if (!isValid) {
+          log.warn(`Invalid edge found after filtering: ${edge.source} -> ${edge.target}`);
+        }
+        return isValid;
+      });
+      
+      if (validEdges.length < edges.length) {
+        log.warn(`Removed ${edges.length - validEdges.length} invalid edges after filtering`);
+      }
+      
+      // Apply clustering (use validEdges instead of edges)
+      log.info('Applying clustering algorithm...');
+      const clusters = this.clusteringService.clusterNodes(nodes, validEdges);
+      log.info(`Created ${clusters.length} clusters`);
+      
+      // Apply layout algorithm (use validEdges instead of edges)
+      const positionedNodes = await this.applyLayout(nodes, validEdges, defaultOptions.layout);
+      
+      // Ensure all nodes have x, y, z convenience properties
+      positionedNodes.forEach(node => {
+        // Validate position exists and has valid coordinates
+        if (!node.position || 
+            typeof node.position.x !== 'number' || 
+            typeof node.position.y !== 'number' || 
+            typeof node.position.z !== 'number' ||
+            isNaN(node.position.x) || 
+            isNaN(node.position.y) || 
+            isNaN(node.position.z)) {
+          log.error('Invalid node position detected:', node.id);
+          // Assign default position
+          node.position = { x: 0, y: 0, z: 0 };
+        }
+        
+        node.x = node.position.x;
+        node.y = node.position.y;
+        node.z = node.position.z;
+      });
+      
+      // Create graph structure (use validEdges instead of edges)
       const graph: Graph3D = {
         nodes: positionedNodes,
-        edges,
+        edges: validEdges,
+        clusters,
         metadata: {
           totalNodes: positionedNodes.length,
-          totalEdges: edges.length,
-          clusters: this.extractClusters(positionedNodes),
+          totalEdges: validEdges.length,
+          clusters: clusters.map(c => c.name),
           lastUpdate: new Date().toISOString(),
           version: 1
         }
@@ -295,7 +370,7 @@ export class DataIntegrationService extends EventEmitter {
       // Update metrics
       this.metrics.transformationTime = Date.now() - startTime;
       this.metrics.nodesProcessed = nodes.length;
-      this.metrics.edgesComputed = edges.length;
+      this.metrics.edgesComputed = validEdges.length;
       this.metrics.cacheHitRate = this.cache.getStats().hitRate;
 
       log.info('Graph transformation completed', {
@@ -431,8 +506,21 @@ export class DataIntegrationService extends EventEmitter {
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
+    // Only fetch pages from Sources database where Drive URL is not null
     const pages = await this.notionService.queryDatabase({
-      pageSize: this.maxBatchSize
+      pageSize: this.maxBatchSize,
+      filter: {
+        property: 'Drive URL',
+        url: {
+          is_not_empty: true
+        }
+      },
+      sorts: [
+        {
+          property: 'Created Date',
+          direction: 'descending'
+        }
+      ]
     });
 
     this.cache.set(cacheKey, pages, 120000); // 2 minutes
@@ -834,16 +922,19 @@ export class DataIntegrationService extends EventEmitter {
     // Check if Notion data has been updated since last transformation
     try {
       const recentPages = await this.notionService.queryDatabase({
-        sorts: [{ 
-          property: 'last_edited_time', 
-          direction: 'descending' 
-        }],
         pageSize: 10
+      });
+
+      // Sort by createdTime to get most recent
+      recentPages.sort((a, b) => {
+        const dateA = a.createdTime ? new Date(a.createdTime).getTime() : 0;
+        const dateB = b.createdTime ? new Date(b.createdTime).getTime() : 0;
+        return dateB - dateA;
       });
 
       const lastUpdate = new Date(this.currentGraph!.metadata.lastUpdate);
       const hasUpdates = recentPages.some(page => 
-        new Date(page.lastEditedTime || 0) > lastUpdate
+        new Date(page.createdTime || 0) > lastUpdate
       );
 
       if (hasUpdates) {

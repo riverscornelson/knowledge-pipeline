@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame, ThreeEvent } from '@react-three/fiber';
-import { Line, Text, Html } from '@react-three/drei';
+import { Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 export interface GraphEdgeProps {
@@ -37,22 +37,42 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({
   const lineRef = useRef<THREE.Line>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Calculate line properties
-  const points = useMemo(() => [
-    new THREE.Vector3(...start),
-    new THREE.Vector3(...end)
-  ], [start, end]);
+  // Calculate line properties with validation
+  const points = useMemo(() => {
+    // Validate start and end arrays
+    if (!start || !end || start.length !== 3 || end.length !== 3) {
+      console.warn('GraphEdge: Invalid start or end points', { start, end });
+      return [];
+    }
+    
+    // Check for valid numbers
+    const isValidPoint = (point: [number, number, number]) => 
+      point.every(coord => typeof coord === 'number' && !isNaN(coord) && isFinite(coord));
+    
+    if (!isValidPoint(start) || !isValidPoint(end)) {
+      console.warn('GraphEdge: Invalid coordinates', { start, end });
+      return [];
+    }
+    
+    return [
+      new THREE.Vector3(...start),
+      new THREE.Vector3(...end)
+    ];
+  }, [start, end]);
 
   const midPoint = useMemo(() => {
+    if (points.length < 2) return [0, 0, 0] as [number, number, number];
+    
     const mid = new THREE.Vector3()
-      .addVectors(new THREE.Vector3(...start), new THREE.Vector3(...end))
+      .addVectors(points[0], points[1])
       .multiplyScalar(0.5);
     return [mid.x, mid.y, mid.z] as [number, number, number];
-  }, [start, end]);
+  }, [points]);
 
   const distance = useMemo(() => {
-    return new THREE.Vector3(...start).distanceTo(new THREE.Vector3(...end));
-  }, [start, end]);
+    if (points.length < 2) return 0;
+    return points[0].distanceTo(points[1]);
+  }, [points]);
 
   // Dynamic properties based on state
   const dynamicColor = useMemo(() => {
@@ -107,10 +127,13 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({
 
   // Create curved line for longer distances
   const curvedPoints = useMemo(() => {
+    // Return null if we don't have valid points - NEVER return empty array
+    if (!points || points.length < 2) return null;
+    
     if (distance < 5) return points;
 
-    const startVec = new THREE.Vector3(...start);
-    const endVec = new THREE.Vector3(...end);
+    const startVec = points[0];
+    const endVec = points[1];
     const midVec = new THREE.Vector3().addVectors(startVec, endVec).multiplyScalar(0.5);
     
     // Add curve based on distance
@@ -125,21 +148,52 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({
     // Create curve with multiple points
     const curve = new THREE.QuadraticBezierCurve3(startVec, midVec, endVec);
     return curve.getPoints(20);
-  }, [points, distance, start, end]);
+  }, [points, distance]);
+
+  // Don't render if we don't have valid points
+  if (!curvedPoints || !Array.isArray(curvedPoints) || curvedPoints.length < 2) {
+    console.warn('GraphEdge: Invalid curved points, not rendering');
+    return null;
+  }
+
+  // Create geometry for the line
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry();
+    const positions: number[] = [];
+    
+    for (const point of curvedPoints) {
+      positions.push(point.x, point.y, point.z);
+    }
+    
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+    return geo;
+  }, [curvedPoints]);
+  
+  const material = useMemo(() => {
+    return new THREE.LineBasicMaterial({
+      color: dynamicColor,
+      opacity: dynamicOpacity,
+      transparent: true,
+      linewidth: lineWidth // Note: linewidth doesn't work in WebGL, but keeping for consistency
+    });
+  }, [dynamicColor, dynamicOpacity, lineWidth]);
+  
+  const glowMaterial = useMemo(() => {
+    return new THREE.LineBasicMaterial({
+      color: dynamicColor,
+      opacity: 0.2,
+      transparent: true,
+      linewidth: lineWidth * 2
+    });
+  }, [dynamicColor, lineWidth]);
 
   return (
     <group>
       {/* Main line */}
-      <Line
+      <line 
         ref={lineRef}
-        points={curvedPoints}
-        color={dynamicColor}
-        lineWidth={lineWidth}
-        transparent={true}
-        opacity={dynamicOpacity}
-        dashed={dashed}
-        dashSize={dashed ? 0.1 : undefined}
-        gapSize={dashed ? 0.05 : undefined}
+        geometry={geometry}
+        material={material}
         onClick={handleClick}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
@@ -147,12 +201,9 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({
 
       {/* Glow effect for selected/highlighted edges */}
       {(selected || highlighted || hovered) && (
-        <Line
-          points={curvedPoints}
-          color={dynamicColor}
-          lineWidth={lineWidth * 2}
-          transparent={true}
-          opacity={0.2}
+        <line
+          geometry={geometry}
+          material={glowMaterial}
         />
       )}
 

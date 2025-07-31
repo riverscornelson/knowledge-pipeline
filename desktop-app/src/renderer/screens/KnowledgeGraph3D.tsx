@@ -15,20 +15,15 @@ import {
   Grid,
   Card,
   CardContent,
-  Divider,
   IconButton,
-  Tooltip,
-  Fade
+  Tooltip
 } from '@mui/material';
 import {
   Refresh,
-  Settings,
-  Info,
-  TrendingUp,
-  Memory,
-  Speed
+  Memory
 } from '@mui/icons-material';
-import Graph3DVisualization from '../components/Graph3DVisualization';
+import EnhancedGraph3D from '../components/EnhancedGraph3D';
+// import Graph3DFallback from '../components/Graph3DFallback';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { Graph3D, Node3D, Edge3D, PerformanceMetrics } from '../../main/services/DataIntegrationService';
 import { IPCChannel } from '../../shared/types';
@@ -58,6 +53,51 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
 
   const { subscribe, unsubscribe } = useIPC();
 
+  // Validate graph data and remove invalid edges
+  const validateGraphData = useCallback((graphData: Graph3D): Graph3D => {
+    const nodeIds = new Set(graphData.nodes.map(node => node.id));
+    
+    // Filter out edges that reference non-existent nodes
+    const validEdges = graphData.edges.filter(edge => {
+      const isValid = nodeIds.has(edge.source) && nodeIds.has(edge.target);
+      if (!isValid) {
+        console.warn(`Invalid edge found: ${edge.source} -> ${edge.target}`);
+      }
+      return isValid;
+    });
+    
+    // Also ensure all nodes have valid coordinates
+    const validNodes = graphData.nodes.filter(node => {
+      const hasValidCoords = 
+        typeof node.x === 'number' && !isNaN(node.x) && isFinite(node.x) &&
+        typeof node.y === 'number' && !isNaN(node.y) && isFinite(node.y) &&
+        typeof node.z === 'number' && !isNaN(node.z) && isFinite(node.z);
+      
+      if (!hasValidCoords) {
+        console.warn(`Invalid node coordinates: ${node.id}`, { x: node.x, y: node.y, z: node.z });
+      }
+      return hasValidCoords;
+    });
+    
+    const invalidEdgesCount = graphData.edges.length - validEdges.length;
+    const invalidNodesCount = graphData.nodes.length - validNodes.length;
+    
+    if (invalidEdgesCount > 0 || invalidNodesCount > 0) {
+      console.warn(`Filtered out ${invalidNodesCount} invalid nodes and ${invalidEdgesCount} invalid edges`);
+    }
+    
+    return {
+      ...graphData,
+      nodes: validNodes,
+      edges: validEdges,
+      metadata: {
+        ...graphData.metadata,
+        totalNodes: validNodes.length,
+        totalEdges: validEdges.length
+      }
+    };
+  }, []);
+
   // Calculate graph statistics
   const calculateStats = useCallback((graphData: Graph3D): GraphStats => {
     const nodesByType: Record<string, number> = {};
@@ -85,6 +125,16 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
       setLoading(true);
       setError(null);
       setConnectionStatus('connecting');
+      
+      console.log('Loading graph data...');
+      
+      // First, test if handlers are registered
+      try {
+        const testResponse = await window.electron.ipcRenderer.invoke('graph3d:test');
+        console.log('Graph3D test response:', testResponse);
+      } catch (testError) {
+        console.log('Graph3D handlers not registered yet');
+      }
 
       const response = await window.electron.ipcRenderer.invoke(IPCChannel.GRAPH_QUERY, {
         options: {
@@ -99,8 +149,10 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
       });
 
       if (response.success && response.data) {
-        setGraph(response.data);
-        setStats(calculateStats(response.data));
+        // Validate and clean the graph data
+        const validatedGraph = validateGraphData(response.data);
+        setGraph(validatedGraph);
+        setStats(calculateStats(validatedGraph));
         setConnectionStatus('connected');
       } else {
         throw new Error(response.error || 'Failed to load graph data');
@@ -123,8 +175,10 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
       const response = await window.electron.ipcRenderer.invoke(IPCChannel.GRAPH_REFRESH);
 
       if (response.success && response.data) {
-        setGraph(response.data);
-        setStats(calculateStats(response.data));
+        // Validate and clean the graph data
+        const validatedGraph = validateGraphData(response.data);
+        setGraph(validatedGraph);
+        setStats(calculateStats(validatedGraph));
         setConnectionStatus('connected');
       } else {
         throw new Error(response.error || 'Failed to refresh graph');
@@ -157,9 +211,10 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
 
   // Handle graph updates
   const handleGraphUpdate = useCallback((updatedGraph: Graph3D) => {
-    setGraph(updatedGraph);
-    setStats(calculateStats(updatedGraph));
-  }, [calculateStats]);
+    const validatedGraph = validateGraphData(updatedGraph);
+    setGraph(validatedGraph);
+    setStats(calculateStats(validatedGraph));
+  }, [calculateStats, validateGraphData]);
 
   // Setup IPC listeners and load initial data
   useEffect(() => {
@@ -169,8 +224,9 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
 
     // Set up real-time update listener
     const handleGraphUpdate = (_event: any, data: Graph3D) => {
-      setGraph(data);
-      setStats(calculateStats(data));
+      const validatedGraph = validateGraphData(data);
+      setGraph(validatedGraph);
+      setStats(calculateStats(validatedGraph));
     };
 
     const handleMetricsUpdate = (_event: any, data: PerformanceMetrics) => {
@@ -189,7 +245,7 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
       unsubscribe(IPCChannel.GRAPH_METRICS_UPDATED, handleMetricsUpdate);
       clearInterval(metricsInterval);
     };
-  }, [subscribe, unsubscribe, loadGraphData, loadMetrics, calculateStats]);
+  }, [subscribe, unsubscribe, loadGraphData, loadMetrics, calculateStats, validateGraphData]);
 
   // Render connection status indicator
   const renderConnectionStatus = () => {
@@ -269,152 +325,6 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
     );
   };
 
-  // Render node type breakdown
-  const renderNodeTypeBreakdown = () => {
-    if (!stats) return null;
-
-    return (
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Node Types
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {Object.entries(stats.nodesByType).map(([type, count]) => (
-              <Chip
-                key={type}
-                label={`${type}: ${count}`}
-                variant="outlined"
-                size="small"
-              />
-            ))}
-          </Box>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  // Render performance metrics
-  const renderPerformanceMetrics = () => {
-    if (!metrics) return null;
-
-    return (
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            <Speed sx={{ mr: 1, verticalAlign: 'middle' }} />
-            Performance Metrics
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">
-                Transformation Time
-              </Typography>
-              <Typography variant="body1">
-                {metrics.transformationTime}ms
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">
-                Cache Hit Rate
-              </Typography>
-              <Typography variant="body1">
-                {(metrics.cacheHitRate * 100).toFixed(1)}%
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">
-                Memory Usage
-              </Typography>
-              <Typography variant="body1">
-                {metrics.memoryUsage.toFixed(1)} MB
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">
-                Nodes Processed
-              </Typography>
-              <Typography variant="body1">
-                {metrics.nodesProcessed}
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  // Render selected node details
-  const renderSelectedNodeDetails = () => {
-    if (!selectedNode) return null;
-
-    return (
-      <Fade in={!!selectedNode}>
-        <Card sx={{ mb: 2 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              <Info sx={{ mr: 1, verticalAlign: 'middle' }} />
-              Selected Node Details
-            </Typography>
-            <Typography variant="h5" color="primary" gutterBottom>
-              {selectedNode.label}
-            </Typography>
-            <Chip
-              label={selectedNode.type}
-              color="primary"
-              size="small"
-              sx={{ mb: 2 }}
-            />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Strength
-                </Typography>
-                <Typography variant="body1">
-                  {(selectedNode.metadata.strength * 100).toFixed(1)}%
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Size
-                </Typography>
-                <Typography variant="body1">
-                  {selectedNode.size}
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Created
-                </Typography>
-                <Typography variant="body1">
-                  {new Date(selectedNode.metadata.createdAt).toLocaleDateString()}
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Depth
-                </Typography>
-                <Typography variant="body1">
-                  {selectedNode.metadata.depth}
-                </Typography>
-              </Grid>
-            </Grid>
-            {selectedNode.properties.content && (
-              <>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="body2" color="textSecondary" gutterBottom>
-                  Preview
-                </Typography>
-                <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                  {selectedNode.properties.content}
-                </Typography>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </Fade>
-    );
-  };
 
   return (
     <ErrorBoundary>
@@ -453,10 +363,10 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
         {/* Statistics Cards */}
         {renderStatsCards()}
 
-        {/* Main Content */}
+        {/* Main Content - Full width without sidebar */}
         <Grid container spacing={3} sx={{ flexGrow: 1, overflow: 'hidden' }}>
-          {/* 3D Visualization */}
-          <Grid item xs={12} lg={8}>
+          {/* 3D Visualization - Now takes full width */}
+          <Grid item xs={12}>
             <Paper 
               sx={{ 
                 height: '100%', 
@@ -491,9 +401,7 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
               )}
               
               {graph && !loading && (
-                <Graph3DVisualization
-                  width={800}
-                  height={600}
+                <EnhancedGraph3D
                   initialGraph={graph}
                   onNodeClick={handleNodeClick}
                   onGraphUpdate={handleGraphUpdate}
@@ -520,46 +428,6 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
                 </Box>
               )}
             </Paper>
-          </Grid>
-
-          {/* Sidebar with details and metrics */}
-          <Grid item xs={12} lg={4}>
-            <Box sx={{ height: '100%', overflow: 'auto' }}>
-              {/* Selected Node Details */}
-              {renderSelectedNodeDetails()}
-
-              {/* Node Type Breakdown */}
-              {renderNodeTypeBreakdown()}
-
-              {/* Performance Metrics */}
-              {renderPerformanceMetrics()}
-
-              {/* Additional Info */}
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    <TrendingUp sx={{ mr: 1, verticalAlign: 'middle' }} />
-                    Graph Information
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" paragraph>
-                    This 3D visualization represents your knowledge pipeline data as an 
-                    interactive graph. Each node represents a document, insight, tag, or concept, 
-                    while edges show relationships and connections.
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Click on nodes to view details, drag to rotate the view, and scroll to zoom. 
-                    The visualization updates automatically as new data is processed.
-                  </Typography>
-                  {graph && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="caption" color="textSecondary">
-                        Last updated: {new Date(graph.metadata.lastUpdate).toLocaleString()}
-                      </Typography>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Box>
           </Grid>
         </Grid>
       </Container>

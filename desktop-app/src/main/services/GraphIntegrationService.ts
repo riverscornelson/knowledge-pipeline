@@ -9,6 +9,7 @@ import log from 'electron-log';
 import { DataIntegrationService } from './DataIntegrationService';
 import { GraphAPIService } from './GraphAPIService';
 import { NotionDriveStatusService } from './NotionDriveStatusService';
+import { NotionService } from './NotionService';
 import { PipelineConfiguration } from '../../shared/types';
 
 export interface IntegrationMetrics {
@@ -128,7 +129,14 @@ export class GraphIntegrationService extends EventEmitter {
     // Initialize services
     this.dataService = new DataIntegrationService(config);
     this.apiService = new GraphAPIService(this.dataService);
-    this.statusService = new NotionDriveStatusService(config);
+    
+    // Create NotionService for status service
+    const notionService = new NotionService({
+      token: config.notionToken,
+      databaseId: config.notionDatabaseId,
+      rateLimitDelay: config.rateLimitDelay || 334
+    });
+    this.statusService = new NotionDriveStatusService(notionService);
 
     this.setupEventHandlers();
     this.startPerformanceTracking();
@@ -268,7 +276,14 @@ export class GraphIntegrationService extends EventEmitter {
     // Reinitialize services
     this.dataService = new DataIntegrationService(this.config);
     this.apiService = new GraphAPIService(this.dataService);
-    this.statusService = new NotionDriveStatusService(this.config);
+    
+    // Create NotionService for status service
+    const notionService = new NotionService({
+      token: this.config.notionToken,
+      databaseId: this.config.notionDatabaseId,
+      rateLimitDelay: this.config.rateLimitDelay || 334
+    });
+    this.statusService = new NotionDriveStatusService(notionService);
     
     if (this.mainWindow) {
       this.setMainWindow(this.mainWindow);
