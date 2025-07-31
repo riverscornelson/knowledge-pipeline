@@ -181,6 +181,9 @@ logs/
 temp/
 output/
 
+# Webpack build artifacts
+.webpack/
+
 # Claude Flow
 .claude/
 memory/backfill_log.txt
