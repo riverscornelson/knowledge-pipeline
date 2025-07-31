@@ -25,7 +25,7 @@ import {
   ZoomIn as ZoomInIcon,
   ZoomOut as ZoomOutIcon,
   CenterFocusStrong as ResetViewIcon,
-  3dRotation as RotateIcon,
+  ThreeDRotation as RotateIcon,
   Fullscreen as FullscreenIcon,
   Info as InfoIcon,
   Search as SearchIcon,

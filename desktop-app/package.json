@@ -59,6 +59,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.2",
     "@mui/material": "^5.15.2",
+    "@mui/x-date-pickers": "^8.9.2",
     "@notionhq/client": "^4.0.1",
     "@react-three/drei": "^9.88.0",
     "@react-three/fiber": "^8.15.0",
