@@ -410,7 +410,8 @@ export default function EnhancedGraph3D({
                   strength: edge.weight,
                   metadata: {
                     createdAt: edge.metadata.createdAt,
-                    confidence: edge.metadata.confidence
+                    confidence: edge.metadata.confidence,
+                    weight: edge.weight
                   }
                 }))
               }}
