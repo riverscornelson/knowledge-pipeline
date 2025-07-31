@@ -11,7 +11,7 @@ export interface Vector3 {
 export interface GraphNode {
   id: string;
   title: string;
-  type: 'document' | 'concept' | 'person' | 'topic' | 'keyword' | 'organization' | 'location';
+  type: 'document' | 'concept' | 'person' | 'topic' | 'keyword' | 'organization' | 'location' | 'research' | 'market-analysis' | 'news';
   position: Vector3;
   size: number;
   color: string;
@@ -23,6 +23,13 @@ export interface GraphNode {
     tags: string[];
     description?: string;
     weight: number; // Importance/centrality score
+    qualityScore: number; // 0-100 quality rating
+    contentType: string; // Specific content categorization
+    preview?: string; // Content preview text
+    createdAt: Date;
+    driveUrl?: string; // Google Drive URL
+    notionUrl?: string; // Notion page URL
+    isNew?: boolean; // Flag for newly added nodes
   };
 }
 
