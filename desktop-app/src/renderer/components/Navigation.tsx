@@ -17,6 +17,7 @@ import {
   Settings as SettingsIcon,
   Description as LogsIcon,
   CloudQueue as DriveIcon,
+  AccountTree as Graph3DIcon,
   PlayArrow as PlayIcon,
   Stop as StopIcon,
   CheckCircle as CheckIcon,
@@ -37,6 +38,7 @@ function Navigation({ pipelineStatus }: NavigationProps) {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Drive Explorer', icon: <DriveIcon />, path: '/drive' },
+    { text: '3D Knowledge Graph', icon: <Graph3DIcon />, path: '/graph3d' },
     { text: 'Configuration', icon: <SettingsIcon />, path: '/configuration' },
     { text: 'Logs', icon: <LogsIcon />, path: '/logs' },
   ];

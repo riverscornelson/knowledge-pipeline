@@ -6,10 +6,13 @@ import { SimplifiedGoogleDriveService } from './services/SimplifiedGoogleDriveSe
 import { UnifiedGoogleAuth } from './services/UnifiedGoogleAuth';
 import { IPCChannel } from '../shared/types';
 import { setupNotionIPCHandlers } from './ipc-notion';
+import { Graph3DIntegration } from './graph3d-integration';
 
 /**
  * Set up IPC handlers for communication between main and renderer processes
  */
+let graph3dIntegration: Graph3DIntegration | null = null;
+
 export function setupIPCHandlers(
   configService: ConfigService,
   pipelineExecutor: PipelineExecutor,
@@ -23,10 +26,25 @@ export function setupIPCHandlers(
   // Set the main window for the executor
   pipelineExecutor.setMainWindow(mainWindow);
   
+  // Initialize Graph3D integration
+  graph3dIntegration = new Graph3DIntegration(mainWindow);
+  
   // Configuration handlers
   ipcMain.handle(IPCChannel.CONFIG_LOAD, async () => {
     try {
-      return await configService.loadConfig();
+      const config = await configService.loadConfig();
+      
+      // Initialize Graph3D integration if config is available and not already initialized
+      if (config && graph3dIntegration && !graph3dIntegration.isReady()) {
+        try {
+          await graph3dIntegration.initialize(config);
+          console.log('Graph3D integration initialized with loaded configuration');
+        } catch (error) {
+          console.warn('Failed to initialize Graph3D integration:', error);
+        }
+      }
+      
+      return config;
     } catch (error) {
       console.error('Failed to load config:', error);
       throw error;
@@ -36,6 +54,20 @@ export function setupIPCHandlers(
   ipcMain.handle(IPCChannel.CONFIG_SAVE, async (_, config) => {
     try {
       await configService.saveConfig(config);
+      
+      // Initialize or reinitialize Graph3D integration
+      if (graph3dIntegration) {
+        try {
+          if (graph3dIntegration.isReady()) {
+            graph3dIntegration.destroy();
+          }
+          await graph3dIntegration.initialize(config);
+          console.log('Graph3D integration reinitialized with new configuration');
+        } catch (error) {
+          console.warn('Failed to reinitialize Graph3D integration:', error);
+        }
+      }
+      
       return { success: true };
     } catch (error) {
       console.error('Failed to save config:', error);

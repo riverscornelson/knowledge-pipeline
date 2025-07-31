@@ -7,6 +7,7 @@ import Dashboard from './screens/Dashboard';
 import Configuration from './screens/Configuration';
 import Logs from './screens/Logs';
 import SimplifiedDriveExplorer from './screens/SimplifiedDriveExplorer';
+import KnowledgeGraph3D from './screens/KnowledgeGraph3D';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useIPC } from './hooks/useIPC';
 import { usePipelineStatus } from './hooks/usePipelineStatus';
@@ -72,6 +73,7 @@ function App() {
                 />
                 <Route path="/configuration" element={<Configuration />} />
                 <Route path="/drive" element={<SimplifiedDriveExplorer />} />
+                <Route path="/graph3d" element={<KnowledgeGraph3D />} />
                 <Route 
                   path="/logs" 
                   element={

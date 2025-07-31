@@ -76,6 +76,14 @@ export enum IPCChannel {
   DRIVE_PROCESS_FILES = 'drive:processFiles',
   DRIVE_GET_PROCESSING_STATUS = 'drive:getProcessingStatus',
   
+  // Graph 3D channels
+  GRAPH_QUERY = 'graph:query',
+  GRAPH_REFRESH = 'graph:refresh',
+  GRAPH_METRICS = 'graph:metrics', 
+  GRAPH_UPDATED = 'graph:updated',
+  GRAPH_METRICS_UPDATED = 'graph:metrics-updated',
+  GRAPH_NODE_DETAILS = 'graph:node-details',
+  
   // Utilities
   CLIPBOARD_WRITE = 'clipboard:write',
   SHOW_NOTIFICATION = 'notification:show'
