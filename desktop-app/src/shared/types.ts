@@ -73,6 +73,8 @@ export enum IPCChannel {
   DRIVE_GET_FOLDER_ID = 'drive:getFolderId',
   DRIVE_DOWNLOAD_PROGRESS = 'drive:downloadProgress',
   DRIVE_NEW_FILE_DETECTED = 'drive:newFileDetected',
+  DRIVE_PROCESS_FILES = 'drive:processFiles',
+  DRIVE_GET_PROCESSING_STATUS = 'drive:getProcessingStatus',
   
   // Utilities
   CLIPBOARD_WRITE = 'clipboard:write',
@@ -168,4 +170,24 @@ export interface DriveSearchOptions {
   folderId?: string;
   mimeTypes?: string[];
   pageSize?: number;
+}
+
+// Drive file with processing status
+export interface DriveFile extends DriveFileMetadata {
+  processed: boolean;
+  lastProcessedDate?: Date;
+  sha256Hash?: string;
+}
+
+// Drive Explorer specific IPC events
+export interface DriveListFilesResult {
+  success: boolean;
+  files: DriveFile[];
+  error?: string;
+}
+
+export interface DriveProcessFilesResult {
+  success: boolean;
+  processedCount: number;
+  error?: string;
 }

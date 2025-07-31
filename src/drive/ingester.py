@@ -195,6 +195,66 @@ class DriveIngester:
         print(f"\n✅ Drive ingestion complete: {stats['new']} new files added")
         return stats
     
+    def process_specific_files(self, file_ids: List[str]) -> Dict[str, int]:
+        """Process specific Drive files by their IDs.
+        
+        Args:
+            file_ids: List of Google Drive file IDs to process
+            
+        Returns:
+            Dictionary with ingestion statistics
+        """
+        stats = {"total": 0, "new": 0, "skipped": 0}
+        
+        # Initialize existing items for deduplication
+        if self.config.google_drive.use_deeplink_dedup:
+            known_urls = self._get_existing_drive_urls()
+        else:
+            known_hashes = self.dedup_service.get_existing_hashes(self.notion_client)
+        
+        print(f"Processing {len(file_ids)} specific files from Google Drive...")
+        
+        for file_id in file_ids:
+            stats["total"] += 1
+            
+            try:
+                # Get file metadata
+                file_info = self.drive.files().get(
+                    fileId=file_id,
+                    fields="id, name, webViewLink, mimeType, createdTime, modifiedTime, size"
+                ).execute()
+                
+                # Check if file is a PDF
+                if file_info.get("mimeType") != "application/pdf":
+                    print(f"⏭️ Skipped {file_info['name']} (not a PDF)")
+                    stats["skipped"] += 1
+                    continue
+                
+                # Skip deduplication check if force reprocess is implied
+                # (when specific files are requested, assume user wants to process them)
+                
+                # Process the file
+                content = self.process_file(file_info, skip_hash_calculation=self.config.google_drive.use_deeplink_dedup)
+                if not content:
+                    stats["skipped"] += 1
+                    continue
+                
+                # Add to Notion
+                self.notion_client.create_page(content)
+                print(f"✓ Processed: {file_info['name']}")
+                
+                stats["new"] += 1
+                
+                # Rate limiting
+                time.sleep(self.config.rate_limit_delay)
+                
+            except Exception as e:
+                print(f"Error processing file {file_id}: {str(e)}")
+                stats["skipped"] += 1
+        
+        print(f"\n✅ Specific files processing complete: {stats['new']} files processed")
+        return stats
+    
     def _get_existing_drive_urls(self) -> Set[str]:
         """Get all existing Drive URLs from Notion database.
         

@@ -232,6 +232,9 @@ export class ConfigService {
         case 'GOOGLE_SERVICE_ACCOUNT_PATH':
           config.googleServiceAccountPath = value;
           break;
+        case 'GOOGLE_APP_CREDENTIALS':
+          config.googleServiceAccountPath = value;  // Map GOOGLE_APP_CREDENTIALS to googleServiceAccountPath
+          break;
         case 'DRIVE_FOLDER_NAME':
           config.driveFolderName = value;
           break;
@@ -284,7 +287,7 @@ export class ConfigService {
       `OPENAI_MODEL=${config.openaiModel || DEFAULT_CONFIG.openaiModel}`,
       '',
       '# Google Drive Configuration',
-      `GOOGLE_SERVICE_ACCOUNT_PATH=${config.googleServiceAccountPath}`,
+      `GOOGLE_APP_CREDENTIALS=${config.googleServiceAccountPath}`,
       `DRIVE_FOLDER_NAME=${config.driveFolderName || DEFAULT_CONFIG.driveFolderName}`,
       config.driveFolderId ? `DRIVE_FOLDER_ID=${config.driveFolderId}` : '',
       '',
@@ -381,12 +384,10 @@ export class ConfigService {
         throw new Error('Missing Google service account path');
       }
       
-      // Use the knowledge-pipeline directory as base for relative paths
-      const basePath = '/Users/riverscornelson/PycharmProjects/knowledge-pipeline';
-      
+      // Use the path as-is if it's absolute, otherwise resolve relative to current directory
       const fullPath = path.isAbsolute(serviceAccountPath) 
         ? serviceAccountPath 
-        : path.join(basePath, serviceAccountPath);
+        : path.resolve(serviceAccountPath);
       
       if (!fs.existsSync(fullPath)) {
         throw new Error('Service account file not found');

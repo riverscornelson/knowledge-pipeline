@@ -6,10 +6,11 @@ import Navigation from './components/Navigation';
 import Dashboard from './screens/Dashboard';
 import Configuration from './screens/Configuration';
 import Logs from './screens/Logs';
-import DriveExplorer from './screens/DriveExplorer';
+import SimplifiedDriveExplorer from './screens/SimplifiedDriveExplorer';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useIPC } from './hooks/useIPC';
 import { usePipelineStatus } from './hooks/usePipelineStatus';
+import { initializeNotionService } from './utils/notionInit';
 
 function App() {
   const [pipelineStatus, setPipelineStatus] = useState<PipelineStatus>(PipelineStatus.IDLE);
@@ -23,6 +24,20 @@ function App() {
     };
 
     subscribe(IPCChannel.PIPELINE_STATUS, statusHandler);
+
+    // Initialize Notion service on app load
+    const initializeNotion = async () => {
+      try {
+        const config = await window.electron.ipcRenderer.invoke(IPCChannel.CONFIG_LOAD);
+        if (config) {
+          await initializeNotionService(config);
+        }
+      } catch (error) {
+        console.error('Failed to initialize Notion on startup:', error);
+      }
+    };
+    
+    initializeNotion();
 
     return () => {
       unsubscribe(IPCChannel.PIPELINE_STATUS, statusHandler);
@@ -56,7 +71,7 @@ function App() {
                   } 
                 />
                 <Route path="/configuration" element={<Configuration />} />
-                <Route path="/drive" element={<DriveExplorer />} />
+                <Route path="/drive" element={<SimplifiedDriveExplorer />} />
                 <Route 
                   path="/logs" 
                   element={

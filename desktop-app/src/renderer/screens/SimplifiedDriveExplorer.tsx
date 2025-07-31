@@ -19,13 +19,14 @@ import {
   Tooltip,
   Checkbox,
   TablePagination,
-  Menu,
-  MenuItem,
   FormControl,
   InputLabel,
   Select,
+  MenuItem,
   Grid,
-  LinearProgress,
+  Card,
+  CardContent,
+  CardActions,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -38,24 +39,17 @@ import {
   FolderOpen as FolderIcon,
   Description as FileIcon,
   Clear as ClearIcon,
-  Article as NotionIcon,
-  MoreVert as MoreIcon,
+  Google as GoogleIcon,
+  Logout as LogoutIcon,
+  AccountCircle as AccountIcon,
 } from '@mui/icons-material';
 import { IPCChannel, DriveFile } from '../../shared/types';
 import { format } from 'date-fns';
 
-interface FileStatusCheck {
-  driveFileId: string;
-  webViewLink: string;
-  inNotionDatabase: boolean;
-  notionPageId?: string;
-  processedDate?: Date;
-}
-
-function DriveExplorer() {
+function SimplifiedDriveExplorer() {
   const [files, setFiles] = useState<DriveFile[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<DriveFile[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
@@ -63,50 +57,68 @@ function DriveExplorer() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'processed' | 'unprocessed'>('all');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
-  const [notionStatus, setNotionStatus] = useState<Record<string, FileStatusCheck>>({});
-  const [checkingStatus, setCheckingStatus] = useState(false);
-  const [fileMenuAnchor, setFileMenuAnchor] = useState<{ el: HTMLElement; fileId: string } | null>(null);
-  const [processingProgress, setProcessingProgress] = useState<{
-    isProcessing: boolean;
-    totalFiles: number;
-    processedFiles: number;
-    currentFile?: string;
-  }>({ isProcessing: false, totalFiles: 0, processedFiles: 0 });
+  
+  // Authentication state
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    loadFiles();
+    checkAuthStatus();
   }, []);
-
-  useEffect(() => {
-    // Check Notion status when files are loaded
-    if (files.length > 0) {
-      checkNotionStatus();
-    }
-  }, [files]);
-
-  useEffect(() => {
-    // Poll for status updates when processing
-    let intervalId: NodeJS.Timeout | null = null;
-    
-    if (processingProgress.isProcessing) {
-      // Poll every 5 seconds for status updates
-      intervalId = setInterval(() => {
-        checkNotionStatus();
-      }, 5000);
-    }
-    
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [processingProgress.isProcessing]);
 
   useEffect(() => {
     filterFiles();
   }, [files, searchQuery, statusFilter]);
+
+  const checkAuthStatus = async () => {
+    setAuthLoading(true);
+    try {
+      const status = await window.electron.ipcRenderer.invoke('google:auth:status');
+      setAuthenticated(status.authenticated);
+      setUserEmail(status.email || null);
+      
+      if (status.authenticated) {
+        // Auto-load files if authenticated
+        loadFiles();
+      }
+    } catch (err) {
+      console.error('Failed to check auth status:', err);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleAuthenticate = async () => {
+    setAuthLoading(true);
+    setError(null);
+    try {
+      const result = await window.electron.ipcRenderer.invoke('google:auth:authenticate');
+      if (result.success) {
+        await checkAuthStatus();
+      } else {
+        setError(result.error || 'Authentication failed');
+      }
+    } catch (err) {
+      console.error('Authentication failed:', err);
+      setError('Failed to authenticate with Google');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await window.electron.ipcRenderer.invoke('google:auth:clear');
+      setAuthenticated(false);
+      setUserEmail(null);
+      setFiles([]);
+      setFilteredFiles([]);
+    } catch (err) {
+      console.error('Failed to logout:', err);
+    }
+  };
 
   const loadFiles = async () => {
     setLoading(true);
@@ -118,29 +130,17 @@ function DriveExplorer() {
         setLastRefresh(new Date());
       } else {
         setError(result.error || 'Failed to load files');
+        
+        // If not authenticated, update status
+        if (result.error?.includes('Not authenticated')) {
+          setAuthenticated(false);
+        }
       }
     } catch (err) {
       console.error('Failed to load files:', err);
       setError('Failed to connect to Google Drive');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const checkNotionStatus = async () => {
-    if (files.length === 0) return;
-    
-    setCheckingStatus(true);
-    try {
-      const result = await window.electron.ipcRenderer.invoke('notion:checkDriveFilesStatus', files);
-      if (result.success) {
-        setNotionStatus(result.status);
-      }
-    } catch (err) {
-      console.error('Failed to check Notion status:', err);
-      // Don't show error - just show files as unknown status
-    } finally {
-      setCheckingStatus(false);
     }
   };
 
@@ -155,13 +155,11 @@ function DriveExplorer() {
       );
     }
 
-    // Status filter - now based on Notion status
+    // Status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(file => {
-        const status = notionStatus[file.id];
-        const isProcessed = status?.inNotionDatabase || false;
-        return statusFilter === 'processed' ? isProcessed : !isProcessed;
-      });
+      filtered = filtered.filter(file => 
+        statusFilter === 'processed' ? file.processed : !file.processed
+      );
     }
 
     // Sort by modified date (newest first)
@@ -200,18 +198,8 @@ function DriveExplorer() {
 
     setProcessing(true);
     setError(null);
-    
     try {
       const filesToProcess = files.filter(f => selectedFiles.has(f.id));
-      
-      // Set up progress tracking
-      setProcessingProgress({
-        isProcessing: true,
-        totalFiles: filesToProcess.length,
-        processedFiles: 0,
-        currentFile: filesToProcess[0]?.name
-      });
-      
       const result = await window.electron.ipcRenderer.invoke(
         IPCChannel.DRIVE_PROCESS_FILES,
         filesToProcess
@@ -228,24 +216,16 @@ function DriveExplorer() {
         // Clear selection
         setSelectedFiles(new Set());
         
-        // Start polling for status updates
-        // The useEffect will handle the polling
+        // Refresh file list to update processing status
+        setTimeout(() => loadFiles(), 2000);
       } else {
         setError(result.error || 'Failed to start processing');
-        setProcessingProgress({ isProcessing: false, totalFiles: 0, processedFiles: 0 });
       }
     } catch (err) {
       console.error('Failed to process files:', err);
       setError('Failed to process selected files');
-      setProcessingProgress({ isProcessing: false, totalFiles: 0, processedFiles: 0 });
     } finally {
       setProcessing(false);
-      
-      // Stop progress tracking after 2 minutes (max processing time)
-      setTimeout(() => {
-        setProcessingProgress({ isProcessing: false, totalFiles: 0, processedFiles: 0 });
-        loadFiles(); // Final refresh
-      }, 120000);
     }
   };
 
@@ -274,7 +254,57 @@ function DriveExplorer() {
   const isIndeterminate = paginatedFiles.some(file => selectedFiles.has(file.id)) && 
     !isAllSelected;
 
-  if (loading && files.length === 0) {
+  // Show auth screen if not authenticated
+  if (!authenticated && !authLoading) {
+    return (
+      <Box className="fade-in">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h4" sx={{ fontWeight: 600 }}>
+            Drive Explorer
+          </Typography>
+        </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
+        <Card sx={{ maxWidth: 600, mx: 'auto', mt: 8 }}>
+          <CardContent sx={{ textAlign: 'center', py: 4 }}>
+            <GoogleIcon sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
+            <Typography variant="h5" gutterBottom>
+              Connect to Google Drive
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+              Authenticate with your Google account to access and process PDF files from your Drive.
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              This will grant the app permission to:
+            </Typography>
+            <Box sx={{ mt: 2, mb: 3 }}>
+              <Typography variant="body2">• Read files from your Google Drive</Typography>
+              <Typography variant="body2">• Create files in your Google Drive</Typography>
+              <Typography variant="body2">• Read your Gmail messages (for future features)</Typography>
+            </Box>
+          </CardContent>
+          <CardActions sx={{ justifyContent: 'center', pb: 3 }}>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={authLoading ? <CircularProgress size={20} /> : <GoogleIcon />}
+              onClick={handleAuthenticate}
+              disabled={authLoading}
+            >
+              {authLoading ? 'Authenticating...' : 'Connect with Google'}
+            </Button>
+          </CardActions>
+        </Card>
+      </Box>
+    );
+  }
+
+  if (authLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
         <CircularProgress />
@@ -288,16 +318,21 @@ function DriveExplorer() {
         <Typography variant="h4" sx={{ fontWeight: 600 }}>
           Drive Explorer
         </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          {userEmail && (
+            <Chip
+              icon={<AccountIcon />}
+              label={userEmail}
+              variant="outlined"
+              onDelete={handleLogout}
+              deleteIcon={<LogoutIcon />}
+            />
+          )}
           <Button
             variant="outlined"
-            startIcon={checkingStatus ? <CircularProgress size={16} /> : <RefreshIcon />}
-            onClick={() => {
-              loadFiles();
-              // Clear cache to force status recheck
-              window.electron.ipcRenderer.invoke('notion:clearStatusCache');
-            }}
-            disabled={loading || checkingStatus}
+            startIcon={loading ? <CircularProgress size={16} /> : <RefreshIcon />}
+            onClick={loadFiles}
+            disabled={loading}
           >
             Refresh
           </Button>
@@ -316,28 +351,6 @@ function DriveExplorer() {
         <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
         </Alert>
-      )}
-
-      {checkingStatus && (
-        <Box sx={{ mb: 2 }}>
-          <LinearProgress />
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-            Checking files against Knowledge Base...
-          </Typography>
-        </Box>
-      )}
-
-      {processingProgress.isProcessing && (
-        <Box sx={{ mb: 2 }}>
-          <LinearProgress 
-            variant="determinate" 
-            value={(processingProgress.processedFiles / processingProgress.totalFiles) * 100}
-          />
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-            Processing {processingProgress.processedFiles} of {processingProgress.totalFiles} files...
-            {processingProgress.currentFile && ` (${processingProgress.currentFile})`}
-          </Typography>
-        </Box>
       )}
 
       <Paper sx={{ mb: 3, p: 2 }}>
@@ -411,7 +424,7 @@ function DriveExplorer() {
               <TableCell>Type</TableCell>
               <TableCell>Modified</TableCell>
               <TableCell>Size</TableCell>
-              <TableCell>In Knowledge Base</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -445,47 +458,43 @@ function DriveExplorer() {
                 <TableCell>{formatFileSize(file.size)}</TableCell>
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {checkingStatus ? (
-                      <CircularProgress size={16} />
+                    {file.processed ? (
+                      <>
+                        <ProcessedIcon color="success" fontSize="small" />
+                        <Typography variant="body2" color="success.main">
+                          Processed
+                        </Typography>
+                      </>
                     ) : (
                       <>
-                        {notionStatus[file.id]?.inNotionDatabase ? (
-                          <>
-                            <ProcessedIcon color="success" fontSize="small" />
-                            <Typography variant="body2" color="success.main">
-                              Yes
-                            </Typography>
-                          </>
-                        ) : (
-                          <>
-                            <UnprocessedIcon color="action" fontSize="small" />
-                            <Typography variant="body2" color="text.secondary">
-                              No
-                            </Typography>
-                          </>
-                        )}
-                        {notionStatus[file.id]?.processedDate && (
-                          <Tooltip title={`Added to Knowledge Base: ${new Date(notionStatus[file.id].processedDate!).toLocaleString()}`}>
-                            <Typography variant="caption" color="text.secondary">
-                              ({format(new Date(notionStatus[file.id].processedDate!), 'MMM d')})
-                            </Typography>
-                          </Tooltip>
-                        )}
+                        <UnprocessedIcon color="action" fontSize="small" />
+                        <Typography variant="body2" color="text.secondary">
+                          New
+                        </Typography>
                       </>
+                    )}
+                    {file.lastProcessedDate && (
+                      <Tooltip title={`Processed: ${new Date(file.lastProcessedDate).toLocaleString()}`}>
+                        <Typography variant="caption" color="text.secondary">
+                          ({format(new Date(file.lastProcessedDate), 'MMM d')})
+                        </Typography>
+                      </Tooltip>
                     )}
                   </Box>
                 </TableCell>
                 <TableCell align="center">
-                  <IconButton
-                    size="small"
-                    onClick={(e) => setFileMenuAnchor({ el: e.currentTarget, fileId: file.id })}
-                  >
-                    <MoreIcon />
-                  </IconButton>
+                  <Tooltip title="Open in Google Drive">
+                    <IconButton
+                      size="small"
+                      onClick={() => window.electron.shell.openExternal(file.webViewLink)}
+                    >
+                      <OpenIcon />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
-            {paginatedFiles.length === 0 && (
+            {paginatedFiles.length === 0 && !loading && (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                   <Typography variant="body2" color="text.secondary">
@@ -511,52 +520,8 @@ function DriveExplorer() {
           }}
         />
       </TableContainer>
-
-      {/* File Actions Menu */}
-      <Menu
-        anchorEl={fileMenuAnchor?.el}
-        open={Boolean(fileMenuAnchor)}
-        onClose={() => setFileMenuAnchor(null)}
-      >
-        <MenuItem onClick={() => {
-          const file = files.find(f => f.id === fileMenuAnchor?.fileId);
-          if (file) {
-            window.electron.shell.openExternal(file.webViewLink);
-          }
-          setFileMenuAnchor(null);
-        }}>
-          <OpenIcon sx={{ mr: 1 }} fontSize="small" />
-          View in Drive
-        </MenuItem>
-        
-        {fileMenuAnchor && notionStatus[fileMenuAnchor.fileId]?.inNotionDatabase && (
-          <MenuItem onClick={async () => {
-            const status = notionStatus[fileMenuAnchor.fileId];
-            if (status?.notionPageId) {
-              const url = await window.electron.ipcRenderer.invoke('notion:getPageUrl', status.notionPageId);
-              window.electron.shell.openExternal(url);
-            }
-            setFileMenuAnchor(null);
-          }}>
-            <NotionIcon sx={{ mr: 1 }} fontSize="small" />
-            View in Notion
-          </MenuItem>
-        )}
-        
-        <MenuItem onClick={() => {
-          const file = files.find(f => f.id === fileMenuAnchor?.fileId);
-          if (file) {
-            setSelectedFiles(new Set([file.id]));
-            handleProcessFiles();
-          }
-          setFileMenuAnchor(null);
-        }}>
-          <ProcessIcon sx={{ mr: 1 }} fontSize="small" />
-          {notionStatus[fileMenuAnchor?.fileId || '']?.inNotionDatabase ? 'Force Reprocess' : 'Process'}
-        </MenuItem>
-      </Menu>
     </Box>
   );
 }
 
-export default DriveExplorer;
+export default SimplifiedDriveExplorer;

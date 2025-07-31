@@ -40,6 +40,16 @@ def main():
         action="store_true",
         help="Upload local PDFs to Drive before processing"
     )
+    parser.add_argument(
+        "--drive-file-ids",
+        type=str,
+        help="Comma-separated Drive file IDs to process"
+    )
+    parser.add_argument(
+        "--process-specific-files",
+        action="store_true",
+        help="Only process specified files"
+    )
     
     args = parser.parse_args()
     
@@ -70,7 +80,14 @@ def main():
         drive_ingester = DriveIngester(config, notion_client)
         
         if not args.dry_run:
-            stats = drive_ingester.ingest()
+            if args.process_specific_files and args.drive_file_ids:
+                # Process only specific files
+                file_ids = args.drive_file_ids.split(',')
+                logger.info(f"Processing specific files: {file_ids}")
+                stats = drive_ingester.process_specific_files(file_ids)
+            else:
+                # Regular ingestion
+                stats = drive_ingester.ingest()
             logger.info(f"Drive ingestion complete: {stats}")
         else:
             logger.info("Dry run - skipping actual ingestion")

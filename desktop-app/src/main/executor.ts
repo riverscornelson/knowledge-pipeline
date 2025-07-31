@@ -79,7 +79,7 @@ export class PipelineExecutor {
   /**
    * Start the pipeline execution
    */
-  async start(): Promise<void> {
+  async start(additionalArgs?: string[]): Promise<void> {
     if (this.isRunning()) {
       throw new Error('Pipeline is already running');
     }
@@ -101,6 +101,11 @@ export class PipelineExecutor {
       
       // Prepare arguments - avoid shell injection
       const args = [scriptPath, '--process-local'];
+      
+      // Add any additional arguments passed in
+      if (additionalArgs && additionalArgs.length > 0) {
+        args.push(...additionalArgs);
+      }
       
       // Get proper environment
       const env = getPythonEnvironment();
@@ -341,27 +346,27 @@ export class PipelineExecutor {
   }
 }
 
-/**
- * Get diagnostic information for debugging
- */
-async getDiagnostics(): Promise<any> {
-  const pythonInfo = await detectPython();
-  const scriptPath = getResolvedScriptPath(PIPELINE_SCRIPT_PATH);
-  
-  return {
-    python: pythonInfo,
-    scriptPath,
-    scriptExists: validateScriptPath(scriptPath),
-    workingDirectory: path.dirname(scriptPath),
-    platform: process.platform,
-    appPath: app.getAppPath(),
-    isPackaged: app.isPackaged,
-    resourcesPath: process.resourcesPath,
-    env: {
-      PATH: process.env.PATH,
-      PYTHONPATH: process.env.PYTHONPATH,
-      PYTHONHOME: process.env.PYTHONHOME
-    }
-  };
-}
+  /**
+   * Get diagnostic information for debugging
+   */
+  async getDiagnostics(): Promise<any> {
+    const pythonInfo = await detectPython();
+    const scriptPath = getResolvedScriptPath(PIPELINE_SCRIPT_PATH);
+    
+    return {
+      python: pythonInfo,
+      scriptPath,
+      scriptExists: validateScriptPath(scriptPath),
+      workingDirectory: path.dirname(scriptPath),
+      platform: process.platform,
+      appPath: app.getAppPath(),
+      isPackaged: app.isPackaged,
+      resourcesPath: process.resourcesPath,
+      env: {
+        PATH: process.env.PATH,
+        PYTHONPATH: process.env.PYTHONPATH,
+        PYTHONHOME: process.env.PYTHONHOME
+      }
+    };
+  }
 }

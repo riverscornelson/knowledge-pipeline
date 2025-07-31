@@ -1,6 +1,9 @@
 import { ipcMain, BrowserWindow, clipboard, Notification } from 'electron';
 import { ConfigService } from './config';
 import { PipelineExecutor } from './executor';
+import { PipelineService } from './pipeline';
+import { SimplifiedGoogleDriveService } from './services/SimplifiedGoogleDriveService';
+import { UnifiedGoogleAuth } from './services/UnifiedGoogleAuth';
 import { IPCChannel } from '../shared/types';
 import { setupNotionIPCHandlers } from './ipc-notion';
 
@@ -12,6 +15,11 @@ export function setupIPCHandlers(
   pipelineExecutor: PipelineExecutor,
   mainWindow: BrowserWindow
 ) {
+  // Initialize services
+  const pipelineService = new PipelineService();
+  pipelineService.setMainWindow(mainWindow);
+  const driveService = new SimplifiedGoogleDriveService(configService, pipelineService);
+  const googleAuth = UnifiedGoogleAuth.getInstance();
   // Set the main window for the executor
   pipelineExecutor.setMainWindow(mainWindow);
   
@@ -181,6 +189,79 @@ export function setupIPCHandlers(
   ipcMain.handle('app:getPath', async (_, name: string) => {
     const { app } = require('electron');
     return app.getPath(name as any);
+  });
+  
+  // Google Authentication handlers
+  ipcMain.handle('google:auth:status', async () => {
+    try {
+      return await googleAuth.getAuthStatus();
+    } catch (error) {
+      console.error('Failed to get auth status:', error);
+      return { authenticated: false };
+    }
+  });
+  
+  ipcMain.handle('google:auth:authenticate', async () => {
+    try {
+      await googleAuth.getAuthClient();
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to authenticate:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to authenticate'
+      };
+    }
+  });
+  
+  ipcMain.handle('google:auth:clear', async () => {
+    try {
+      googleAuth.clearAuth();
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to clear auth:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to clear authentication'
+      };
+    }
+  });
+  
+  // Google Drive handlers
+  ipcMain.handle(IPCChannel.DRIVE_LIST_FILES, async () => {
+    try {
+      // Check if authenticated first
+      const authStatus = await googleAuth.getAuthStatus();
+      if (!authStatus.authenticated) {
+        return {
+          success: false,
+          files: [],
+          error: 'Not authenticated. Please authenticate with Google first.'
+        };
+      }
+      
+      return await driveService.listFiles();
+    } catch (error) {
+      console.error('Failed to list Drive files:', error);
+      return {
+        success: false,
+        files: [],
+        error: error instanceof Error ? error.message : 'Failed to list files'
+      };
+    }
+  });
+  
+  ipcMain.handle(IPCChannel.DRIVE_PROCESS_FILES, async (_, files) => {
+    try {
+      return await driveService.processFiles(files);
+    } catch (error) {
+      console.error('Failed to process Drive files:', error);
+      return {
+        success: false,
+        processedCount: 0,
+        error: error instanceof Error ? error.message : 'Failed to process files'
+      };
+    }
   });
   
   // Set up Notion-specific handlers

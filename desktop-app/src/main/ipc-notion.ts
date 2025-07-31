@@ -3,11 +3,13 @@
  */
 
 import { ipcMain, BrowserWindow } from 'electron';
-import { IPCChannel } from '../shared/types';
+import { IPCChannel, DriveFile } from '../shared/types';
 import { NotionService, NotionConfig, QueryOptions, CreatePageOptions } from './services/NotionService';
+import { NotionDriveStatusService } from './services/NotionDriveStatusService';
 import log from 'electron-log';
 
 let notionService: NotionService | null = null;
+let notionStatusService: NotionDriveStatusService | null = null;
 
 /**
  * Set up Notion-specific IPC handlers
@@ -25,6 +27,7 @@ export function setupNotionIPCHandlers(mainWindow: BrowserWindow) {
       
       // Create new service
       notionService = new NotionService(config);
+      notionStatusService = new NotionDriveStatusService(notionService);
       
       // Set up event listeners
       notionService.on('progress', (progress) => {
@@ -124,11 +127,55 @@ export function setupNotionIPCHandlers(mainWindow: BrowserWindow) {
     }
   });
   
+  // Check Drive files status in Notion
+  ipcMain.handle('notion:checkDriveFilesStatus', async (_, files: DriveFile[]) => {
+    if (!notionStatusService) {
+      throw new Error('Notion service not initialized');
+    }
+    
+    try {
+      const statusMap = await notionStatusService.checkFilesInNotion(files);
+      // Convert Map to plain object for IPC transfer
+      const statusObject: Record<string, any> = {};
+      statusMap.forEach((value, key) => {
+        statusObject[key] = value;
+      });
+      
+      return { success: true, status: statusObject };
+    } catch (error: any) {
+      log.error('Failed to check files in Notion:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to check file status',
+        status: {}
+      };
+    }
+  });
+  
+  // Clear Notion status cache
+  ipcMain.handle('notion:clearStatusCache', async () => {
+    if (notionStatusService) {
+      notionStatusService.clearCache();
+      return { success: true };
+    }
+    return { success: false, error: 'Notion service not initialized' };
+  });
+  
+  // Get Notion page URL
+  ipcMain.handle('notion:getPageUrl', async (_, pageId: string) => {
+    if (!notionStatusService) {
+      throw new Error('Notion service not initialized');
+    }
+    
+    return notionStatusService.getNotionPageUrl(pageId);
+  });
+  
   // Cleanup on app quit
   ipcMain.on('before-quit', () => {
     if (notionService) {
       notionService.destroy();
       notionService = null;
+      notionStatusService = null;
     }
   });
 }
@@ -138,4 +185,11 @@ export function setupNotionIPCHandlers(mainWindow: BrowserWindow) {
  */
 export function getNotionService(): NotionService | null {
   return notionService;
+}
+
+/**
+ * Get current Notion status service instance
+ */
+export function getNotionStatusService(): NotionDriveStatusService | null {
+  return notionStatusService;
 }

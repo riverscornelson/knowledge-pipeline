@@ -370,11 +370,11 @@ function Configuration() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Service Account JSON Path"
+                label="Google App Credentials Path"
                 value={config.googleServiceAccountPath}
                 onChange={(e) => handleFieldChange('googleServiceAccountPath', e.target.value)}
                 error={!!getFieldError('googleServiceAccountPath')}
-                helperText={getFieldError('googleServiceAccountPath') || 'Path to your Google service account JSON file'}
+                helperText={getFieldError('googleServiceAccountPath') || 'Path to your Google service account JSON file (GOOGLE_APP_CREDENTIALS)'}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
