@@ -60,6 +60,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SimpleGraph3D from './3d/SimpleGraph3D';
 import TestGraph3D from './3d/TestGraph3D';
 import Graph3DErrorBoundary from './3d/Graph3DErrorBoundary';
+import { WorldClassKnowledgeGraph } from '../../components/3d-graph';
 import { Graph3D, Node3D, Edge3D, Cluster } from '../../main/services/DataIntegrationService';
 import { format } from 'date-fns';
 
@@ -363,10 +364,60 @@ export default function EnhancedGraph3D({
           
           {/* Original graph rendering */}
           {graph && !error && filteredNodes.length > 0 && (
-            <SimpleGraph3D
-              nodes={filteredNodes}
-              edges={filteredEdges}
-              onNodeClick={handleNodeClick}
+            <WorldClassKnowledgeGraph
+              data={{
+                nodes: filteredNodes.map(node => ({
+                  id: node.id,
+                  title: node.label,
+                  type: node.type === 'document' ? 'document' : 
+                        node.type === 'insight' ? 'research' : 
+                        node.type === 'tag' ? 'keyword' : 
+                        node.type === 'person' ? 'person' : 
+                        node.type === 'concept' ? 'concept' : 
+                        node.type === 'source' ? 'organization' : 'topic',
+                  position: { x: node.x, y: node.y, z: node.z },
+                  size: node.size,
+                  color: node.color,
+                  connections: filteredEdges
+                    .filter(edge => edge.source === node.id || edge.target === node.id)
+                    .map(edge => edge.source === node.id ? edge.target : edge.source),
+                  metadata: {
+                    confidence: node.metadata.strength,
+                    source: node.properties.source || 'Unknown',
+                    tags: node.properties.tags || [],
+                    description: node.properties.description || '',
+                    weight: node.metadata.strength,
+                    qualityScore: Math.round((node.metadata.strength || 0.5) * 100),
+                    contentType: node.type,
+                    preview: node.properties.description || node.label,
+                    createdAt: new Date(node.metadata.createdAt),
+                    lastModified: new Date(node.metadata.lastUpdated),
+                    driveUrl: node.properties.driveUrl,
+                    notionUrl: node.properties.notionUrl,
+                    isNew: false
+                  }
+                })),
+                connections: filteredEdges.map(edge => ({
+                  id: edge.id,
+                  source: edge.source,
+                  target: edge.target,
+                  type: edge.type === 'reference' ? 'reference' : 
+                        edge.type === 'similarity' ? 'semantic' : 
+                        edge.type === 'parent-child' ? 'hierarchical' : 
+                        edge.type === 'derivation' ? 'causal' : 
+                        edge.type === 'tag' ? 'semantic' : 
+                        edge.type === 'mention' ? 'reference' : 'semantic',
+                  strength: edge.weight,
+                  metadata: {
+                    createdAt: edge.metadata.createdAt,
+                    confidence: edge.metadata.confidence
+                  }
+                }))
+              }}
+              onNodeSelect={(nodeIds) => {
+                const node = filteredNodes.find(n => nodeIds.includes(n.id));
+                if (node) handleNodeClick(node);
+              }}
             />
           )}
         </Graph3DErrorBoundary>

@@ -8,6 +8,7 @@
 // Main components
 export { default as GraphVisualization3D } from './GraphVisualization3D';
 export { default as GraphVisualization3DEnhanced } from './GraphVisualization3DEnhanced';
+export { default as WorldClassKnowledgeGraph } from './WorldClassKnowledgeGraph';
 export { default as AccessibleGraphView } from './AccessibleGraphView';
 export { default as CameraControls } from './CameraControls';
 export { default as PerformanceMonitor } from './PerformanceMonitor';
@@ -40,6 +41,9 @@ export type {
   LoadingState,
   Graph3D
 } from './types';
+
+// Import types for the component integration helper
+import type { GraphNode, GraphConnection } from './types';
 
 // Component integration helper
 export interface GraphVisualizationProps {
