@@ -6,19 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0200f2da-ba98-4297-afb5-4c517d38ef60" name="Changes" comment="Basic Pipeline Setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/executor.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/executor.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/ipc-notion.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/ipc-notion.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/ipc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/ipc.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/services/NotionService.example.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/screens/Configuration.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/screens/Configuration.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/screens/DriveExplorer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/screens/DriveExplorer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/shared/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/shared/constants.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/shared/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/shared/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/run_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/run_pipeline.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/drive/ingester.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/drive/ingester.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -182,7 +169,7 @@
       <workItem from="1752806558119" duration="21127000" />
       <workItem from="1752926498610" duration="35266000" />
       <workItem from="1753183387636" duration="27175000" />
-      <workItem from="1753848845959" duration="35881000" />
+      <workItem from="1753848845959" duration="36651000" />
     </task>
     <task id="LOCAL-00001" summary="Basic Pipeline Setup">
       <option name="closed" value="true" />
