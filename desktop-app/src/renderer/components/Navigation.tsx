@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Box,
   Drawer,
@@ -24,6 +25,7 @@ import {
   Error as ErrorIcon,
 } from '@mui/icons-material';
 import { PipelineStatus } from '../../shared/types';
+import { animationTokens, hoverVariants } from '../utils/animationTokens';
 
 const drawerWidth = 240;
 
@@ -84,56 +86,100 @@ function Navigation({ pipelineStatus }: NavigationProps) {
       }}
     >
       <Box sx={{ p: 2, pt: 5 }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-          Knowledge Pipeline
-        </Typography>
-        <Chip
-          icon={getStatusIcon()}
-          label={pipelineStatus.toUpperCase()}
-          size="small"
-          color={getStatusColor()}
-          sx={{ fontSize: '0.75rem' }}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: animationTokens.duration.normal / 1000 }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+            Knowledge Pipeline
+          </Typography>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ 
+            delay: 0.1,
+            duration: animationTokens.duration.fast / 1000,
+            type: 'spring',
+            stiffness: 300
+          }}
+        >
+          <Chip
+            icon={getStatusIcon()}
+            label={pipelineStatus.toUpperCase()}
+            size="small"
+            color={getStatusColor()}
+            sx={{ fontSize: '0.75rem' }}
+          />
+        </motion.div>
       </Box>
       <Divider sx={{ mx: 2, mb: 1 }} />
       <List sx={{ px: 1 }}>
-        {menuItems.map((item) => (
-          <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
-            <ListItemButton
-              onClick={() => navigate(item.path)}
-              selected={location.pathname === item.path}
-              sx={{
-                borderRadius: 2,
-                mx: 1,
-                '&.Mui-selected': {
-                  backgroundColor: 'rgba(0, 122, 255, 0.08)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 122, 255, 0.12)',
-                  },
-                },
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                },
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 36,
-                  color: location.pathname === item.path ? 'primary.main' : 'text.secondary',
-                }}
+        {menuItems.map((item, index) => (
+          <motion.div
+            key={item.path}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              delay: index * 0.05 + 0.2,
+              duration: animationTokens.duration.fast / 1000,
+              ease: animationTokens.easing.express
+            }}
+          >
+            <ListItem disablePadding sx={{ mb: 0.5 }}>
+              <motion.div
+                style={{ width: '100%' }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: animationTokens.duration.micro / 1000 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={item.text}
-                primaryTypographyProps={{
-                  fontSize: '0.875rem',
-                  fontWeight: location.pathname === item.path ? 600 : 400,
-                  color: location.pathname === item.path ? 'primary.main' : 'text.primary',
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
+                <ListItemButton
+                  onClick={() => navigate(item.path)}
+                  selected={location.pathname === item.path}
+                  sx={{
+                    borderRadius: 2,
+                    mx: 1,
+                    transition: 'all 0.2s ease',
+                    '&.Mui-selected': {
+                      backgroundColor: 'rgba(0, 122, 255, 0.08)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 122, 255, 0.12)',
+                      },
+                    },
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                    },
+                  }}
+                >
+                  <motion.div
+                    animate={{
+                      scale: location.pathname === item.path ? 1.1 : 1,
+                      rotate: location.pathname === item.path ? 360 : 0
+                    }}
+                    transition={{ duration: animationTokens.duration.normal / 1000 }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 36,
+                        color: location.pathname === item.path ? 'primary.main' : 'text.secondary',
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                  </motion.div>
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontSize: '0.875rem',
+                      fontWeight: location.pathname === item.path ? 600 : 400,
+                      color: location.pathname === item.path ? 'primary.main' : 'text.primary',
+                    }}
+                  />
+                </ListItemButton>
+              </motion.div>
+            </ListItem>
+          </motion.div>
         ))}
       </List>
     </Drawer>

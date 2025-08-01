@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container } from '@mui/material';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import { IPCChannel, PipelineStatus } from '../shared/types';
 import Navigation from './components/Navigation';
-import Dashboard from './screens/Dashboard';
-import Configuration from './screens/Configuration';
-import Logs from './screens/Logs';
-import SimplifiedDriveExplorer from './screens/SimplifiedDriveExplorer';
-import KnowledgeGraph3D from './screens/KnowledgeGraph3D';
 import ErrorBoundary from './components/ErrorBoundary';
+import { AnimatedRoutes } from './components/AnimatedRoutes';
 import { useIPC } from './hooks/useIPC';
 import { usePipelineStatus } from './hooks/usePipelineStatus';
 import { initializeNotionService } from './utils/notionInit';
+import { AnimationPerformanceMonitor } from './hooks/useAnimationPerformance';
 
 function App() {
   const [pipelineStatus, setPipelineStatus] = useState<PipelineStatus>(PipelineStatus.IDLE);
@@ -58,33 +55,17 @@ function App() {
               bgcolor: 'background.default',
             }}
           >
+            {/* Performance monitor in development */}
+            {process.env.NODE_ENV === 'development' && (
+              <AnimationPerformanceMonitor show={true} />
+            )}
+            
             <Container maxWidth="xl" sx={{ py: 3 }}>
-              <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <Dashboard 
-                      pipelineStatus={pipelineStatus}
-                      onStartPipeline={() => window.electron.ipcRenderer.send(IPCChannel.PIPELINE_START)}
-                      onStopPipeline={() => window.electron.ipcRenderer.send(IPCChannel.PIPELINE_STOP)}
-                    />
-                  } 
-                />
-                <Route path="/configuration" element={<Configuration />} />
-                <Route path="/drive" element={<SimplifiedDriveExplorer />} />
-                <Route path="/graph3d" element={<KnowledgeGraph3D />} />
-                <Route 
-                  path="/logs" 
-                  element={
-                    <Logs 
-                      logs={logs}
-                      onClear={clearLogs}
-                      pipelineStatus={pipelineStatus}
-                    />
-                  } 
-                />
-              </Routes>
+              <AnimatedRoutes 
+                pipelineStatus={pipelineStatus}
+                logs={logs}
+                clearLogs={clearLogs}
+              />
             </Container>
           </Box>
         </Box>

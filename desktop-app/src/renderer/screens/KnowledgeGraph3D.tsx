@@ -13,7 +13,6 @@ import {
   CircularProgress,
   Chip,
   Grid,
-  Card,
   CardContent,
   IconButton,
   Tooltip
@@ -22,12 +21,15 @@ import {
   Refresh,
   Memory
 } from '@mui/icons-material';
+import { motion, AnimatePresence } from 'framer-motion';
 import EnhancedGraph3D from '../components/EnhancedGraph3D';
 // import Graph3DFallback from '../components/Graph3DFallback';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { Graph3D, Node3D, Edge3D, PerformanceMetrics } from '../../main/services/DataIntegrationService';
 import { IPCChannel } from '../../shared/types';
 import { useIPC } from '../hooks/useIPC';
+import { AnimatedCard } from '../components/AnimatedCard';
+import { animationTokens } from '../utils/animationTokens';
 
 interface KnowledgeGraph3DProps {
   // Optional props for configuration
@@ -271,56 +273,39 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
   const renderStatsCards = () => {
     if (!stats) return null;
 
+    const statItems = [
+      { value: stats.totalNodes, label: 'Total Nodes', color: 'primary' },
+      { value: stats.totalEdges, label: 'Total Connections', color: 'secondary' },
+      { value: stats.averageConnections, label: 'Avg Connections', color: 'info.main' },
+      { value: stats.clusters.length, label: 'Clusters', color: 'success.main' }
+    ];
+
     return (
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" color="primary">
-                {stats.totalNodes}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Total Nodes
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" color="secondary">
-                {stats.totalEdges}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Total Connections
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" color="info.main">
-                {stats.averageConnections}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Avg Connections
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" color="success.main">
-                {stats.clusters.length}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Clusters
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+        {statItems.map((stat, index) => (
+          <Grid item xs={12} sm={6} md={3} key={stat.label}>
+            <AnimatedCard delay={index * 0.1}>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ 
+                    delay: 0.2 + index * 0.1,
+                    type: 'spring',
+                    stiffness: 200
+                  }}
+                >
+                  <Typography variant="h4" color={stat.color}>
+                    {stat.value}
+                  </Typography>
+                </motion.div>
+                <Typography variant="body2" color="textSecondary">
+                  {stat.label}
+                </Typography>
+              </CardContent>
+            </AnimatedCard>
+          </Grid>
+        ))}
       </Grid>
     );
   };
@@ -330,35 +315,55 @@ const KnowledgeGraph3D: React.FC<KnowledgeGraph3DProps> = () => {
     <ErrorBoundary>
       <Container maxWidth="xl" sx={{ py: 3, height: '100vh', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
-        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Knowledge Graph 3D
-            </Typography>
-            <Typography variant="body1" color="textSecondary">
-              Interactive 3D visualization of your knowledge pipeline data
-              {renderConnectionStatus()}
-            </Typography>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: animationTokens.duration.normal / 1000 }}
+        >
+          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box>
+              <Typography variant="h4" component="h1" gutterBottom>
+                Knowledge Graph 3D
+              </Typography>
+              <Typography variant="body1" color="textSecondary">
+                Interactive 3D visualization of your knowledge pipeline data
+                {renderConnectionStatus()}
+              </Typography>
+            </Box>
+            <Box>
+              <Tooltip title="Refresh Data">
+                <motion.div
+                  whileHover={{ rotate: 180 }}
+                  transition={{ duration: animationTokens.duration.normal / 1000 }}
+                >
+                  <IconButton onClick={refreshGraph} disabled={loading}>
+                    <Refresh />
+                  </IconButton>
+                </motion.div>
+              </Tooltip>
+            </Box>
           </Box>
-          <Box>
-            <Tooltip title="Refresh Data">
-              <IconButton onClick={refreshGraph} disabled={loading}>
-                <Refresh />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
+        </motion.div>
 
         {/* Error Alert */}
-        {error && (
-          <Alert 
-            severity="error" 
-            sx={{ mb: 3 }}
-            onClose={() => setError(null)}
-          >
-            {error}
-          </Alert>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: animationTokens.duration.fast / 1000 }}
+            >
+              <Alert 
+                severity="error" 
+                sx={{ mb: 3 }}
+                onClose={() => setError(null)}
+              >
+                {error}
+              </Alert>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Statistics Cards */}
         {renderStatsCards()}

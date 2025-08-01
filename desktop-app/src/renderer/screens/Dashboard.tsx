@@ -25,9 +25,13 @@ import {
   Speed as SpeedIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PipelineStatus, IPCChannel, PipelineCompleteEvent } from '../../shared/types';
 import { PythonDiagnostics } from '../components/PythonDiagnostics';
 import { getElectronAPI } from '../utils/electronAPI';
+import { AnimatedButton } from '../components/AnimatedButton';
+import { AnimatedCard } from '../components/AnimatedCard';
+import { animationTokens } from '../utils/animationTokens';
 
 interface DashboardProps {
   pipelineStatus: PipelineStatus;
@@ -136,34 +140,50 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
   const isRunning = pipelineStatus === PipelineStatus.RUNNING;
 
   return (
-    <Box className="fade-in">
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
-        Dashboard
-      </Typography>
+    <Box>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: animationTokens.duration.normal / 1000 }}
+      >
+        <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
+          Dashboard
+        </Typography>
+      </motion.div>
 
-      {lastError && (
-        <Alert 
-          severity="error" 
-          onClose={() => {
-            setLastError(null);
-            setShowDiagnostics(false);
-          }}
-          sx={{ mb: 3 }}
-          action={
-            !showDiagnostics && lastError.includes('Python') ? (
-              <Button 
-                color="inherit" 
-                size="small"
-                onClick={() => setShowDiagnostics(true)}
-              >
-                Show Diagnostics
-              </Button>
-            ) : undefined
-          }
-        >
-          {lastError}
-        </Alert>
-      )}
+      <AnimatePresence>
+        {lastError && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: animationTokens.duration.fast / 1000 }}
+          >
+            <Alert 
+              severity="error" 
+              onClose={() => {
+                setLastError(null);
+                setShowDiagnostics(false);
+              }}
+              sx={{ mb: 3 }}
+              action={
+                !showDiagnostics && lastError.includes('Python') ? (
+                  <AnimatedButton 
+                    color="inherit" 
+                    size="small"
+                    onClick={() => setShowDiagnostics(true)}
+                    animationVariant="scale"
+                  >
+                    Show Diagnostics
+                  </AnimatedButton>
+                ) : undefined
+              }
+            >
+              {lastError}
+            </Alert>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {showDiagnostics && (
         <Paper sx={{ p: 3, mb: 3, backgroundColor: 'grey.50' }}>
@@ -185,63 +205,106 @@ function Dashboard({ pipelineStatus, onStartPipeline, onStopPipeline }: Dashboar
       )}
 
       {/* Action Bar */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box>
-            <Typography variant="h6" sx={{ mb: 1 }}>
-              Pipeline Control
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {isRunning ? 'Pipeline is currently running...' : 'Ready to process documents'}
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={isRunning ? <StopIcon /> : <PlayIcon />}
-              onClick={isRunning ? onStopPipeline : onStartPipeline}
-              color={isRunning ? 'error' : 'primary'}
-              disabled={loading}
-            >
-              {isRunning ? 'Stop Pipeline' : 'Start Pipeline'}
-            </Button>
-            <Tooltip title="Refresh stats">
-              <IconButton
-                onClick={() => window.location.reload()}
-                disabled={isRunning}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          delay: 0.1,
+          duration: animationTokens.duration.normal / 1000,
+          ease: animationTokens.easing.smooth
+        }}
+      >
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Pipeline Control
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {isRunning ? 'Pipeline is currently running...' : 'Ready to process documents'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <AnimatedButton
+                variant="contained"
+                size="large"
+                startIcon={isRunning ? <StopIcon /> : <PlayIcon />}
+                onClick={isRunning ? onStopPipeline : onStartPipeline}
+                color={isRunning ? 'error' : 'primary'}
+                disabled={loading}
+                animationVariant="lift"
+                loading={loading}
               >
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
+                {isRunning ? 'Stop Pipeline' : 'Start Pipeline'}
+              </AnimatedButton>
+              <Tooltip title="Refresh stats">
+                <motion.div
+                  whileHover={{ rotate: 180 }}
+                  transition={{ duration: animationTokens.duration.normal / 1000 }}
+                >
+                  <IconButton
+                    onClick={() => window.location.reload()}
+                    disabled={isRunning}
+                  >
+                    <RefreshIcon />
+                  </IconButton>
+                </motion.div>
+              </Tooltip>
+            </Box>
           </Box>
-        </Box>
-        {isRunning && (
-          <LinearProgress sx={{ mt: 2, borderRadius: 1 }} />
-        )}
-      </Paper>
+          <AnimatePresence>
+            {isRunning && (
+              <motion.div
+                initial={{ opacity: 0, scaleX: 0 }}
+                animate={{ opacity: 1, scaleX: 1 }}
+                exit={{ opacity: 0, scaleX: 0 }}
+                transition={{ duration: animationTokens.duration.fast / 1000 }}
+                style={{ originX: 0 }}
+              >
+                <LinearProgress sx={{ mt: 2, borderRadius: 1 }} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Paper>
+      </motion.div>
 
       {/* Stats Grid */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Card>
+          <AnimatedCard delay={0.2}>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <StorageIcon sx={{ color: 'primary.main', mr: 1 }} />
-                <Typography variant="h6">Total Documents</Typography>
-              </Box>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ 
+                  delay: 0.3,
+                  type: 'spring',
+                  stiffness: 200
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <StorageIcon sx={{ color: 'primary.main', mr: 1 }} />
+                  <Typography variant="h6">Total Documents</Typography>
+                </Box>
+              </motion.div>
               {loading ? (
                 <Skeleton variant="text" width={100} height={48} />
               ) : (
-                <Typography variant="h3" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                  {stats.totalDocuments.toLocaleString()}
-                </Typography>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4, duration: animationTokens.duration.fast / 1000 }}
+                >
+                  <Typography variant="h3" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                    {stats.totalDocuments.toLocaleString()}
+                  </Typography>
+                </motion.div>
               )}
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                 Processed all time
               </Typography>
             </CardContent>
-          </Card>
+          </AnimatedCard>
         </Grid>
 
         <Grid item xs={12} md={4}>
