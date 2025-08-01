@@ -1,0 +1,67 @@
+{
+  "name": "desktop-animation-toolkit",
+  "version": "1.0.0",
+  "description": "Production-ready animation improvement toolkit for desktop applications",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "keywords": [
+    "animations",
+    "framer-motion",
+    "desktop",
+    "electron",
+    "tauri",
+    "performance",
+    "accessibility"
+  ],
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "framer-motion": "^10.16.0",
+    "next": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "jest": "^29.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "@storybook/react": "^7.0.0",
+    "@storybook/addon-essentials": "^7.0.0"
+  },
+  "optionalDependencies": {
+    "@tauri-apps/api": "^1.5.0",
+    "electron": "^27.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/desktop-animation-toolkit"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/desktop-animation-toolkit/issues"
+  },
+  "homepage": "https://github.com/your-username/desktop-animation-toolkit#readme"
+}
