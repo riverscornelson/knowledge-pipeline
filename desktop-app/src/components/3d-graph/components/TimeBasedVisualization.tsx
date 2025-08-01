@@ -352,7 +352,7 @@ export const ActivityHeatmap3D: React.FC<{
   return (
     <group>
       {activeNodes.map(node => (
-        <mesh key={node.id} position={node.position}>
+        <mesh key={node.id} position={[node.position.x, node.position.y, node.position.z]}>
           <sphereGeometry args={[2, 16, 8]} />
           <meshBasicMaterial
             color="#FF6B6B"

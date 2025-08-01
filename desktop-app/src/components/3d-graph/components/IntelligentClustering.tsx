@@ -60,7 +60,7 @@ const detectClusters = (nodes: GraphNode[]): ClusterData[] => {
       const typeCount: Record<string, number> = {};
 
       cluster.forEach((n) => {
-        centroid.add(new THREE.Vector3(...n.position));
+        centroid.add(new THREE.Vector3(n.position.x, n.position.y, n.position.z));
         n.metadata.tags.forEach(tag => allTags.add(tag));
         totalQuality += n.metadata.qualityScore;
         typeCount[n.type] = (typeCount[n.type] || 0) + 1;
@@ -71,7 +71,7 @@ const detectClusters = (nodes: GraphNode[]): ClusterData[] => {
       // Calculate bounding sphere
       let maxDistance = 0;
       cluster.forEach((n) => {
-        const dist = centroid.distanceTo(new THREE.Vector3(...n.position));
+        const dist = centroid.distanceTo(new THREE.Vector3(n.position.x, n.position.y, n.position.z));
         maxDistance = Math.max(maxDistance, dist);
       });
 
@@ -257,7 +257,7 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
                   return (
                     <Line
                       key={`${node.id}-${nextNode.id}`}
-                      points={[node.position, nextNode.position]}
+                      points={[[node.position.x, node.position.y, node.position.z], [nextNode.position.x, nextNode.position.y, nextNode.position.z]]}
                       color={cluster.color}
                       lineWidth={1}
                       transparent

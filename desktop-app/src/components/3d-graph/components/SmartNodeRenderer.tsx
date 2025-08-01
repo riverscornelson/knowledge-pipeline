@@ -125,7 +125,7 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
   }, [node.metadata.isNew]);
 
   return (
-    <group position={node.position}>
+    <group position={[node.position.x, node.position.y, node.position.z]}>
       {/* Main node mesh */}
       <mesh
         onClick={onClick}

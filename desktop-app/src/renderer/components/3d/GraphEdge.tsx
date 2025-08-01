@@ -3,10 +3,12 @@ import { useFrame, ThreeEvent } from '@react-three/fiber';
 import { Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
+type Position3D = [number, number, number] | { x: number; y: number; z: number };
+
 export interface GraphEdgeProps {
   id: string;
-  start: [number, number, number];
-  end: [number, number, number];
+  start: Position3D;
+  end: Position3D;
   label?: string;
   color?: string;
   weight?: number;
@@ -37,10 +39,22 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({
   const lineRef = useRef<THREE.Line>(null);
   const [hovered, setHovered] = useState(false);
 
+  // Helper function to normalize position to array format
+  const normalizePosition = (pos: Position3D): [number, number, number] => {
+    if (Array.isArray(pos)) {
+      return pos;
+    }
+    return [pos.x, pos.y, pos.z];
+  };
+
   // Calculate line properties with validation
   const points = useMemo(() => {
-    // Validate start and end arrays
-    if (!start || !end || start.length !== 3 || end.length !== 3) {
+    // Normalize positions to arrays
+    const startArray = normalizePosition(start);
+    const endArray = normalizePosition(end);
+    
+    // Validate normalized arrays
+    if (!startArray || !endArray || startArray.length !== 3 || endArray.length !== 3) {
       console.warn('GraphEdge: Invalid start or end points', { start, end });
       return [];
     }
@@ -49,14 +63,14 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({
     const isValidPoint = (point: [number, number, number]) => 
       point.every(coord => typeof coord === 'number' && !isNaN(coord) && isFinite(coord));
     
-    if (!isValidPoint(start) || !isValidPoint(end)) {
+    if (!isValidPoint(startArray) || !isValidPoint(endArray)) {
       console.warn('GraphEdge: Invalid coordinates', { start, end });
       return [];
     }
     
     return [
-      new THREE.Vector3(...start),
-      new THREE.Vector3(...end)
+      new THREE.Vector3(...startArray),
+      new THREE.Vector3(...endArray)
     ];
   }, [start, end]);
 
@@ -208,16 +222,20 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({
       )}
 
       {/* Arrow indicator for direction */}
-      {weight && weight > 0.5 && (
-        <mesh position={end} lookAt={start}>
-          <coneGeometry args={[0.1, 0.2, 8]} />
-          <meshBasicMaterial 
-            color={dynamicColor} 
-            transparent={true} 
-            opacity={dynamicOpacity} 
-          />
-        </mesh>
-      )}
+      {weight && weight > 0.5 && (() => {
+        const endArray = normalizePosition(end);
+        const startArray = normalizePosition(start);
+        return (
+          <mesh position={endArray}>
+            <coneGeometry args={[0.1, 0.2, 8]} />
+            <meshBasicMaterial 
+              color={dynamicColor} 
+              transparent={true} 
+              opacity={dynamicOpacity} 
+            />
+          </mesh>
+        );
+      })()}
 
       {/* Edge label */}
       {label && (hovered || selected) && (
@@ -226,9 +244,7 @@ export const GraphEdge: React.FC<GraphEdgeProps> = ({
           fontSize={0.2}
           color={dynamicColor}
           anchorX="center"
-          anchorY="center"
-          billboardMode="horizontal"
-          font="/fonts/Inter-Regular.woff"
+          anchorY="middle"
         >
           {label}
         </Text>

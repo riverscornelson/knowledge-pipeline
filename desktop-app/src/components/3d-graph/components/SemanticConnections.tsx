@@ -65,7 +65,7 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
   const nodePositions = useMemo(() => {
     const map = new Map<string, THREE.Vector3>();
     nodes.forEach(node => {
-      map.set(node.id, new THREE.Vector3(...node.position));
+      map.set(node.id, new THREE.Vector3(node.position.x, node.position.y, node.position.z));
     });
     return map;
   }, [nodes]);
@@ -375,7 +375,7 @@ const calculateBounds = (nodes: GraphNode[]) => {
   const max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
   
   nodes.forEach(node => {
-    const pos = new THREE.Vector3(...node.position);
+    const pos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
     min.min(pos);
     max.max(pos);
   });
