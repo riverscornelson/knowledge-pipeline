@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Environment, Grid } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Grid, Line } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Box,
@@ -9,6 +9,25 @@ import {
   Zoom,
   useTheme,
   useMediaQuery,
+  Drawer,
+  Typography,
+  IconButton,
+  Divider,
+  Chip,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Link,
+  Avatar,
 } from '@mui/material';
 import {
   Fullscreen as FullscreenIcon,
@@ -16,19 +35,24 @@ import {
   FilterList as FilterIcon,
   AutoAwesome as AIIcon,
   Timeline as TimelineIcon,
+  Close as CloseIcon,
+  OpenInNew as OpenInNewIcon,
+  Description as DescriptionIcon,
+  Cloud as CloudIcon,
+  Share as ShareIcon,
+  ContentCopy as ContentCopyIcon,
+  Star as StarIcon,
 } from '@mui/icons-material';
 
 // Import all our world-class components
 import SmartNodeRenderer from './components/SmartNodeRenderer';
 import SemanticConnections from './components/SemanticConnections';
 import IntelligentClustering from './components/IntelligentClustering';
-import RichTooltip from './components/RichTooltip';
 import NodeInteractions from './components/NodeInteractions';
 import PathAnalysis from './components/PathAnalysis';
 import TimeBasedVisualization, { ActivityHeatmap3D } from './components/TimeBasedVisualization';
 import AIInsights from './components/AIInsights';
 import AdvancedFilters from './components/AdvancedFilters';
-import ProgressiveLoader from './performance/ProgressiveLoader';
 import { GraphNode, GraphConnection, GraphFilters, ClusterInfo, PerformanceSettings } from './types';
 
 interface WorldClassKnowledgeGraphProps {
@@ -121,11 +145,6 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
   const [timeRange, setTimeRange] = useState<[Date, Date] | null>(null);
 
   // UI state
-  const [tooltipData, setTooltipData] = useState<{
-    node: GraphNode | null;
-    position: { x: number; y: number };
-    visible: boolean;
-  }>({ node: null, position: { x: 0, y: 0 }, visible: false });
   const [contextMenuData, setContextMenuData] = useState<{
     node: GraphNode | null;
     anchorEl: HTMLElement | null;
@@ -199,21 +218,6 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
 
   const handleNodeHover = useCallback((node: GraphNode | null, event?: any) => {
     setHoveredNode(node?.id || null);
-    if (node && event) {
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (rect) {
-        setTooltipData({
-          node,
-          position: {
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top,
-          },
-          visible: true,
-        });
-      }
-    } else {
-      setTooltipData(prev => ({ ...prev, visible: false }));
-    }
   }, []);
 
   // Navigation handlers
@@ -316,6 +320,19 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
             setClusteringEnabled(!clusteringEnabled);
           }
           break;
+        case ' ':  // Spacebar
+          event.preventDefault();
+          if (hoveredNode) {
+            const newSelected = new Set(selectedNodes);
+            if (newSelected.has(hoveredNode)) {
+              newSelected.delete(hoveredNode);
+            } else {
+              newSelected.add(hoveredNode);
+            }
+            setSelectedNodes(newSelected);
+            setFocusedNode(hoveredNode);
+          }
+          break;
         case 'Escape':
           setSelectedNodes(new Set());
           setHighlightedPaths([]);
@@ -330,18 +347,31 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
 
   return (
     <Box
-      ref={canvasRef}
       sx={{
         width: '100%',
         height: '100%',
-        position: 'relative',
-        backgroundColor: '#0a0a0a',
-        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'row', // Changed to row for side-by-side layout
+        backgroundColor: '#505050',
       }}
     >
+      <Box
+        ref={canvasRef}
+        sx={{
+          flex: '1 1 50%',
+          width: '50%',
+          position: 'relative',
+          overflow: 'hidden',
+          minHeight: 0, // Important for flexbox
+        }}
+      >
       {/* 3D Canvas */}
       <Canvas
-        camera={{ position: [0, 0, 50], fov: 75 }}
+        camera={{ position: [0, 50, 100], fov: 75 }}
+        onCreated={({ camera }) => {
+          camera.lookAt(0, 0, 0);
+          console.log('Camera created:', camera.position);
+        }}
         gl={{
           antialias: performanceSettings.antialiasing,
           alpha: true,
@@ -352,27 +382,27 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
         dpr={[1, performanceSettings.devicePixelRatio]}
       >
         <Suspense fallback={null}>
-          {/* Lighting */}
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={0.5} />
+          {/* Enhanced Lighting - brighter for better visibility */}
+          <ambientLight intensity={1.2} />
+          <pointLight position={[50, 50, 50]} intensity={1.5} color="#ffffff" />
+          <pointLight position={[-50, -50, -50]} intensity={1.2} color="#ffffff" />
+          <pointLight position={[0, 100, 0]} intensity={1} color="#ffffff" />
           <directionalLight
-            position={[5, 5, 5]}
-            intensity={0.5}
+            position={[10, 10, 5]}
+            intensity={1.5}
+            color="#ffffff"
             castShadow={performanceSettings.shadowsEnabled}
           />
-
-          {/* Environment */}
-          <Environment preset="city" />
           <Grid
-            args={[100, 100]}
-            cellSize={5}
+            args={[200, 200]}
+            cellSize={10}
             cellThickness={0.5}
-            cellColor="#222"
-            sectionSize={25}
-            sectionThickness={1}
-            sectionColor="#444"
-            fadeDistance={100}
-            fadeStrength={1}
+            cellColor="#444"
+            sectionSize={50}
+            sectionThickness={1.5}
+            sectionColor="#666"
+            fadeDistance={150}
+            fadeStrength={0.5}
             followCamera={false}
             infiniteGrid
           />
@@ -385,15 +415,7 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
             zoomSpeed={0.7}
             panSpeed={0.8}
             minDistance={5}
-            maxDistance={200}
-          />
-
-          {/* Progressive Loading */}
-          <ProgressiveLoader
-            nodes={visibleNodes}
-            onBatchLoaded={(batch) => {
-              // Handle batch loaded
-            }}
+            maxDistance={500}
           />
 
           {/* Intelligent Clustering */}
@@ -407,29 +429,110 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
             />
           )}
 
-          {/* Semantic Connections */}
-          <SemanticConnections
-            connections={visibleConnections}
-            nodes={visibleNodes}
-            selectedNodeIds={selectedNodes}
-            hoveredNodeId={hoveredNode}
-            highlightedPaths={highlightedPaths}
-            showLabels={selectedNodes.size > 0}
-          />
+          {/* Semantic Connections - disabled due to performance with 2000+ connections */}
+          {false && (
+            <SemanticConnections
+              connections={visibleConnections}
+              nodes={visibleNodes}
+              selectedNodeIds={selectedNodes}
+              hoveredNodeId={hoveredNode}
+              highlightedPaths={highlightedPaths}
+              showLabels={selectedNodes.size > 0}
+            />
+          )}
+          
+          {/* Connection rendering with smart filtering */}
+          {(() => {
+            // Filter connections based on interaction state
+            let connectionsToRender = [];
+            
+            if (selectedNodes.size > 0 || hoveredNode) {
+              // Show connections for selected/hovered nodes
+              connectionsToRender = visibleConnections.filter(conn => 
+                selectedNodes.has(conn.source) || 
+                selectedNodes.has(conn.target) ||
+                hoveredNode === conn.source ||
+                hoveredNode === conn.target
+              );
+            } else {
+              // Show top connections by strength when nothing is selected
+              connectionsToRender = visibleConnections
+                .sort((a, b) => b.strength - a.strength)
+                .slice(0, 200); // Show top 200 connections
+            }
+            
+            console.log('Rendering', connectionsToRender.length, 'connections');
+            
+            return connectionsToRender.map((conn) => {
+              const sourceNode = visibleNodes.find(n => n.id === conn.source);
+              const targetNode = visibleNodes.find(n => n.id === conn.target);
+              
+              if (!sourceNode || !targetNode) return null;
+              
+              const isHighlighted = 
+                selectedNodes.has(conn.source) || 
+                selectedNodes.has(conn.target) ||
+                hoveredNode === conn.source ||
+                hoveredNode === conn.target;
+              
+              // Different colors for different connection types
+              const color = isHighlighted ? "#FFD700" : 
+                           conn.type === 'reference' ? "#00FF00" :
+                           conn.type === 'semantic' ? "#00BFFF" :
+                           conn.type === 'hierarchical' ? "#FF1493" :
+                           "#888888";
+              
+              return (
+                <Line
+                  key={conn.id}
+                  points={[
+                    [sourceNode.position.x, sourceNode.position.y, sourceNode.position.z],
+                    [targetNode.position.x, targetNode.position.y, targetNode.position.z]
+                  ]}
+                  color={color}
+                  lineWidth={isHighlighted ? 4 : 2}
+                  opacity={isHighlighted ? 1 : 0.6}
+                  transparent
+                />
+              );
+            });
+          })()}
+
+          {/* Removed test connection */}
+
+          {/* Test objects removed - ready for actual nodes */}
 
           {/* Smart Nodes */}
-          {visibleNodes.map((node) => (
-            <SmartNodeRenderer
-              key={node.id}
-              node={node}
-              isHovered={hoveredNode === node.id}
-              isSelected={selectedNodes.has(node.id)}
-              onClick={() => handleNodeClick(node)}
-              onPointerOver={(e) => handleNodeHover(node, e)}
-              onPointerOut={() => handleNodeHover(null)}
-              highQualityMode={visibleNodes.length < 500}
-            />
-          ))}
+          {console.log('Visible nodes count:', visibleNodes.length)}
+          {visibleNodes.length === 0 && (
+            <mesh position={[0, 5, 0]}>
+              <boxGeometry args={[10, 2, 10]} />
+              <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={0.3} />
+            </mesh>
+          )}
+          {visibleNodes.map((node) => {
+            // Check if this node is connected to selected or hovered nodes
+            const isConnected = visibleConnections.some(conn => 
+              (selectedNodes.has(conn.source) && conn.target === node.id) ||
+              (selectedNodes.has(conn.target) && conn.source === node.id) ||
+              (hoveredNode === conn.source && conn.target === node.id) ||
+              (hoveredNode === conn.target && conn.source === node.id)
+            );
+            
+            return (
+              <SmartNodeRenderer
+                key={node.id}
+                node={node}
+                isHovered={hoveredNode === node.id}
+                isSelected={selectedNodes.has(node.id)}
+                isConnected={isConnected}
+                onClick={() => handleNodeClick(node)}
+                onPointerOver={(e) => handleNodeHover(node, e)}
+                onPointerOut={() => handleNodeHover(null)}
+                highQualityMode={visibleNodes.length < 500}
+              />
+            );
+          })}
 
           {/* Activity Heatmap */}
           {showTimeline && timeRange && (
@@ -442,17 +545,7 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
         </Suspense>
       </Canvas>
 
-      {/* Rich Tooltip */}
-      {tooltipData.visible && tooltipData.node && (
-        <RichTooltip
-          node={tooltipData.node}
-          position={tooltipData.position}
-          visible={tooltipData.visible}
-          onOpenInDrive={() => handleOpenInDrive(tooltipData.node!)}
-          onOpenInNotion={() => handleOpenInNotion(tooltipData.node!)}
-          onViewRelated={() => handleViewConnections(tooltipData.node!)}
-        />
-      )}
+      {/* Rich Tooltip - disabled */}
 
       {/* Node Context Menu */}
       <NodeInteractions
@@ -592,6 +685,220 @@ const WorldClassKnowledgeGraph: React.FC<WorldClassKnowledgeGraphProps> = ({
           <CircularProgress size={60} />
         </Box>
       )}
+
+      {/* Removed Node Details Drawer - using frozen tooltip instead */}
+      </Box>
+      
+      {/* Related Documents Grid - Always visible */}
+      <Box
+        sx={{
+          flex: '1 1 50%',
+          width: '50%',
+          borderLeft: 2,
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 0,
+        }}
+      >
+        {(() => {
+          // Get connected nodes
+          const activeNodeIds = hoveredNode ? new Set([hoveredNode]) : selectedNodes;
+          const connectedNodes = new Set<GraphNode>();
+          const activeNodes = new Set<GraphNode>();
+          
+          // Add active nodes
+          activeNodeIds.forEach(nodeId => {
+            const node = visibleNodes.find(n => n.id === nodeId);
+            if (node) activeNodes.add(node);
+          });
+          
+          // Find all connected nodes
+          visibleConnections.forEach(conn => {
+            activeNodeIds.forEach(nodeId => {
+              if (conn.source === nodeId) {
+                const targetNode = visibleNodes.find(n => n.id === conn.target);
+                if (targetNode) connectedNodes.add(targetNode);
+              } else if (conn.target === nodeId) {
+                const sourceNode = visibleNodes.find(n => n.id === conn.source);
+                if (sourceNode) connectedNodes.add(sourceNode);
+              }
+            });
+          });
+          
+          return (
+            <>
+            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+              <Typography variant="h6">
+                {activeNodes.size === 0 ? 
+                  'Document Explorer' :
+                  activeNodes.size === 1 ? 
+                  `${Array.from(activeNodes)[0].title} - Related Documents` : 
+                  `${activeNodes.size} Selected Nodes - Related Documents`
+                }
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {activeNodes.size === 0 ? 
+                  'Select a node to view documents' :
+                  `${connectedNodes.size} connected documents found`
+                }
+              </Typography>
+            </Box>
+            
+            <TableContainer sx={{ flex: 1 }}>
+              <Table stickyHeader size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Title</TableCell>
+                    <TableCell>Drive</TableCell>
+                    <TableCell>Notion</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* Selected/Hovered Nodes First */}
+                  {Array.from(activeNodes).map((node) => (
+                    <TableRow 
+                      key={node.id} 
+                      sx={{ 
+                        bgcolor: 'action.selected',
+                        '&:hover': { bgcolor: 'action.hover' },
+                      }}
+                    >
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {node.title}
+                        </Typography>
+                        {node.metadata.preview && (
+                          <Typography variant="caption" color="text.secondary" sx={{ 
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                          }}>
+                            {node.metadata.preview}
+                          </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {node.metadata.driveUrl ? (
+                          <Link
+                            href={node.metadata.driveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                          >
+                            <CloudIcon fontSize="small" />
+                            Open
+                          </Link>
+                        ) : (
+                          <Typography variant="body2" color="text.disabled">-</Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {node.metadata.notionUrl ? (
+                          <Link
+                            href={node.metadata.notionUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                          >
+                            <DescriptionIcon fontSize="small" />
+                            View
+                          </Link>
+                        ) : (
+                          <Typography variant="body2" color="text.disabled">-</Typography>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  
+                  {/* Divider */}
+                  {activeNodes.size > 0 && connectedNodes.size > 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} sx={{ py: 0 }}>
+                        <Divider>Connected Documents</Divider>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  
+                  {/* Connected Nodes */}
+                  {Array.from(connectedNodes)
+                    .sort((a, b) => b.metadata.qualityScore - a.metadata.qualityScore)
+                    .map((node) => (
+                    <TableRow 
+                      key={node.id}
+                      hover
+                      onClick={() => handleNodeClick(node)}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <TableCell>
+                        <Typography variant="body2">
+                          {node.title}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        {node.metadata.driveUrl ? (
+                          <Link
+                            href={node.metadata.driveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                          >
+                            <CloudIcon fontSize="small" />
+                            Open
+                          </Link>
+                        ) : (
+                          <Typography variant="body2" color="text.disabled">-</Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {node.metadata.notionUrl ? (
+                          <Link
+                            href={node.metadata.notionUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                          >
+                            <DescriptionIcon fontSize="small" />
+                            View
+                          </Link>
+                        ) : (
+                          <Typography variant="body2" color="text.disabled">-</Typography>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            
+            {/* Empty state when no nodes selected */}
+            {activeNodes.size === 0 && (
+              <Box sx={{ 
+                flex: 1, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                flexDirection: 'column',
+                color: 'text.secondary',
+                p: 4
+              }}>
+                <Typography variant="h6" gutterBottom>
+                  No Node Selected
+                </Typography>
+                <Typography variant="body2">
+                  Click on a node in the graph to view its details and connections
+                </Typography>
+              </Box>
+            )}
+            </>
+          );
+        })()}
+      </Box>
     </Box>
   );
 };

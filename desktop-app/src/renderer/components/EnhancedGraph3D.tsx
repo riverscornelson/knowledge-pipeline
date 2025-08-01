@@ -363,7 +363,11 @@ export default function EnhancedGraph3D({
           )}
           
           {/* Original graph rendering */}
-          {graph && !error && filteredNodes.length > 0 && (
+          {graph && !error && filteredNodes.length > 0 && (() => {
+            console.log('Rendering graph with nodes:', filteredNodes.length);
+            console.log('Sample node positions:', filteredNodes.slice(0, 3).map(n => ({ id: n.id, x: n.x, y: n.y, z: n.z })));
+            return true;
+          })() && (
             <WorldClassKnowledgeGraph
               data={{
                 nodes: filteredNodes.map(node => ({
@@ -392,8 +396,8 @@ export default function EnhancedGraph3D({
                     preview: node.properties.description || node.label,
                     createdAt: new Date(node.metadata.createdAt),
                     lastModified: new Date(node.metadata.lastUpdated),
-                    driveUrl: node.properties.driveUrl,
-                    notionUrl: node.properties.notionUrl,
+                    driveUrl: node.properties['Drive URL'] || node.properties.driveUrl,
+                    notionUrl: node.properties.url || node.properties.notionUrl,
                     isNew: false
                   }
                 })),

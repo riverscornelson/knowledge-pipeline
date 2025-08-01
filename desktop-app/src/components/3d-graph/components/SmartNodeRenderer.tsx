@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
-import { Text } from '@react-three/drei';
+// import { Text } from '@react-three/drei'; // Disabled due to CSP
 import { GraphNode } from '../types';
 
 interface SmartNodeRendererProps {
   node: GraphNode;
   isHovered: boolean;
   isSelected: boolean;
+  isConnected?: boolean;
   onClick: () => void;
   onPointerOver: () => void;
   onPointerOut: () => void;
@@ -77,6 +78,7 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
   node,
   isHovered,
   isSelected,
+  isConnected = false,
   onClick,
   onPointerOver,
   onPointerOut,
@@ -84,17 +86,20 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
 }) => {
   const config = nodeTypeConfig[node.type] || nodeTypeConfig.document;
   
-  // Calculate node size based on importance metrics
+  // Calculate node size based on importance metrics - 10x larger
   const baseSize = useMemo(() => {
     const connectionFactor = Math.min(node.connections.length / 10, 1) * 0.5;
     const qualityFactor = (node.metadata.qualityScore / 100) * 0.3;
     const weightFactor = node.metadata.weight * 0.2;
     
-    return 1 + connectionFactor + qualityFactor + weightFactor;
+    return (1 + connectionFactor + qualityFactor + weightFactor) * 3.33;  // Reduced from 10x to ~3.3x
   }, [node]);
 
   const currentSize = isHovered ? baseSize * 1.2 : baseSize;
-  const currentColor = isSelected ? config.selectedColor : isHovered ? config.hoverColor : config.color;
+  const currentColor = isSelected ? config.selectedColor : 
+                      isHovered ? config.hoverColor : 
+                      isConnected ? '#FFD700' : // Yellow for connected nodes
+                      config.color;
 
   // Geometry based on node type
   const geometry = useMemo(() => {
@@ -134,15 +139,13 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
         scale={scale}
       >
         {geometry}
-        <meshPhysicalMaterial
+        <meshStandardMaterial
           color={currentColor}
-          metalness={0.3}
-          roughness={0.4}
-          clearcoat={highQualityMode ? 0.5 : 0}
-          clearcoatRoughness={0.3}
+          metalness={0.1}
+          roughness={0.3}
           emissive={currentColor}
-          emissiveIntensity={isHovered ? 0.3 : isSelected ? 0.2 : 0.1}
-          opacity={node.metadata.confidence}
+          emissiveIntensity={isHovered ? 0.8 : isSelected ? 0.6 : 0.4}
+          opacity={Math.max(0.7, node.metadata.confidence)}
           transparent={node.metadata.confidence < 1}
         />
       </mesh>
@@ -180,8 +183,8 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
         </mesh>
       )}
 
-      {/* Node label */}
-      {(isHovered || isSelected || node.metadata.weight > 0.8) && (
+      {/* Node label - disabled due to CSP */}
+      {false && (isHovered || isSelected || node.metadata.weight > 0.8) && (
         <Text
           position={[0, currentSize + 0.5, 0]}
           fontSize={0.4}
@@ -215,6 +218,7 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
             <sphereGeometry args={[0.3, 16, 8]} />
             <meshBasicMaterial color="#FF6B6B" />
           </mesh>
+          {/* Text disabled due to CSP
           <Text
             position={[0, 0, 0.31]}
             fontSize={0.2}
@@ -223,7 +227,7 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
             anchorY="middle"
           >
             {node.connections.length}
-          </Text>
+          </Text> */}
         </group>
       )}
 

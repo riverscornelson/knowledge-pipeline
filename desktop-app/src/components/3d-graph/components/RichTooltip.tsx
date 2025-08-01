@@ -21,6 +21,11 @@ import {
   FolderOpen as SourceIcon,
   Star as QualityIcon,
   LocalOffer as TagIcon,
+  Close as CloseIcon,
+  ContentCopy as CopyIcon,
+  Share as ShareIcon,
+  Cloud as CloudIcon,
+  Description as NotionIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { GraphNode } from '../types';
@@ -29,9 +34,11 @@ interface RichTooltipProps {
   node: GraphNode;
   position: { x: number; y: number };
   visible: boolean;
+  frozen?: boolean;
   onOpenInDrive?: () => void;
   onOpenInNotion?: () => void;
   onViewRelated?: () => void;
+  onClose?: () => void;
 }
 
 const contentTypeIcons = {
@@ -62,9 +69,11 @@ const RichTooltip: React.FC<RichTooltipProps> = ({
   node,
   position,
   visible,
+  frozen = false,
   onOpenInDrive,
   onOpenInNotion,
   onViewRelated,
+  onClose,
 }) => {
   if (!visible) return null;
 
@@ -76,17 +85,17 @@ const RichTooltip: React.FC<RichTooltipProps> = ({
       elevation={8}
       sx={{
         position: 'absolute',
-        left: position.x + 20,
-        top: position.y - 10,
-        width: 320,
+        left: frozen ? '50%' : position.x + 20,
+        top: frozen ? '50%' : position.y - 10,
+        transform: frozen ? 'translate(-50%, -50%)' : 'translateY(-50%)',
+        width: frozen ? 420 : 320,
         maxWidth: '90vw',
         p: 2,
-        pointerEvents: 'auto',
+        pointerEvents: frozen ? 'auto' : 'none',
         backgroundColor: 'rgba(255, 255, 255, 0.98)',
         backdropFilter: 'blur(12px)',
         border: '1px solid rgba(0, 0, 0, 0.08)',
         borderRadius: 2,
-        transform: 'translateY(-50%)',
         zIndex: 1000,
         transition: 'all 0.2s ease-in-out',
         '&::before': {
@@ -114,6 +123,11 @@ const RichTooltip: React.FC<RichTooltipProps> = ({
             {getContentTypeLabel(node.metadata.contentType)}
           </Typography>
         </Box>
+        {frozen && onClose && (
+          <IconButton size="small" onClick={onClose} sx={{ ml: 1 }}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        )}
       </Box>
 
       {/* Quality Score */}
@@ -161,7 +175,7 @@ const RichTooltip: React.FC<RichTooltipProps> = ({
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
-              WebkitLineClamp: 3,
+              WebkitLineClamp: frozen ? 5 : 3,
               WebkitBoxOrient: 'vertical',
               lineHeight: 1.5,
               color: 'text.secondary',
@@ -239,21 +253,28 @@ const RichTooltip: React.FC<RichTooltipProps> = ({
       <Divider sx={{ mb: 1 }} />
 
       {/* Actions */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
         <Stack direction="row" spacing={1}>
-          {onOpenInDrive && (
-            <MuiTooltip title="Open in Google Drive">
-              <IconButton size="small" onClick={onOpenInDrive}>
-                <OpenIcon fontSize="small" />
-              </IconButton>
-            </MuiTooltip>
-          )}
-          {onOpenInNotion && (
-            <MuiTooltip title="View in Notion">
-              <IconButton size="small" onClick={onOpenInNotion}>
-                <OpenIcon fontSize="small" />
-              </IconButton>
-            </MuiTooltip>
+          {frozen && (
+            <>
+              <MuiTooltip title="Copy Node ID">
+                <IconButton size="small" onClick={() => navigator.clipboard.writeText(node.id)}>
+                  <CopyIcon fontSize="small" />
+                </IconButton>
+              </MuiTooltip>
+              <MuiTooltip title="Copy Node Data">
+                <IconButton size="small" onClick={() => {
+                  const nodeData = {
+                    title: node.title,
+                    type: node.type,
+                    metadata: node.metadata,
+                  };
+                  navigator.clipboard.writeText(JSON.stringify(nodeData, null, 2));
+                }}>
+                  <ShareIcon fontSize="small" />
+                </IconButton>
+              </MuiTooltip>
+            </>
           )}
         </Stack>
         {onViewRelated && (
@@ -272,6 +293,54 @@ const RichTooltip: React.FC<RichTooltipProps> = ({
           </Link>
         )}
       </Box>
+
+      {/* Drive and Notion Links for frozen state */}
+      {frozen && (
+        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {node.metadata.driveUrl && (
+            <Link
+              href={node.metadata.driveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                textDecoration: 'none',
+                color: 'primary.main',
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              <CloudIcon fontSize="small" />
+              Open in Google Drive
+              <OpenIcon fontSize="small" />
+            </Link>
+          )}
+          {node.metadata.notionUrl && (
+            <Link
+              href={node.metadata.notionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                textDecoration: 'none',
+                color: 'primary.main',
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              <NotionIcon fontSize="small" />
+              View in Notion
+              <OpenIcon fontSize="small" />
+            </Link>
+          )}
+        </Box>
+      )}
 
       {/* Connection Strength Indicator */}
       {node.metadata.weight > 0 && (

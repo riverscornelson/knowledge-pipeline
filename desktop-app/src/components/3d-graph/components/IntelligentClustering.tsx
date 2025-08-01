@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { Box, Line, Text } from '@react-three/drei';
+import { Box, Line } from '@react-three/drei';
+// Text disabled due to CSP - import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { GraphNode, ClusterInfo } from '../types';
 
@@ -173,8 +174,8 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
               opacity={0.6}
             />
 
-            {/* Cluster label */}
-            <Text
+            {/* Cluster label - disabled due to CSP */}
+            {/* <Text
               position={[
                 cluster.center[0],
                 cluster.center[1] + cluster.radius + 1,
@@ -188,7 +189,7 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
               outlineColor="#FFFFFF"
             >
               {cluster.label}
-            </Text>
+            </Text> */}
 
             {/* Cluster summary */}
             {!isExpanded && (
@@ -202,8 +203,8 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
                   />
                 </sprite>
 
-                {/* Quality indicator */}
-                <Text
+                {/* Quality indicator - disabled due to CSP */}
+                {/* <Text
                   position={[0, -1, 0]}
                   fontSize={0.4}
                   color="#FFFFFF"
@@ -211,7 +212,7 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
                   anchorY="top"
                 >
                   Quality: {Math.round(cluster.averageQuality)}%
-                </Text>
+                </Text> */}
 
                 {/* Tag badges */}
                 {cluster.semanticTags.slice(0, 3).map((tag, i) => (
@@ -221,6 +222,7 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
                     args={[2, 0.4, 0.1]}
                   >
                     <meshBasicMaterial color="#333333" opacity={0.8} transparent />
+                    {/* Text disabled due to CSP
                     <Text
                       position={[0, 0, 0.06]}
                       fontSize={0.3}
@@ -229,7 +231,7 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
                       anchorY="middle"
                     >
                       {tag}
-                    </Text>
+                    </Text> */}
                   </Box>
                 ))}
               </group>

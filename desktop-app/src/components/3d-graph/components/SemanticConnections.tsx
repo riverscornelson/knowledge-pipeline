@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Line, Text, Tube } from '@react-three/drei';
+import { Line } from '@react-three/drei';
+// Text disabled due to CSP - import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { GraphConnection, GraphNode } from '../types';
 
@@ -13,40 +14,40 @@ interface SemanticConnectionsProps {
   qualityThreshold?: number;
 }
 
-// Connection type styling
+// Connection type styling - MUCH thicker for visibility
 const connectionStyles = {
   semantic: {
-    color: '#4A90E2',
+    color: '#00BFFF',  // Bright blue
     dashScale: 0,
-    width: 2,
+    width: 2,  // Base width for cylinder radius
     label: 'Related',
     curve: 0.3,
   },
   reference: {
-    color: '#7ED321',
+    color: '#00FF00',  // Bright green
     dashScale: 3,
     width: 2.5,
     label: 'References',
     curve: 0.2,
   },
   temporal: {
-    color: '#F5A623',
+    color: '#FFA500',  // Bright orange
     dashScale: 5,
-    width: 1.5,
+    width: 2,
     label: 'Timeline',
     curve: 0.1,
   },
   hierarchical: {
-    color: '#BD10E0',
+    color: '#FF1493',  // Bright pink
     dashScale: 0,
     width: 3,
     label: 'Parent-Child',
     curve: 0,
   },
   causal: {
-    color: '#FF6B6B',
+    color: '#FF4500',  // Bright red-orange
     dashScale: 4,
-    width: 2,
+    width: 2.5,
     label: 'Causes',
     curve: 0.4,
   },
@@ -59,7 +60,7 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
   hoveredNodeId,
   highlightedPaths = [],
   showLabels = false,
-  qualityThreshold = 0.3,
+  qualityThreshold = 0.0,  // Show all connections
 }) => {
   // Create node position map for quick lookup
   const nodePositions = useMemo(() => {
@@ -72,13 +73,27 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
 
   // Filter and enhance connections based on state
   const enhancedConnections = useMemo(() => {
+    console.log('Processing connections:', connections.length);
+    console.log('Node positions available:', nodePositions.size);
+    console.log('Quality threshold:', qualityThreshold);
+    console.log('First few connections:', connections.slice(0, 3));
+    
     return connections
-      .filter(conn => conn.strength >= qualityThreshold)
+      .filter(conn => {
+        const passes = conn.strength >= qualityThreshold;
+        if (!passes) {
+          console.log('Connection filtered out due to strength:', conn.strength, '<', qualityThreshold);
+        }
+        return passes;
+      })
       .map(conn => {
         const sourcePos = nodePositions.get(conn.source);
         const targetPos = nodePositions.get(conn.target);
         
-        if (!sourcePos || !targetPos) return null;
+        if (!sourcePos || !targetPos) {
+          console.log('Missing positions for connection:', conn.source, '->', conn.target);
+          return null;
+        }
 
         const isHighlighted = 
           selectedNodeIds.has(conn.source) || 
@@ -116,8 +131,8 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
           style,
           isHighlighted,
           isInPath,
-          opacity: isHighlighted ? 1 : isInPath ? 0.8 : 0.3 + conn.strength * 0.4,
-          width: style.width * (isHighlighted ? 1.5 : 1) * conn.strength,
+          opacity: isHighlighted ? 1 : 0.9,
+          width: style.width * (isHighlighted ? 1.5 : 1),
         };
       })
       .filter(Boolean);
@@ -138,6 +153,8 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
     return chains;
   }, [enhancedConnections]);
 
+  console.log('Enhanced connections to render:', enhancedConnections.filter(Boolean).length);
+
   return (
     <group>
       {/* Main connections */}
@@ -154,34 +171,29 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
         );
         const points = curve.getPoints(32);
 
+        // Calculate position and rotation for cylinder
+        const distance = sourcePos.distanceTo(targetPos);
+        const center = new THREE.Vector3().addVectors(sourcePos, targetPos).multiplyScalar(0.5);
+        
+        // Create direction vector and calculate rotation
+        const direction = new THREE.Vector3().subVectors(targetPos, sourcePos);
+        direction.normalize();
+        
+        // Default cylinder is along Y axis, so we need to rotate it
+        const axis = new THREE.Vector3(0, 1, 0);
+        const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction);
+        
         return (
           <group key={conn.id}>
-            {/* Connection line */}
-            {style.curve > 0 ? (
-              <Line
-                points={points}
-                color={style.color}
-                lineWidth={width}
-                transparent
+            {/* Connection line - using cylinder mesh for visibility */}
+            <mesh position={center} quaternion={quaternion}>
+              <cylinderGeometry args={[width * 0.3, width * 0.3, distance, 8]} />
+              <meshBasicMaterial
+                color={isHighlighted ? '#FFD700' : style.color}
                 opacity={opacity}
-                dashed={style.dashScale > 0}
-                dashScale={style.dashScale}
-                dashSize={3}
-                gapSize={1}
-              />
-            ) : (
-              <Line
-                points={[sourcePos, targetPos]}
-                color={style.color}
-                lineWidth={width}
                 transparent
-                opacity={opacity}
-                dashed={style.dashScale > 0}
-                dashScale={style.dashScale}
-                dashSize={3}
-                gapSize={1}
               />
-            )}
+            </mesh>
 
             {/* Connection strength indicator */}
             {isHighlighted && conn.strength > 0.7 && (
@@ -195,8 +207,8 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
               </mesh>
             )}
 
-            {/* Connection label */}
-            {(showLabels || isHighlighted) && (
+            {/* Connection label - disabled due to CSP */}
+            {false && (showLabels || isHighlighted) && (
               <Text
                 position={midPoint.toArray()}
                 fontSize={0.3}
@@ -245,22 +257,14 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
       {citationChains.length > 0 && (
         <group>
           {citationChains.map((chain, index) => (
-            <Tube
+            <Line
               key={`citation-chain-${index}`}
-              args={[
-                new THREE.CatmullRomCurve3(chain),
-                32,
-                0.05,
-                8,
-                false,
-              ]}
-            >
-              <meshBasicMaterial
-                color="#7ED321"
-                opacity={0.2}
-                transparent
-              />
-            </Tube>
+              points={chain}
+              color="#7ED321"
+              lineWidth={2}
+              opacity={0.2}
+              transparent
+            />
           ))}
         </group>
       )}
