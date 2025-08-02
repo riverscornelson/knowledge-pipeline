@@ -29,6 +29,8 @@ export interface Node3D {
     strength: number; // Relevance/importance score 0-1
     cluster?: string;
     depth: number; // Distance from root nodes
+    driveUrl?: string; // Google Drive URL
+    notionUrl?: string; // Notion page URL
   };
 }
 
@@ -506,9 +508,12 @@ export class DataIntegrationService extends EventEmitter {
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
+    log.info('Fetching Notion pages with content...');
+
     // Only fetch pages from Sources database where Drive URL is not null
     const pages = await this.notionService.queryDatabase({
       pageSize: this.maxBatchSize,
+      fetchContent: true, // Explicitly fetch content for similarity calculation
       filter: {
         property: 'Drive URL',
         url: {
@@ -523,6 +528,20 @@ export class DataIntegrationService extends EventEmitter {
       ]
     });
 
+    // Log content statistics for debugging
+    const contentStats = {
+      totalPages: pages.length,
+      pagesWithContent: pages.filter(p => p.content && p.content.length > 0).length,
+      avgContentLength: pages.reduce((sum, p) => sum + (p.content?.length || 0), 0) / pages.length,
+      contentSample: pages.slice(0, 3).map(p => ({
+        title: p.title?.substring(0, 30),
+        contentLength: p.content?.length || 0,
+        contentPreview: p.content?.substring(0, 100) || 'EMPTY'
+      }))
+    };
+
+    log.info('Notion content fetch results:', contentStats);
+
     this.cache.set(cacheKey, pages, 120000); // 2 minutes
     return pages;
   }
@@ -531,24 +550,41 @@ export class DataIntegrationService extends EventEmitter {
     const nodes: Node3D[] = [];
 
     for (const page of pages) {
+      // Extract hierarchical tags for similarity calculation
+      const hierarchicalTags = this.extractAndValidateHierarchicalTags(page.properties);
+      
       // Create document node
       const node: Node3D = {
         id: page.id,
-        label: page.title,
+        label: page.title || 'Untitled Document',
         type: 'document',
         position: { x: 0, y: 0, z: 0 }, // Will be set by layout algorithm
+        x: 0, // Convenience properties
+        y: 0,
+        z: 0,
         size: this.calculateNodeSize(page),
         color: this.getNodeColor('document'),
         properties: {
           ...page.properties,
           url: page.url,
-          content: page.content.substring(0, 500) // Truncated preview
+          content: page.content || '', // Full content for similarity calculation
+          contentPreview: page.content?.substring(0, 500) || '', // Truncated preview for display
+          // Add Drive and Notion URLs for easy access
+          driveUrl: page.properties['Drive URL'] || page.properties['drive_url'] || '',
+          notionUrl: page.url || '',
+          // Ensure hierarchical tags are available in properties for similarity calculation
+          ...hierarchicalTags
         },
         metadata: {
           createdAt: page.createdTime || new Date().toISOString(),
           lastUpdated: page.lastEditedTime || new Date().toISOString(),
           strength: this.calculateNodeStrength(page),
-          depth: 0
+          depth: 0,
+          // Also add URLs to metadata for GraphNode compatibility
+          driveUrl: page.properties['Drive URL'] || page.properties['drive_url'] || '',
+          notionUrl: page.url || '',
+          // Add hierarchical tags to metadata for UI display
+          ...hierarchicalTags
         }
       };
 
@@ -584,7 +620,9 @@ export class DataIntegrationService extends EventEmitter {
         if (nodeA.type === 'document' && nodeB.type === 'document') {
           const similarity = await this.calculateSimilarity(nodeA, nodeB);
           
-          if (similarity > 0.3) { // Threshold for meaningful connections
+          // Note: calculateSimilarity now returns 0 for scores below 10% threshold
+          // We use a slightly higher threshold here for edge creation (15%)
+          if (similarity >= 0.15) { // Threshold for meaningful connections
             edges.push({
               id: `${nodeA.id}-${nodeB.id}`,
               source: nodeA.id,
@@ -602,25 +640,49 @@ export class DataIntegrationService extends EventEmitter {
       }
     }
 
-    // Add tag-to-document edges
+    // Add tag-to-document edges with hierarchical priority
     for (const node of nodes) {
       if (node.type === 'tag') {
-        const relatedDocs = nodes.filter(n => 
-          n.type === 'document' && 
-          n.properties.tags?.includes(node.label)
-        );
+        const relatedDocs = nodes.filter(n => {
+          if (n.type !== 'document') return false;
+          
+          // Check all hierarchical tag types for connections
+          const hierarchicalTags = this.extractAndValidateHierarchicalTags(n.properties);
+          const allDocTags = [
+            ...hierarchicalTags.aiPrimitives,
+            ...hierarchicalTags.topicalTags, 
+            ...hierarchicalTags.domainTags,
+            ...hierarchicalTags.generalTags
+          ];
+          
+          return allDocTags.includes(node.label);
+        });
 
         for (const doc of relatedDocs) {
+          // Determine edge weight based on tag hierarchy
+          let weight = 0.4; // Default for general tags
+          const hierarchicalTags = this.extractAndValidateHierarchicalTags(doc.properties);
+          
+          if (hierarchicalTags.aiPrimitives.includes(node.label)) {
+            weight = 0.9; // Highest weight for AI primitives
+          } else if (hierarchicalTags.topicalTags.includes(node.label)) {
+            weight = 0.8; // High weight for topical tags
+          } else if (hierarchicalTags.domainTags.includes(node.label)) {
+            weight = 0.7; // Medium weight for domain tags
+          }
+          
           edges.push({
             id: `${node.id}-${doc.id}`,
             source: node.id,
             target: doc.id,
             type: 'tag',
-            weight: 0.8,
-            properties: {},
+            weight,
+            properties: {
+              tagHierarchy: node.properties.tagType || 'general'
+            },
             metadata: {
               createdAt: new Date().toISOString(),
-              confidence: 0.9
+              confidence: weight
             }
           });
         }
@@ -773,21 +835,614 @@ export class DataIntegrationService extends EventEmitter {
       strength += Math.max(0, 0.2 - daysSinceUpdate * 0.01);
     }
 
+    // Factor in quality score if available (either explicit or fallback)
+    const qualityScore = page.properties?.qualityScore || this.calculateFallbackQualityScoreFromPage(page);
+    if (qualityScore > 0) {
+      // Normalize quality score (0-100) to strength factor (0-0.2)
+      strength += (qualityScore / 100) * 0.2;
+    }
+
     return Math.min(strength, 1.0);
   }
 
+  /**
+   * Calculate fallback quality score from NotionPage (for use in calculateNodeStrength)
+   */
+  private calculateFallbackQualityScoreFromPage(page: NotionPage): number {
+    let qualityScore = 40; // Base quality score
+    
+    // Factor 1: Content length (0-20 points)
+    if (page.content && page.content.length > 0) {
+      const contentScore = Math.min(20, (page.content.length / 2000) * 20);
+      qualityScore += contentScore;
+    }
+    
+    // Factor 2: Tag richness (0-25 points)
+    const hierarchicalTags = this.extractAndValidateHierarchicalTags(page.properties || {});
+    const totalTags = hierarchicalTags.aiPrimitives.length + 
+                     hierarchicalTags.topicalTags.length + 
+                     hierarchicalTags.domainTags.length + 
+                     hierarchicalTags.generalTags.length;
+    
+    if (totalTags > 0) {
+      const tagScore = Math.min(25, 
+        hierarchicalTags.aiPrimitives.length * 8 +
+        hierarchicalTags.topicalTags.length * 5 +
+        hierarchicalTags.domainTags.length * 3 +
+        hierarchicalTags.generalTags.length * 2
+      );
+      qualityScore += tagScore;
+    }
+    
+    // Factor 3: Content type and other factors (simplified for page context)
+    const contentType = page.properties?.['Content-Type'] || page.properties?.contentType || '';
+    if (contentType) {
+      qualityScore += 5; // Simple bonus for having content type
+    }
+    
+    const vendor = page.properties?.Vendor || page.properties?.vendor || '';
+    if (vendor) {
+      qualityScore += 2; // Simple bonus for having vendor
+    }
+    
+    const status = page.properties?.Status || page.properties?.status || '';
+    if (status && status.toLowerCase() === 'processed') {
+      qualityScore += 5; // Bonus for processed status
+    }
+    
+    return Math.min(100, Math.max(0, qualityScore));
+  }
+
   private async calculateSimilarity(nodeA: Node3D, nodeB: Node3D): Promise<number> {
-    // Simplified similarity calculation based on content overlap
+    // Cache key for this pair (order-independent)
+    const cacheKey = `similarity_${[nodeA.id, nodeB.id].sort().join('_')}`;
+    const cached = this.cache.get(cacheKey);
+    if (cached !== null) {
+      return cached;
+    }
+
+    // Multi-factor connection scoring system
+    const factors: Record<string, number> = {};
+    
+    // Calculate all factors
+    factors.contentSimilarity = this.calculateContentSimilarity(nodeA, nodeB);
+    factors.tagSimilarity = this.calculateTagSimilarity(nodeA, nodeB);
+    factors.temporalProximity = this.calculateTemporalProximity(nodeA, nodeB);
+    factors.semanticSimilarity = this.calculateSemanticSimilarity(nodeA, nodeB);
+    factors.qualitySimilarity = this.calculateQualitySimilarity(nodeA, nodeB);
+    factors.vendorSimilarity = this.calculateVendorSimilarity(nodeA, nodeB);
+
+
+    // Apply factor-specific thresholds to create more realistic score distribution
+    const thresholdedFactors = {
+      contentSimilarity: factors.contentSimilarity >= 0.05 ? factors.contentSimilarity : 0,
+      tagSimilarity: factors.tagSimilarity >= 0.1 ? factors.tagSimilarity : 0,
+      temporalProximity: factors.temporalProximity >= 0.1 ? factors.temporalProximity : 0,
+      semanticSimilarity: factors.semanticSimilarity >= 0.1 ? factors.semanticSimilarity : 0,
+      qualitySimilarity: factors.qualitySimilarity >= 0.1 ? factors.qualitySimilarity : 0,
+      vendorSimilarity: factors.vendorSimilarity >= 0.5 ? factors.vendorSimilarity : 0
+    };
+
+    // Weighted combination of factors
+    const weights = {
+      contentSimilarity: 0.30,    // Content overlap - most important
+      tagSimilarity: 0.25,        // Shared tags - very important for AI content
+      temporalProximity: 0.15,    // Time-based relevance
+      semanticSimilarity: 0.15,   // Semantic relationship
+      qualitySimilarity: 0.10,    // Similar quality levels
+      vendorSimilarity: 0.05      // Same AI vendor - minor factor
+    };
+
+    // Calculate weighted score using only factors that meet threshold
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    for (const [factor, score] of Object.entries(thresholdedFactors)) {
+      if (score > 0) {
+        const weight = weights[factor as keyof typeof weights];
+        totalScore += score * weight;
+        totalWeight += weight;
+      }
+    }
+
+    // If no factors meet their thresholds, return 0
+    if (totalWeight === 0) {
+      this.cache.set(cacheKey, 0, 600000);
+      return 0;
+    }
+
+    // Normalize by actual contributing weights
+    let finalScore = totalScore / totalWeight;
+    // Apply non-linear transformation to create better score distribution
+    // This prevents most scores from clustering around high values
+    finalScore = Math.pow(finalScore, 1.5); // Emphasize higher similarities more
+    
+    // Apply minimum threshold - return 0 if below 10%
+    const result = finalScore >= 0.1 ? Math.min(finalScore, 1.0) : 0;
+    
+    if (Math.random() < 0.1) { // 10% sample logging for better debugging
+      log.info('Connection scoring detail', {
+        nodeA: nodeA.label?.substring(0, 30),
+        nodeB: nodeB.label?.substring(0, 30),
+        rawFactors: factors,
+        thresholdedFactors,
+        finalScore: result,
+        totalWeight,
+        status: result >= 0.1 ? 'CONNECTED' : 'FILTERED'
+      });
+    }
+    
+    // Cache the result
+    this.cache.set(cacheKey, result, 600000); // 10 minutes cache
+    return result;
+  }
+
+  private calculateContentSimilarity(nodeA: Node3D, nodeB: Node3D): number {
     const contentA = nodeA.properties.content || '';
     const contentB = nodeB.properties.content || '';
     
-    const wordsA = new Set(contentA.toLowerCase().split(/\s+/));
-    const wordsB = new Set(contentB.toLowerCase().split(/\s+/));
+    // Debug logging for content similarity issues
+    if (Math.random() < 0.05) { // 5% sample logging
+      log.info('Content similarity debug:', {
+        nodeA: nodeA.label?.substring(0, 30),
+        nodeB: nodeB.label?.substring(0, 30),
+        contentALength: contentA.length,
+        contentBLength: contentB.length,
+        contentAPreview: contentA.substring(0, 50),
+        contentBPreview: contentB.substring(0, 50),
+        hasContent: { A: !!contentA, B: !!contentB }
+      });
+    }
+    
+    if (!contentA || !contentB) return 0;
+    
+    // Expanded stopword list for better filtering
+    const stopWords = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
+      'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did',
+      'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those',
+      'it', 'its', 'he', 'she', 'his', 'her', 'they', 'them', 'their', 'we', 'us', 'our',
+      'i', 'me', 'my', 'you', 'your', 'from', 'up', 'about', 'into', 'over', 'after',
+      'also', 'more', 'most', 'other', 'some', 'such', 'only', 'own', 'same', 'so',
+      'than', 'too', 'very', 'just', 'now', 'then', 'here', 'there', 'when', 'where',
+      'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some'
+    ]);
+    
+    const extractFeatures = (text: string) => {
+      const words = text.toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(word => word.length > 3 && !stopWords.has(word)); // Require longer words
+      
+      const features = new Set(words);
+      
+      // Only add bigrams if we have sufficient meaningful words
+      if (words.length >= 10) {
+        for (let i = 0; i < words.length - 1; i++) {
+          features.add(`${words[i]}_${words[i + 1]}`);
+        }
+      }
+      
+      return features;
+    };
+    
+    const featuresA = extractFeatures(contentA);
+    const featuresB = extractFeatures(contentB);
+    
+    if (featuresA.size === 0 || featuresB.size === 0) return 0;
+    
+    const intersection = new Set([...featuresA].filter(word => featuresB.has(word)));
+    const union = new Set([...featuresA, ...featuresB]);
+    
+    // Require meaningful overlap - at least 3 shared features for any similarity
+    if (intersection.size < 3) return 0;
+    
+    // Basic Jaccard similarity
+    let jaccard = intersection.size / union.size;
+    
+    // Apply scaling to create more realistic distribution
+    // Most document pairs should have low similarity unless they're truly related
+    jaccard = Math.pow(jaccard, 2); // Square to emphasize higher similarities
+    
+    // Length-based adjustment - similar length documents with good overlap score higher
+    const lengthA = contentA.length;
+    const lengthB = contentB.length;
+    const minLength = Math.min(lengthA, lengthB);
+    const maxLength = Math.max(lengthA, lengthB);
+    
+    // Penalize very different lengths
+    let lengthFactor = 1.0;
+    if (maxLength > minLength * 3) {
+      lengthFactor = 0.5; // Significant penalty for very different lengths
+    } else if (maxLength > minLength * 2) {
+      lengthFactor = 0.7; // Moderate penalty
+    }
+    
+    // Apply minimum content threshold - both documents should have substantial content
+    const minContentLength = 200; // At least 200 characters
+    if (minLength < minContentLength) {
+      lengthFactor *= 0.5; // Penalty for short content
+    }
+    
+    const finalScore = jaccard * lengthFactor;
+    
+    // Only return meaningful similarities
+    return finalScore >= 0.02 ? finalScore : 0;
+  }
+
+  private calculateTagSimilarity(nodeA: Node3D, nodeB: Node3D): number {
+    // Multi-tier tag analysis with different weights
+    const getTagArrays = (node: Node3D) => ({
+      aiPrimitives: node.properties.aiPrimitives || [],
+      topicalTags: node.properties.topicalTags || [],
+      domainTags: node.properties.domainTags || [],
+      generalTags: node.properties.tags || []
+    });
+    
+    const tagsA = getTagArrays(nodeA);
+    const tagsB = getTagArrays(nodeB);
+    
+    
+    // Calculate similarity for each tag type with different weights
+    const similarities = {
+      aiPrimitives: this.calculateArraySimilarity(tagsA.aiPrimitives, tagsB.aiPrimitives) * 1.0,
+      topicalTags: this.calculateArraySimilarity(tagsA.topicalTags, tagsB.topicalTags) * 0.8,
+      domainTags: this.calculateArraySimilarity(tagsA.domainTags, tagsB.domainTags) * 0.6,
+      generalTags: this.calculateArraySimilarity(tagsA.generalTags, tagsB.generalTags) * 0.4
+    };
+    
+    // Weighted average of tag similarities
+    const weights = [1.0, 0.8, 0.6, 0.4];
+    const scores = Object.values(similarities);
+    const totalWeight = weights.reduce((sum, w, i) => sum + (scores[i] > 0 ? w : 0), 0);
+    
+    if (totalWeight === 0) return 0;
+    
+    return scores.reduce((sum, score, i) => sum + score * weights[i], 0) / totalWeight;
+  }
+
+  private calculateArraySimilarity(arrayA: string[], arrayB: string[]): number {
+    if (arrayA.length === 0 || arrayB.length === 0) return 0;
+    
+    const setA = new Set(arrayA.map(item => item.toLowerCase()));
+    const setB = new Set(arrayB.map(item => item.toLowerCase()));
+    
+    const intersection = new Set([...setA].filter(item => setB.has(item)));
+    const union = new Set([...setA, ...setB]);
+    
+    return intersection.size / union.size;
+  }
+
+  private calculateTemporalProximity(nodeA: Node3D, nodeB: Node3D): number {
+    const dateA = nodeA.metadata.createdAt ? new Date(nodeA.metadata.createdAt) : null;
+    const dateB = nodeB.metadata.createdAt ? new Date(nodeB.metadata.createdAt) : null;
+    
+    if (!dateA || !dateB) return 0;
+    
+    const timeDiffMs = Math.abs(dateA.getTime() - dateB.getTime());
+    const hoursDiff = timeDiffMs / (1000 * 60 * 60);
+    
+    // Much more strict temporal proximity - only very close times get meaningful scores
+    // This prevents batch-imported documents from all connecting via temporal proximity
+    if (hoursDiff <= 0.5) return 0.7;      // Within 30 minutes - moderate score
+    if (hoursDiff <= 2) return 0.4;        // Within 2 hours - lower score  
+    if (hoursDiff <= 6) return 0.2;        // Within 6 hours - minimal score
+    if (hoursDiff <= 24) return 0.05;      // Within 24 hours - very minimal
+    
+    return 0; // Beyond 24 hours, no temporal connection
+  }
+
+  /**
+   * Enhanced quality similarity calculation with fallback scoring
+   * 
+   * This function gracefully handles missing quality scores by:
+   * 1. First attempting to use explicit quality scores from Notion
+   * 2. Falling back to calculated quality scores based on metadata
+   * 3. Adjusting similarity thresholds and scaling based on score types
+   * 
+   * Similarity Rules:
+   * - Both explicit scores: Use stricter thresholds (20pt max diff, 0.6 scale factor)
+   * - Mixed/fallback scores: Use looser thresholds (30pt max diff, 0.4 scale factor)
+   * - Minimum quality threshold: 30 points (lowered for fallback compatibility)
+   */
+  private calculateQualitySimilarity(nodeA: Node3D, nodeB: Node3D): number {
+    // Try to get explicit quality scores first
+    let qualityA = nodeA.properties.qualityScore || 0;
+    let qualityB = nodeB.properties.qualityScore || 0;
+    
+    // If no explicit quality scores, use fallback calculation
+    if (qualityA === 0) {
+      qualityA = this.calculateFallbackQualityScore(nodeA);
+    }
+    if (qualityB === 0) {
+      qualityB = this.calculateFallbackQualityScore(nodeB);
+    }
+    
+    // If both still zero after fallback, no similarity
+    if (qualityA === 0 || qualityB === 0) return 0;
+    
+    // Only create quality connections for meaningful quality scores
+    const minQuality = Math.min(qualityA, qualityB);
+    if (minQuality < 30) return 0; // Lowered threshold for fallback scores
+    
+    // Similarity based on quality score proximity
+    const qualityDiff = Math.abs(qualityA - qualityB);
+    
+    // Allow larger differences for fallback scores
+    const maxDiff = qualityA > 0 && qualityB > 0 && 
+                   (nodeA.properties.qualityScore || nodeB.properties.qualityScore) ? 20 : 30;
+    
+    if (qualityDiff > maxDiff) return 0;
+    
+    // Calculate similarity - closer scores get higher similarity
+    const qualitySimilarity = 1 - (qualityDiff / maxDiff);
+    
+    // Scale the result more conservatively for fallback scores
+    const scaleFactor = (nodeA.properties.qualityScore && nodeB.properties.qualityScore) ? 0.6 : 0.4;
+    return qualitySimilarity * scaleFactor;
+  }
+
+  private calculateSemanticSimilarity(nodeA: Node3D, nodeB: Node3D): number {
+    // Enhanced semantic analysis using content type and structure
+    const typeA = nodeA.properties.contentType || '';
+    const typeB = nodeB.properties.contentType || '';
+    
+    let semanticScore = 0;
+    
+    // Same content type gets moderate bonus (not too high to avoid over-connection)
+    if (typeA && typeB && typeA.toLowerCase() === typeB.toLowerCase()) {
+      semanticScore += 0.2; // Reduced from 0.3
+    }
+    
+    // Analyze title similarity (often more semantically meaningful than content)
+    const titleA = nodeA.label || '';
+    const titleB = nodeB.label || '';
+    
+    if (titleA && titleB) {
+      const titleSimilarity = this.calculateTextSimilarity(titleA, titleB);
+      // Only count significant title similarities
+      if (titleSimilarity >= 0.3) {
+        semanticScore += titleSimilarity * 0.5; // Reduced multiplier
+      }
+    }
+    
+    // Add domain-specific semantic analysis
+    const domainA = nodeA.properties.domain || '';
+    const domainB = nodeB.properties.domain || '';
+    
+    if (domainA && domainB && domainA.toLowerCase() === domainB.toLowerCase()) {
+      semanticScore += 0.15; // Small bonus for same domain
+    }
+    
+    // Cap the semantic similarity at a reasonable level
+    return Math.min(0.7, semanticScore); // Maximum 0.7 instead of 1.0
+  }
+
+  /**
+   * Calculate vendor similarity with enhanced matching logic
+   * 
+   * This function compares AI vendors used to process documents, providing connection
+   * scores based on vendor relationships and reliability.
+   * 
+   * Scoring Logic:
+   * - Exact match: 1.0 (same vendor, e.g., both OpenAI)
+   * - Related vendors: 0.7 (same company family, e.g., Google & Bard)
+   * - Tier match: 0.4 (same tier vendors, e.g., OpenAI & Anthropic)
+   * - No match: 0.0
+   * 
+   * The normalized vendor names from NotionService ensure consistent matching
+   * across different naming conventions (e.g., "openai" vs "OpenAI" vs "Open AI").
+   */
+  private calculateVendorSimilarity(nodeA: Node3D, nodeB: Node3D): number {
+    const vendorA = nodeA.properties.vendor;
+    const vendorB = nodeB.properties.vendor;
+    
+    if (!vendorA || !vendorB) return 0;
+    
+    // Exact match - same vendor
+    if (vendorA === vendorB) {
+      return 1.0;
+    }
+    
+    // Define vendor relationships for partial similarity scoring
+    const vendorRelationships: Record<string, { 
+      related: string[]; // Same company/ecosystem
+      sameTier: string[]; // Comparable tier/capability
+    }> = {
+      'OpenAI': {
+        related: ['ChatGPT', 'GPT'],
+        sameTier: ['Anthropic', 'Google', 'Microsoft']
+      },
+      'Anthropic': {
+        related: ['Claude'],
+        sameTier: ['OpenAI', 'Google', 'Microsoft']
+      },
+      'Google': {
+        related: ['Bard', 'Gemini', 'PaLM', 'Alphabet'],
+        sameTier: ['OpenAI', 'Anthropic', 'Microsoft']
+      },
+      'Microsoft': {
+        related: ['Bing', 'Copilot'],
+        sameTier: ['OpenAI', 'Google', 'Anthropic']
+      },
+      'Meta': {
+        related: ['Facebook', 'LLaMA'],
+        sameTier: ['Google', 'Microsoft']
+      },
+      'Amazon': {
+        related: ['AWS', 'Bedrock'],
+        sameTier: ['Microsoft', 'Google']
+      }
+    };
+    
+    // Check for related vendors (same company/ecosystem)
+    const relationshipA = vendorRelationships[vendorA];
+    const relationshipB = vendorRelationships[vendorB];
+    
+    if (relationshipA?.related.includes(vendorB) || relationshipB?.related.includes(vendorA)) {
+      return 0.7; // High similarity for related vendors
+    }
+    
+    // Check for same-tier vendors (comparable capabilities)
+    if (relationshipA?.sameTier.includes(vendorB) || relationshipB?.sameTier.includes(vendorA)) {
+      return 0.4; // Moderate similarity for same-tier vendors
+    }
+    
+    // Special cases for academic/manual content
+    if ((vendorA === 'Academic' || vendorA === 'Human' || vendorA === 'Manual') &&
+        (vendorB === 'Academic' || vendorB === 'Human' || vendorB === 'Manual')) {
+      return 0.6; // Human-created content has some similarity
+    }
+    
+    // No relationship found
+    return 0;
+  }
+
+  private calculateTextSimilarity(textA: string, textB: string): number {
+    if (!textA || !textB) return 0;
+    
+    const wordsA = new Set(textA.toLowerCase().split(/\s+/));
+    const wordsB = new Set(textB.toLowerCase().split(/\s+/));
     
     const intersection = new Set([...wordsA].filter(word => wordsB.has(word)));
     const union = new Set([...wordsA, ...wordsB]);
     
     return union.size > 0 ? intersection.size / union.size : 0;
+  }
+
+  /**
+   * Calculate fallback quality score based on available metadata when explicit quality field is missing
+   * 
+   * This system provides intelligent quality scoring when the Notion database doesn't have a quality score field.
+   * It considers multiple factors to infer document quality:
+   * 
+   * Scoring Factors:
+   * - Base score: 40 points (all documents start here)
+   * - Content length: 0-20 points (longer content = higher quality)
+   * - Tag richness: 0-25 points (more tags, especially AI primitives = higher quality)
+   * - Content type: 0-10 points (research papers, whitepapers get highest bonus)
+   * - Vendor reliability: 0-5 points (trusted AI vendors get bonus)
+   * - Processing status: 0-10 points (processed > reviewed > pending > draft)
+   * - Recency: 0-5 points (newer content gets bonus)
+   * 
+   * Total possible score: 100 points
+   * Typical ranges:
+   * - Basic documents: 40-50 points
+   * - Well-tagged documents: 60-75 points  
+   * - Rich research content: 80-100 points
+   * 
+   * @param node The Node3D to calculate fallback quality for
+   * @returns Quality score from 0-100
+   */
+  private calculateFallbackQualityScore(node: Node3D): number {
+    let qualityScore = 40; // Base quality score for any document
+    
+    // Factor 1: Content length (0-20 points)
+    const content = node.properties.content || '';
+    const contentLength = content.length;
+    if (contentLength > 0) {
+      // Score based on content length: more content typically indicates higher quality
+      const contentScore = Math.min(20, (contentLength / 2000) * 20); // 2000+ chars = max 20 points
+      qualityScore += contentScore;
+    }
+    
+    // Factor 2: Tag richness (0-25 points)
+    const hierarchicalTags = this.extractAndValidateHierarchicalTags(node.properties);
+    const totalTags = hierarchicalTags.aiPrimitives.length + 
+                     hierarchicalTags.topicalTags.length + 
+                     hierarchicalTags.domainTags.length + 
+                     hierarchicalTags.generalTags.length;
+    
+    if (totalTags > 0) {
+      // AI primitives are worth more than other tags
+      const tagScore = Math.min(25, 
+        hierarchicalTags.aiPrimitives.length * 8 +
+        hierarchicalTags.topicalTags.length * 5 +
+        hierarchicalTags.domainTags.length * 3 +
+        hierarchicalTags.generalTags.length * 2
+      );
+      qualityScore += tagScore;
+    }
+    
+    // Factor 3: Content type bonus (0-10 points)
+    const contentType = node.properties['Content-Type'] || node.properties.contentType || '';
+    if (contentType) {
+      // Different content types get different quality bonuses
+      const contentTypeScores: Record<string, number> = {
+        'research-paper': 10,
+        'market-analysis': 9,
+        'technical-document': 8,
+        'report': 7,
+        'whitepaper': 10,
+        'case-study': 8,
+        'article': 6
+      };
+      
+      const typeScore = contentTypeScores[contentType.toLowerCase()] || 5;
+      qualityScore += typeScore;
+    }
+    
+    // Factor 4: Vendor/Source reliability (0-5 points)
+    const vendor = node.properties.Vendor || node.properties.vendor || '';
+    if (vendor) {
+      // Trusted vendors get a small bonus
+      const trustedVendors = ['openai', 'anthropic', 'google', 'microsoft', 'academic'];
+      const vendorScore = trustedVendors.some(trusted => 
+        vendor.toLowerCase().includes(trusted)) ? 5 : 2;
+      qualityScore += vendorScore;
+    }
+    
+    // Factor 5: Status bonus (0-10 points)
+    const status = node.properties.Status || node.properties.status || '';
+    if (status) {
+      const statusScores: Record<string, number> = {
+        'processed': 10,
+        'reviewed': 8,
+        'pending': 5,
+        'draft': 3
+      };
+      const statusScore = statusScores[status.toLowerCase()] || 0;
+      qualityScore += statusScore;
+    }
+    
+    // Factor 6: Recency bonus (0-5 points)
+    if (node.metadata.createdAt) {
+      const daysSinceCreation = (Date.now() - new Date(node.metadata.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+      if (daysSinceCreation <= 30) {
+        qualityScore += 5; // Recent content gets bonus
+      } else if (daysSinceCreation <= 90) {
+        qualityScore += 3;
+      } else if (daysSinceCreation <= 180) {
+        qualityScore += 1;
+      }
+    }
+    
+    // Cap the score at 100
+    return Math.min(100, Math.max(0, qualityScore));
+  }
+
+  /**
+   * Extract and validate hierarchical tags from properties
+   */
+  private extractAndValidateHierarchicalTags(properties: Record<string, any>): {
+    aiPrimitives: string[];
+    topicalTags: string[];
+    domainTags: string[];
+    generalTags: string[];
+  } {
+    const extractTagArray = (prop: any): string[] => {
+      if (!prop) return [];
+      if (Array.isArray(prop)) return prop.filter(tag => typeof tag === 'string' && tag.trim());
+      if (typeof prop === 'string') return prop.split(',').map(tag => tag.trim()).filter(Boolean);
+      return [];
+    };
+
+    return {
+      aiPrimitives: extractTagArray(properties['AI-Primitive'] || properties.aiPrimitives || properties.ai_primitives),
+      topicalTags: extractTagArray(properties['Topical-Tags'] || properties.topicalTags || properties.topical_tags),
+      domainTags: extractTagArray(properties['Domain-Tags'] || properties.domainTags || properties.domain_tags),
+      generalTags: extractTagArray(properties.tags || properties.Tags)
+    };
   }
 
   private extractInsights(page: NotionPage): Node3D[] {
@@ -811,6 +1466,9 @@ export class DataIntegrationService extends EventEmitter {
             label: match.trim(),
             type: 'insight',
             position: { x: 0, y: 0, z: 0 },
+            x: 0,
+            y: 0,
+            z: 0,
             size: 3,
             color: this.getNodeColor('insight'),
             properties: {
@@ -841,6 +1499,9 @@ export class DataIntegrationService extends EventEmitter {
         label: tag,
         type: 'tag',
         position: { x: 0, y: 0, z: 0 },
+        x: 0,
+        y: 0,
+        z: 0,
         size: 4,
         color: this.getNodeColor('tag'),
         properties: {

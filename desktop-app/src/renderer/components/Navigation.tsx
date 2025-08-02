@@ -19,6 +19,7 @@ import {
   Description as LogsIcon,
   CloudQueue as DriveIcon,
   AccountTree as Graph3DIcon,
+  ViewQuilt as WorkspaceIcon,
   PlayArrow as PlayIcon,
   Stop as StopIcon,
   CheckCircle as CheckIcon,
@@ -41,6 +42,7 @@ function Navigation({ pipelineStatus }: NavigationProps) {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Drive Explorer', icon: <DriveIcon />, path: '/drive' },
     { text: '3D Knowledge Graph', icon: <Graph3DIcon />, path: '/graph3d' },
+    { text: 'Graph Workspace', icon: <WorkspaceIcon />, path: '/graph-workspace', isNew: true },
     { text: 'Configuration', icon: <SettingsIcon />, path: '/configuration' },
     { text: 'Logs', icon: <LogsIcon />, path: '/logs' },
   ];
@@ -169,7 +171,23 @@ function Navigation({ pipelineStatus }: NavigationProps) {
                     </ListItemIcon>
                   </motion.div>
                   <ListItemText
-                    primary={item.text}
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {item.text}
+                        {item.isNew && (
+                          <Chip
+                            label="NEW"
+                            size="small"
+                            color="secondary"
+                            sx={{
+                              height: 16,
+                              fontSize: '0.625rem',
+                              fontWeight: 600,
+                            }}
+                          />
+                        )}
+                      </Box>
+                    }
                     primaryTypographyProps={{
                       fontSize: '0.875rem',
                       fontWeight: location.pathname === item.path ? 600 : 400,

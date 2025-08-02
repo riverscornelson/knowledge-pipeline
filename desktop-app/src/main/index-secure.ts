@@ -82,6 +82,7 @@ app.on('web-contents-created', (_, contents) => {
           "img-src 'self' data:",
           "font-src 'self'",
           "connect-src 'self'",
+          "worker-src 'self' blob:",
           "frame-ancestors 'none'",
           "form-action 'none'"
         ].join('; ')

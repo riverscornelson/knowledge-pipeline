@@ -70,25 +70,35 @@ export class NotionDriveStatusService extends EventEmitter {
         return statusMap;
       }
 
-      // Query Notion for all URLs using OR filter
-      const filter = this.buildBatchUrlFilter(urls);
-      
-      const notionPages = await this.notionService.queryDatabase({
-        filter,
-        pageSize: 100
-      });
-
-      // Create a map of URL to Notion page info
+      // Query Notion for URLs in batches to respect API limits
       const urlToNotionPage = new Map();
-      notionPages.forEach(page => {
-        const url = page.properties?.URL || page.properties?.url || page.properties?.Source;
-        if (url) {
-          urlToNotionPage.set(url, {
-            id: page.id,
-            createdTime: page.createdTime ? new Date(page.createdTime) : undefined
-          });
+      const batchSize = 50; // Use 50 to be safe with the 100 limit
+      
+      for (let i = 0; i < urls.length; i += batchSize) {
+        const batch = urls.slice(i, i + batchSize);
+        const filter = this.buildBatchUrlFilter(batch);
+        
+        const notionPages = await this.notionService.queryDatabase({
+          filter,
+          pageSize: 100
+        });
+
+        // Process results from this batch
+        notionPages.forEach(page => {
+          const url = page.properties?.['Drive URL'] || page.properties?.URL || page.properties?.url || page.properties?.Source;
+          if (url) {
+            urlToNotionPage.set(url, {
+              id: page.id,
+              createdTime: page.createdTime ? new Date(page.createdTime) : undefined
+            });
+          }
+        });
+        
+        // Add rate limiting between batches
+        if (i + batchSize < urls.length) {
+          await new Promise(resolve => setTimeout(resolve, 334));
         }
-      });
+      }
 
       // Build status map
       files.forEach(file => {
@@ -141,9 +151,17 @@ export class NotionDriveStatusService extends EventEmitter {
    * Build Notion filter for batch URL checking
    */
   private buildBatchUrlFilter(urls: string[]): any {
+    if (urls.length === 0) {
+      throw new Error('Cannot build filter for empty URL list');
+    }
+    
+    if (urls.length > 100) {
+      throw new Error(`Too many URLs in batch: ${urls.length}. Maximum is 100.`);
+    }
+    
     if (urls.length === 1) {
       return {
-        property: 'URL',
+        property: 'Drive URL',
         url: {
           equals: urls[0]
         }
@@ -153,7 +171,7 @@ export class NotionDriveStatusService extends EventEmitter {
     // For multiple URLs, use OR filter
     return {
       or: urls.map(url => ({
-        property: 'URL',
+        property: 'Drive URL',
         url: {
           equals: url
         }

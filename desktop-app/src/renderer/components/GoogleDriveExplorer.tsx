@@ -40,7 +40,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useGoogleDrive } from '../hooks/useGoogleDrive';
-import { DriveFileMetadata, DriveMonitoringOptions } from '../../shared/types';
+import { DriveFileMetadata, DriveFileWithNotionMetadata, DriveMonitoringOptions } from '../../shared/types';
 
 interface GoogleDriveExplorerProps {
   folderId?: string;
@@ -72,7 +72,8 @@ export const GoogleDriveExplorer: React.FC<GoogleDriveExplorerProps> = ({
     stopMonitoring,
     getFolderIdByName,
     refresh,
-    clearError
+    clearError,
+    notionMetadataLoading
   } = useGoogleDrive({
     onNewFile: (file) => {
       setNewFileCount(prev => prev + 1);
@@ -254,6 +255,13 @@ export const GoogleDriveExplorer: React.FC<GoogleDriveExplorerProps> = ({
       
       {/* Loading indicator */}
       {loading && <LinearProgress />}
+      {notionMetadataLoading && !loading && (
+        <LinearProgress 
+          variant="indeterminate" 
+          sx={{ height: 2 }} 
+          color="secondary"
+        />
+      )}
       
       {/* Files list */}
       <Box sx={{ flex: 1, overflow: 'auto' }}>
@@ -278,9 +286,29 @@ export const GoogleDriveExplorer: React.FC<GoogleDriveExplorerProps> = ({
                   <ListItemText
                     primary={file.name}
                     secondary={
-                      <Box component="span" display="flex" gap={2}>
+                      <Box component="span" display="flex" gap={2} alignItems="center">
                         <span>{formatFileSize(file.size)}</span>
                         <span>{format(new Date(file.modifiedTime), 'MMM dd, yyyy')}</span>
+                        {file.notionMetadata?.contentType && (
+                          <Chip 
+                            label={file.notionMetadata.contentType} 
+                            size="small" 
+                            color="primary"
+                            variant="outlined"
+                          />
+                        )}
+                        {file.notionMetadata?.status && (
+                          <Chip 
+                            label={file.notionMetadata.status} 
+                            size="small" 
+                            color={
+                              file.notionMetadata.status === 'Published' ? 'success' :
+                              file.notionMetadata.status === 'Draft' ? 'warning' :
+                              'default'
+                            }
+                            variant="outlined"
+                          />
+                        )}
                       </Box>
                     }
                   />

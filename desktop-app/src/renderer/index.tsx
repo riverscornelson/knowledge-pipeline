@@ -4,6 +4,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import App from './App';
 import theme from './theme';
 import './styles/global.css';
+import './styles/panels.css';
 import { APIErrorBoundary } from './components/APIErrorBoundary';
 
 console.log('React script starting...');

@@ -1,0 +1,51 @@
+/**
+ * CSS animations for connection strength display
+ */
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 2px 4px rgba(46, 125, 50, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 8px rgba(46, 125, 50, 0.6);
+  }
+  100% {
+    box-shadow: 0 2px 4px rgba(46, 125, 50, 0.3);
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* High strength connection chip pulsing */
+.connection-strength-high {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Loading state fade animation */
+.connection-calculating {
+  animation: fadeInOut 1.5s ease-in-out infinite;
+}
+
+/* Refresh button spinning when calculating */
+.refresh-calculating {
+  animation: spin 2s linear infinite;
+}

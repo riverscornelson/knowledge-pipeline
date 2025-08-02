@@ -1,0 +1,21 @@
+/* Styles for react-resizable-panels */
+
+/* Resize handle styling */
+[data-panel-resize-handle-id] {
+  background: rgba(0, 0, 0, 0.1);
+  transition: background 0.2s ease;
+}
+
+[data-panel-resize-handle-id]:hover {
+  background: #3f51b5;
+}
+
+/* Panel styling */
+[data-panel] {
+  overflow: hidden;
+}
+
+/* Ensure panels take full height */
+[data-panel-group] {
+  height: 100%;
+}

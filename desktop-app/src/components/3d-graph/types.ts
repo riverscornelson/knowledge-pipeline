@@ -30,6 +30,14 @@ export interface GraphNode {
     driveUrl?: string; // Google Drive URL
     notionUrl?: string; // Notion page URL
     isNew?: boolean; // Flag for newly added nodes
+    
+    // Rich Notion metadata fields
+    status?: 'Inbox' | 'Enriched' | 'Failed'; // Processing status
+    vendor?: 'OpenAI' | 'Google' | 'Claude' | string; // AI vendor used
+    topicalTags?: string[]; // Rich topic tags from Notion
+    domainTags?: string[]; // Domain categorization tags
+    aiPrimitives?: string[]; // AI processing primitives applied
+    hash?: string; // Content hash for deduplication
   };
 }
 

@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { 
   IPCChannel, 
   DriveFileMetadata, 
+  DriveFileWithNotionMetadata,
   DriveListOptions, 
   DriveSearchOptions,
   DriveMonitoringOptions,
@@ -14,11 +15,12 @@ interface UseGoogleDriveOptions {
 }
 
 interface GoogleDriveState {
-  files: DriveFileMetadata[];
+  files: DriveFileWithNotionMetadata[];
   loading: boolean;
   error: string | null;
   downloadProgress: Map<string, DriveDownloadProgress>;
   monitoring: Map<string, boolean>; // monitorId -> active
+  notionMetadataLoading: boolean;
 }
 
 export function useGoogleDrive(options?: UseGoogleDriveOptions) {
@@ -27,7 +29,8 @@ export function useGoogleDrive(options?: UseGoogleDriveOptions) {
     loading: false,
     error: null,
     downloadProgress: new Map(),
-    monitoring: new Map()
+    monitoring: new Map(),
+    notionMetadataLoading: false
   });
   
   const monitorIds = useRef<Set<string>>(new Set());
@@ -83,20 +86,82 @@ export function useGoogleDrive(options?: UseGoogleDriveOptions) {
     };
   }, [options]);
   
+  // Enrich files with Notion metadata
+  const enrichWithNotionMetadata = useCallback(async (files: DriveFileMetadata[]): Promise<DriveFileWithNotionMetadata[]> => {
+    // Skip enrichment if disabled or no files
+    if (!files || files.length === 0) {
+      return files;
+    }
+    
+    setState(prev => ({ ...prev, notionMetadataLoading: true }));
+    
+    try {
+      // Extract Drive URLs from files
+      const driveUrls = files
+        .map(file => file.webViewLink)
+        .filter((url): url is string => !!url);
+      
+      if (driveUrls.length === 0) {
+        setState(prev => ({ ...prev, notionMetadataLoading: false }));
+        return files;
+      }
+      
+      console.log('Fetching Notion metadata for', driveUrls.length, 'URLs');
+      console.log('Sample URLs:', driveUrls.slice(0, 2));
+      
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Notion metadata fetch timeout')), 15000)
+      );
+      
+      // Fetch Notion metadata with timeout
+      const result = await Promise.race([
+        window.electronAPI.ipcRenderer.invoke(IPCChannel.DRIVE_GET_NOTION_METADATA, driveUrls),
+        timeoutPromise
+      ]);
+      
+      console.log('Notion metadata result:', result);
+      
+      if (!result || !result.success) {
+        console.error('Failed to fetch Notion metadata:', result?.error || 'Unknown error');
+        setState(prev => ({ ...prev, notionMetadataLoading: false }));
+        return files;
+      }
+      
+      // Merge Notion metadata with Drive files
+      const enrichedFiles: DriveFileWithNotionMetadata[] = files.map(file => {
+        const notionMetadata = file.webViewLink ? result.data[file.webViewLink] : undefined;
+        return {
+          ...file,
+          notionMetadata
+        };
+      });
+      
+      setState(prev => ({ ...prev, notionMetadataLoading: false }));
+      return enrichedFiles;
+    } catch (error) {
+      console.error('Error enriching with Notion metadata:', error);
+      setState(prev => ({ ...prev, notionMetadataLoading: false }));
+      return files;
+    }
+  }, []);
+  
   // List files
   const listFiles = useCallback(async (listOptions?: DriveListOptions) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
     
     try {
       const files = await window.electronAPI.drive.listFiles(listOptions || {});
-      setState(prev => ({ ...prev, files, loading: false }));
-      return files;
+      // Enrich with Notion metadata
+      const enrichedFiles = await enrichWithNotionMetadata(files);
+      setState(prev => ({ ...prev, files: enrichedFiles, loading: false }));
+      return enrichedFiles;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to list files';
       setState(prev => ({ ...prev, error: errorMessage, loading: false }));
       throw error;
     }
-  }, []);
+  }, [enrichWithNotionMetadata]);
   
   // Search files
   const searchFiles = useCallback(async (searchOptions: DriveSearchOptions) => {
@@ -104,14 +169,16 @@ export function useGoogleDrive(options?: UseGoogleDriveOptions) {
     
     try {
       const files = await window.electronAPI.drive.searchFiles(searchOptions);
-      setState(prev => ({ ...prev, files, loading: false }));
-      return files;
+      // Enrich with Notion metadata
+      const enrichedFiles = await enrichWithNotionMetadata(files);
+      setState(prev => ({ ...prev, files: enrichedFiles, loading: false }));
+      return enrichedFiles;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to search files';
       setState(prev => ({ ...prev, error: errorMessage, loading: false }));
       throw error;
     }
-  }, []);
+  }, [enrichWithNotionMetadata]);
   
   // Download file
   const downloadFile = useCallback(async (fileId: string, fileName: string) => {
@@ -200,6 +267,7 @@ export function useGoogleDrive(options?: UseGoogleDriveOptions) {
     error: state.error,
     downloadProgress: state.downloadProgress,
     monitoring: state.monitoring,
+    notionMetadataLoading: state.notionMetadataLoading,
     
     // Actions
     listFiles,

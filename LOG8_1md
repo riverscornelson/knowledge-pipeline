@@ -1,0 +1,4809 @@
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3158666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.37390339165244313,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.571 › Connection scoring detail {
+  nodeA: 'Rethinking decision making to ',
+  nodeB: 'ai-in-the-enterprise.pdf',
+  rawFactors: {
+    contentSimilarity: 0.04304720018210198,
+    tagSimilarity: 0.6416666666666666,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.31560000000000005,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.6416666666666666,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.31560000000000005,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.45775014018643223,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.573 › Connection scoring detail {
+  nodeA: 'Rethinking decision making to ',
+  nodeB: 'codex_system_card.pdf',
+  rawFactors: {
+    contentSimilarity: 0.03850878714302231,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2507324377768374,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.576 › Content similarity debug: {
+  nodeA: 'GenAI_Report_Agentic_AI - Agen',
+  nodeB: 'Microsoft 365 Copilot Experime',
+  contentALength: 3444,
+  contentBLength: 3419,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  hasContent: { A: true, B: true }
+}
+17:58:30.578 › Connection scoring detail {
+  nodeA: 'GenAI_Report_Agentic_AI - Agen',
+  nodeB: 'Multi-Agent Portfolio Collabor',
+  rawFactors: {
+    contentSimilarity: 0.04075725162078004,
+    tagSimilarity: 0.49166666666666664,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.49166666666666664,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.37768474370167504,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.578 › Connection scoring detail {
+  nodeA: 'GenAI_Report_Agentic_AI - Agen',
+  nodeB: 'US Marine Corpy AI Implementat',
+  rawFactors: {
+    contentSimilarity: 0.032469363081306796,
+    tagSimilarity: 0.49166666666666664,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.37333333333333335,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.49166666666666664,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.37333333333333335,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.3863919611288516,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.581 › Connection scoring detail {
+  nodeA: 'GenAI_Report_Agentic_AI - Agen',
+  nodeB: 'GPT-4.1 Prompting Guide _ Open',
+  rawFactors: {
+    contentSimilarity: 0.03278807101056861,
+    tagSimilarity: 0.6416666666666666,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.6416666666666666,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.46185629190799155,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.581 › Connection scoring detail {
+  nodeA: 'GenAI_Report_Agentic_AI - Agen',
+  nodeB: 'The Prompt Report- A Systemati',
+  rawFactors: {
+    contentSimilarity: 0.024011038065092118,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2457047904833738,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.587 › Connection scoring detail {
+  nodeA: 'The_Illusion_of_Thinking_17493',
+  nodeB: 'The Memory Paradox: Why Our Br',
+  rawFactors: {
+    contentSimilarity: 0.021456868148431875,
+    tagSimilarity: 0.657142857142857,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2682666666666667,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.657142857142857,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2682666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.45575332209402575,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.589 › Connection scoring detail {
+  nodeA: 'The_Illusion_of_Thinking_17493',
+  nodeB: 'Microsoft Build 2025_ The age ',
+  rawFactors: {
+    contentSimilarity: 0.03111181499220316,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3158666666666667,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3158666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.24243012858974441,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.591 › Connection scoring detail {
+  nodeA: 'The_Illusion_of_Thinking_17493',
+  nodeB: 'ai-in-the-enterprise.pdf',
+  rawFactors: {
+    contentSimilarity: 0.029359281600196074,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.31560000000000005,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.31560000000000005,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.222618129574225,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.597 › Content similarity debug: {
+  nodeA: 'Large Language Models Often Kn',
+  nodeB: 'How to Build Your Own AI Assis',
+  contentALength: 1495,
+  contentBLength: 1559,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  hasContent: { A: true, B: true }
+}
+17:58:30.599 › Connection scoring detail {
+  nodeA: 'Large Language Models Often Kn',
+  nodeB: 'Toward an evaluation science f',
+  rawFactors: {
+    contentSimilarity: 0.023108411995206225,
+    tagSimilarity: 0.657142857142857,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3993333333333334,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.657142857142857,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3993333333333334,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.4863448829531309,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.599 › Connection scoring detail {
+  nodeA: 'Large Language Models Often Kn',
+  nodeB: 'gemini-for-google-workspace-pr',
+  rawFactors: {
+    contentSimilarity: 0.02461879168782059,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3326666666666667,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3326666666666667,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.279942256176667,
+  totalWeight: 0.55,
+  status: 'CONNECTED'
+}
+17:58:30.601 › Connection scoring detail {
+  nodeA: 'Large Language Models Often Kn',
+  nodeB: 'codex_system_card.pdf',
+  rawFactors: {
+    contentSimilarity: 0.06544077879935101,
+    tagSimilarity: 0.5516666666666666,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3326666666666667,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.06544077879935101,
+    tagSimilarity: 0.5516666666666666,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3326666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2248518972085549,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.601 › Content similarity debug: {
+  nodeA: 'Large Language Models Often Kn',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  contentALength: 1495,
+  contentBLength: 1024,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 2',
+  hasContent: { A: true, B: true }
+}
+17:58:30.603 › Connection scoring detail {
+  nodeA: 'Building Enterprise AI Agents ',
+  nodeB: 'Microsoft 365 Copilot Experime',
+  rawFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.15522486772486774,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.22813333333333335,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.15522486772486774,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.22813333333333335,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.1923684874954248,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.605 › Connection scoring detail {
+  nodeA: 'Building Enterprise AI Agents ',
+  nodeB: 'GPT-4.1 Prompting Guide _ Open',
+  rawFactors: {
+    contentSimilarity: 0.030334675771018484,
+    tagSimilarity: 0.6666666666666666,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.22813333333333335,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.6666666666666666,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.22813333333333335,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.4519898685890382,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.607 › Content similarity debug: {
+  nodeA: 'Building Enterprise AI Agents ',
+  nodeB: 'a-practical-guide-to-building-',
+  contentALength: 1011,
+  contentBLength: 3551,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 1',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  hasContent: { A: true, B: true }
+}
+17:58:30.607 › Content similarity debug: {
+  nodeA: 'Building Enterprise AI Agents ',
+  nodeB: 'Introducing Claude 4 _ Anthrop',
+  contentALength: 1011,
+  contentBLength: 2409,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 1',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  hasContent: { A: true, B: true }
+}
+17:58:30.609 › Content similarity debug: {
+  nodeA: 'Building Enterprise AI Agents ',
+  nodeB: 'Evidence of a social evaluatio',
+  contentALength: 1011,
+  contentBLength: 2339,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 1',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  hasContent: { A: true, B: true }
+}
+17:58:30.609 › Connection scoring detail {
+  nodeA: 'Building Enterprise AI Agents ',
+  nodeB: 'Evidence of a social evaluatio',
+  rawFactors: {
+    contentSimilarity: 0.054880000000000005,
+    tagSimilarity: 0.3333333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.26813333333333333,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.054880000000000005,
+    tagSimilarity: 0.3333333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.26813333333333333,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.15577682735054774,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.610 › Connection scoring detail {
+  nodeA: 'The Automated but Risky Game- ',
+  nodeB: 'Beyond Efficiency- Horizons of',
+  rawFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.5856620185738528,
+  totalWeight: 0.15,
+  status: 'CONNECTED'
+}
+17:58:30.612 › Connection scoring detail {
+  nodeA: 'The Automated but Risky Game- ',
+  nodeB: 'Confidence Scoring in GenAI_ W',
+  rawFactors: {
+    contentSimilarity: 0.02837998852086224,
+    tagSimilarity: 0.3433333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3433333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.30019367976419886,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.614 › Connection scoring detail {
+  nodeA: 'The Automated but Risky Game- ',
+  nodeB: '2025 Work Trend Index Annual R',
+  rawFactors: {
+    contentSimilarity: 0.020727213700186674,
+    tagSimilarity: 0.0857142857142857,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3388,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3388,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.414046910816405,
+  totalWeight: 0.25,
+  status: 'CONNECTED'
+}
+17:58:30.621 › Content similarity debug: {
+  nodeA: 'Microsoft 365 Copilot Experime',
+  nodeB: 'Explainable AI - the Latest Ad',
+  contentALength: 3419,
+  contentBLength: 2227,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  hasContent: { A: true, B: true }
+}
+17:58:30.625 › Connection scoring detail {
+  nodeA: 'Microsoft 365 Copilot Experime',
+  nodeB: 'Building Effective AI Agents _',
+  rawFactors: {
+    contentSimilarity: 0.02021602003551986,
+    tagSimilarity: 0.19999999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2725333333333333,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.19999999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2725333333333333,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.22006866741678674,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.626 › Content similarity debug: {
+  nodeA: 'The Memory Paradox: Why Our Br',
+  nodeB: 'The Labor Market Effects of Ge',
+  contentALength: 1012,
+  contentBLength: 1026,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  hasContent: { A: true, B: true }
+}
+17:58:30.627 › Connection scoring detail {
+  nodeA: 'The Memory Paradox: Why Our Br',
+  nodeB: 'How to Build Your Own AI Assis',
+  rawFactors: {
+    contentSimilarity: 0.17911599264963737,
+    tagSimilarity: 0.18379629629629632,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3270666666666667,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.17911599264963737,
+    tagSimilarity: 0.18379629629629632,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3270666666666667,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.1965985501509294,
+  totalWeight: 0.8500000000000001,
+  status: 'CONNECTED'
+}
+17:58:30.628 › Content similarity debug: {
+  nodeA: 'The Memory Paradox: Why Our Br',
+  nodeB: 'Confidence Scoring in GenAI_ W',
+  contentALength: 1012,
+  contentBLength: 2310,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  hasContent: { A: true, B: true }
+}
+17:58:30.631 › Connection scoring detail {
+  nodeA: 'The Memory Paradox: Why Our Br',
+  nodeB: 'quantifying-genai-opportunity.',
+  rawFactors: {
+    contentSimilarity: 0.0463794812189642,
+    tagSimilarity: 0.18379629629629632,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2682666666666667,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.18379629629629632,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2682666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2120087272477885,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.631 › Connection scoring detail {
+  nodeA: 'The Memory Paradox: Why Our Br',
+  nodeB: 'Deloitte_Jan2025_Gen AI Call f',
+  rawFactors: {
+    contentSimilarity: 0.4240129799891834,
+    tagSimilarity: 0.2185185185185185,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.39506666666666684,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.4240129799891834,
+    tagSimilarity: 0.2185185185185185,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.39506666666666684,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2605378729273605,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.631 › Connection scoring detail {
+  nodeA: 'The Memory Paradox: Why Our Br',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0.49581597283008305,
+    tagSimilarity: 0.44749999999999995,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3749333333333334,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.49581597283008305,
+    tagSimilarity: 0.44749999999999995,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3749333333333334,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.35768887088189744,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.633 › Connection scoring detail {
+  nodeA: 'The Labor Market Effects of Ge',
+  nodeB: 'US Marine Corpy AI Implementat',
+  rawFactors: {
+    contentSimilarity: 0.06866018596787828,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3101333333333332,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.06866018596787828,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3101333333333332,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.13876334895617332,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.635 › Content similarity debug: {
+  nodeA: 'The Labor Market Effects of Ge',
+  nodeB: '2025 Work Trend Index Annual R',
+  contentALength: 1026,
+  contentBLength: 1041,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 1',
+  hasContent: { A: true, B: true }
+}
+17:58:30.636 › Connection scoring detail {
+  nodeA: 'The Labor Market Effects of Ge',
+  nodeB: 'Building Living Software Syste',
+  rawFactors: {
+    contentSimilarity: 0.4275147928994083,
+    tagSimilarity: 0.20000000000000004,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3989333333333332,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.4275147928994083,
+    tagSimilarity: 0.20000000000000004,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3989333333333332,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.2908659536621575,
+  totalWeight: 0.8500000000000001,
+  status: 'CONNECTED'
+}
+17:58:30.637 › Content similarity debug: {
+  nodeA: 'The Labor Market Effects of Ge',
+  nodeB: 'Deloitte_Jan2025_Gen AI Call f',
+  contentALength: 1026,
+  contentBLength: 1049,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  hasContent: { A: true, B: true }
+}
+17:58:30.637 › Connection scoring detail {
+  nodeA: 'The Labor Market Effects of Ge',
+  nodeB: 'Building Effective AI Agents _',
+  rawFactors: {
+    contentSimilarity: 0.390625,
+    tagSimilarity: 0.36,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.39759999999999995,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.390625,
+    tagSimilarity: 0.36,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.39759999999999995,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.29179768793546496,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.639 › Content similarity debug: {
+  nodeA: 'Beyond Efficiency- Horizons of',
+  nodeB: 'Microsoft Build 2025_ The age ',
+  contentALength: 451,
+  contentBLength: 1069,
+  contentAPreview: '✨ AI Attribution: 2 prompts (📝 2 from Notion) • 3',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  hasContent: { A: true, B: true }
+}
+17:58:30.640 › Content similarity debug: {
+  nodeA: 'Beyond Efficiency- Horizons of',
+  nodeB: 'ai-in-the-enterprise.pdf',
+  contentALength: 451,
+  contentBLength: 1067,
+  contentAPreview: '✨ AI Attribution: 2 prompts (📝 2 from Notion) • 3',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  hasContent: { A: true, B: true }
+}
+17:58:30.641 › Connection scoring detail {
+  nodeA: 'Beyond Efficiency- Horizons of',
+  nodeB: 'a-practical-guide-to-building-',
+  rawFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3333333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3333333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.32307310278847157,
+  totalWeight: 0.4,
+  status: 'CONNECTED'
+}
+17:58:30.652 › Connection scoring detail {
+  nodeA: 'E2E Process Automation Leverag',
+  nodeB: 'Toward an evaluation science f',
+  rawFactors: {
+    contentSimilarity: 0.0238402540011437,
+    tagSimilarity: 0.18994708994708995,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.37333333333333335,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.18994708994708995,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.37333333333333335,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.23391512821171417,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.653 › Content similarity debug: {
+  nodeA: 'E2E Process Automation Leverag',
+  nodeB: '2025 Work Trend Index Annual R',
+  contentALength: 2068,
+  contentBLength: 1041,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 1',
+  hasContent: { A: true, B: true }
+}
+17:58:30.653 › Connection scoring detail {
+  nodeA: 'E2E Process Automation Leverag',
+  nodeB: '2025 Work Trend Index Annual R',
+  rawFactors: {
+    contentSimilarity: 0.10684387013604867,
+    tagSimilarity: 0.3433333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3121333333333333,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.10684387013604867,
+    tagSimilarity: 0.3433333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3121333333333333,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.17900764347271758,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.654 › Connection scoring detail {
+  nodeA: 'E2E Process Automation Leverag',
+  nodeB: 'identifying-and-scaling-ai-use',
+  rawFactors: {
+    contentSimilarity: 0.058233542440234085,
+    tagSimilarity: 0.29124999999999995,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.058233542440234085,
+    tagSimilarity: 0.29124999999999995,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.15544593012608296,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.655 › Content similarity debug: {
+  nodeA: 'E2E Process Automation Leverag',
+  nodeB: 'Deloitte_Jan2025_Gen AI Call f',
+  contentALength: 2068,
+  contentBLength: 1049,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  hasContent: { A: true, B: true }
+}
+17:58:30.655 › Content similarity debug: {
+  nodeA: 'E2E Process Automation Leverag',
+  nodeB: 'Building Effective AI Agents _',
+  contentALength: 2068,
+  contentBLength: 1044,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  hasContent: { A: true, B: true }
+}
+17:58:30.656 › Connection scoring detail {
+  nodeA: 'E2E Process Automation Leverag',
+  nodeB: 'A Prompt Pattern Catalog to En',
+  rawFactors: {
+    contentSimilarity: 0.02694863725730366,
+    tagSimilarity: 0.4488095238095237,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.4488095238095237,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.36036837488982676,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.657 › Content similarity debug: {
+  nodeA: 'US Marine Corpy AI Implementat',
+  nodeB: 'Confidence Scoring in GenAI_ W',
+  contentALength: 2213,
+  contentBLength: 2310,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  hasContent: { A: true, B: true }
+}
+17:58:30.661 › Connection scoring detail {
+  nodeA: 'US Marine Corpy AI Implementat',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0.06208531159485204,
+    tagSimilarity: 0.24047619047619045,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.24320000000000014,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.06208531159485204,
+    tagSimilarity: 0.24047619047619045,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.24320000000000014,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.13263631332051085,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.662 › Connection scoring detail {
+  nodeA: 'US Marine Corpy AI Implementat',
+  nodeB: 'A Prompt Pattern Catalog to En',
+  rawFactors: {
+    contentSimilarity: 0.027016304869735785,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.30622795343392684,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.669 › Connection scoring detail {
+  nodeA: 'There is Too Much AI Hype—This',
+  nodeB: 'Explainable AI - the Latest Ad',
+  rawFactors: {
+    contentSimilarity: 0.0650148410342693,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3606666666666667,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.0650148410342693,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3606666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.15556883002040514,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.669 › Connection scoring detail {
+  nodeA: 'There is Too Much AI Hype—This',
+  nodeB: 'GPT-4.1 Prompting Guide _ Open',
+  rawFactors: {
+    contentSimilarity: 0.03814697265625,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3726666666666667,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3726666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2782403865868505,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.670 › Connection scoring detail {
+  nodeA: 'There is Too Much AI Hype—This',
+  nodeB: 'Toward an evaluation science f',
+  rawFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3606666666666667,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3606666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.306362770064121,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.671 › Content similarity debug: {
+  nodeA: 'There is Too Much AI Hype—This',
+  nodeB: 'identifying-and-scaling-ai-use',
+  contentALength: 1795,
+  contentBLength: 2211,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  hasContent: { A: true, B: true }
+}
+17:58:30.674 › Connection scoring detail {
+  nodeA: 'How to Build Your Own AI Assis',
+  nodeB: 'GPT-4.1 Prompting Guide _ Open',
+  rawFactors: {
+    contentSimilarity: 0.04854926745188164,
+    tagSimilarity: 0.44749999999999995,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3012000000000001,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.44749999999999995,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3012000000000001,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.39680731773319255,
+  totalWeight: 0.55,
+  status: 'CONNECTED'
+}
+17:58:30.677 › Content similarity debug: {
+  nodeA: 'How to Build Your Own AI Assis',
+  nodeB: 'quantifying-genai-opportunity.',
+  contentALength: 1559,
+  contentBLength: 2568,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  hasContent: { A: true, B: true }
+}
+17:58:30.677 › Connection scoring detail {
+  nodeA: 'How to Build Your Own AI Assis',
+  nodeB: 'quantifying-genai-opportunity.',
+  rawFactors: {
+    contentSimilarity: 0.0625,
+    tagSimilarity: 0.287962962962963,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.34120000000000006,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.0625,
+    tagSimilarity: 0.287962962962963,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.34120000000000006,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.15401471707099212,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.679 › Content similarity debug: {
+  nodeA: 'Confidence Scoring in GenAI_ W',
+  nodeB: 'Microsoft Build 2025_ The age ',
+  contentALength: 2310,
+  contentBLength: 1069,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  hasContent: { A: true, B: true }
+}
+17:58:30.679 › Content similarity debug: {
+  nodeA: 'Confidence Scoring in GenAI_ W',
+  nodeB: 'Explainable AI - the Latest Ad',
+  contentALength: 2310,
+  contentBLength: 2227,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  hasContent: { A: true, B: true }
+}
+17:58:30.680 › Connection scoring detail {
+  nodeA: 'Confidence Scoring in GenAI_ W',
+  nodeB: 'GPT-4.1 Prompting Guide _ Open',
+  rawFactors: {
+    contentSimilarity: 0.03773096630609182,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.23124999999999998,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.31164041979772483,
+  totalWeight: 0.55,
+  status: 'CONNECTED'
+}
+17:58:30.681 › Content similarity debug: {
+  nodeA: 'Confidence Scoring in GenAI_ W',
+  nodeB: 'gemini-for-google-workspace-pr',
+  contentALength: 2310,
+  contentBLength: 2136,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  hasContent: { A: true, B: true }
+}
+17:58:30.682 › Connection scoring detail {
+  nodeA: 'Confidence Scoring in GenAI_ W',
+  nodeB: 'Introducing Claude 4 _ Anthrop',
+  rawFactors: {
+    contentSimilarity: 0.04377539360942763,
+    tagSimilarity: 0.49166666666666664,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.49166666666666664,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.3922334160446265,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.683 › Content similarity debug: {
+  nodeA: 'Confidence Scoring in GenAI_ W',
+  nodeB: 'Deloitte_Jan2025_Gen AI Call f',
+  contentALength: 2310,
+  contentBLength: 1049,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  hasContent: { A: true, B: true }
+}
+17:58:30.683 › Content similarity debug: {
+  nodeA: 'Confidence Scoring in GenAI_ W',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  contentALength: 2310,
+  contentBLength: 1024,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 2',
+  hasContent: { A: true, B: true }
+}
+17:58:30.683 › Connection scoring detail {
+  nodeA: 'Confidence Scoring in GenAI_ W',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0.06093367600842598,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2032000000000001,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.06093367600842598,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2032000000000001,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.15391429948532442,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.685 › Connection scoring detail {
+  nodeA: 'Microsoft Build 2025_ The age ',
+  nodeB: 'AI governance _ Crowe LLP.pdf',
+  rawFactors: {
+    contentSimilarity: 0.3377374523724679,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36146666666666666,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.3377374523724679,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36146666666666666,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.24508017469775367,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.686 › Connection scoring detail {
+  nodeA: 'Microsoft Build 2025_ The age ',
+  nodeB: 'ai-in-the-enterprise.pdf',
+  rawFactors: {
+    contentSimilarity: 0.3677003168854686,
+    tagSimilarity: 0.287962962962963,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.39973333333333344,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.3677003168854686,
+    tagSimilarity: 0.287962962962963,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.39973333333333344,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.26165715378494836,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.688 › Connection scoring detail {
+  nodeA: 'Microsoft Build 2025_ The age ',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0.3397580714346993,
+    tagSimilarity: 0.24047619047619045,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3273333333333335,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.3397580714346993,
+    tagSimilarity: 0.24047619047619045,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3273333333333335,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.22938687925202922,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.688 › Connection scoring detail {
+  nodeA: 'Microsoft Build 2025_ The age ',
+  nodeB: 'Building Effective AI Agents _',
+  rawFactors: {
+    contentSimilarity: 0.44196498236634313,
+    tagSimilarity: 0.5362962962962963,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3966666666666667,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.44196498236634313,
+    tagSimilarity: 0.5362962962962963,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3966666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.36868118163200847,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.689 › Connection scoring detail {
+  nodeA: 'AI governance _ Crowe LLP.pdf',
+  nodeB: 'GPT-4.1 Prompting Guide _ Open',
+  rawFactors: {
+    contentSimilarity: 0.03292907114253189,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2373333333333333,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2373333333333333,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.25216046613688353,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.690 › Connection scoring detail {
+  nodeA: 'AI governance _ Crowe LLP.pdf',
+  nodeB: 'Google announces AI Ultra subs',
+  rawFactors: {
+    contentSimilarity: 0.1240960743801653,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.38826666666666676,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.1240960743801653,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.38826666666666676,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.17667632757744445,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.691 › Connection scoring detail {
+  nodeA: 'AI governance _ Crowe LLP.pdf',
+  nodeB: 'a-practical-guide-to-building-',
+  rawFactors: {
+    contentSimilarity: 0.02048315773679054,
+    tagSimilarity: 0.3433333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2373333333333333,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3433333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2373333333333333,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2811178192188648,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.693 › Content similarity debug: {
+  nodeA: 'AI governance _ Crowe LLP.pdf',
+  nodeB: 'Evidence of a social evaluatio',
+  contentALength: 1080,
+  contentBLength: 2339,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  hasContent: { A: true, B: true }
+}
+17:58:30.694 › Connection scoring detail {
+  nodeA: 'Explainable AI - the Latest Ad',
+  nodeB: 'Toward an evaluation science f',
+  rawFactors: {
+    contentSimilarity: 0.026791079822258767,
+    tagSimilarity: 0.4488095238095237,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.4488095238095237,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.3689414670705044,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.696 › Content similarity debug: {
+  nodeA: 'Explainable AI - the Latest Ad',
+  nodeB: 'quantifying-genai-opportunity.',
+  contentALength: 2227,
+  contentBLength: 2568,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 9',
+  hasContent: { A: true, B: true }
+}
+17:58:30.701 › Connection scoring detail {
+  nodeA: 'GPT-4.1 Prompting Guide _ Open',
+  nodeB: 'codex_system_card.pdf',
+  rawFactors: {
+    contentSimilarity: 0.04204957083409427,
+    tagSimilarity: 0.5375,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.5375,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.4634382916694313,
+  totalWeight: 0.55,
+  status: 'CONNECTED'
+}
+17:58:30.702 › Connection scoring detail {
+  nodeA: 'GPT-4.1 Prompting Guide _ Open',
+  nodeB: "Humanity's Last Exam.pdf",
+  rawFactors: {
+    contentSimilarity: 0.033195927739229844,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2258501731974034,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.704 › Connection scoring detail {
+  nodeA: 'The Prompt Report- A Systemati',
+  nodeB: 'gemini-for-google-workspace-pr',
+  rawFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.29642857142857143,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.29642857142857143,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2900880222144455,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.705 › Connection scoring detail {
+  nodeA: 'The Prompt Report- A Systemati',
+  nodeB: 'Building Living Software Syste',
+  rawFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.2,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.27120000000000005,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.2,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.27120000000000005,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.2741730785827671,
+  totalWeight: 0.55,
+  status: 'CONNECTED'
+}
+17:58:30.711 › Content similarity debug: {
+  nodeA: 'Google announces AI Ultra subs',
+  nodeB: "Humanity's Last Exam.pdf",
+  contentALength: 692,
+  contentBLength: 2421,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 1',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  hasContent: { A: true, B: true }
+}
+17:58:30.715 › Connection scoring detail {
+  nodeA: 'Toward an evaluation science f',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2698666666666668,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2698666666666668,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.28818408847086685,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.715 › Content similarity debug: {
+  nodeA: 'Toward an evaluation science f',
+  nodeB: "Humanity's Last Exam.pdf",
+  contentALength: 4112,
+  contentBLength: 2421,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  hasContent: { A: true, B: true }
+}
+17:58:30.718 › Connection scoring detail {
+  nodeA: 'ai-in-the-enterprise.pdf',
+  nodeB: "Humanity's Last Exam.pdf",
+  rawFactors: {
+    contentSimilarity: 0.04989867093976812,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3422666666666667,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3422666666666667,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.22748421789927264,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.719 › Content similarity debug: {
+  nodeA: 'ai-in-the-enterprise.pdf',
+  nodeB: 'Evidence of a social evaluatio',
+  contentALength: 1067,
+  contentBLength: 2339,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  hasContent: { A: true, B: true }
+}
+17:58:30.720 › Connection scoring detail {
+  nodeA: 'gemini-for-google-workspace-pr',
+  nodeB: 'Building Living Software Syste',
+  rawFactors: {
+    contentSimilarity: 0.02109444587251391,
+    tagSimilarity: 0.2,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.27120000000000005,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.2,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.27120000000000005,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.21982721404099176,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.721 › Connection scoring detail {
+  nodeA: 'gemini-for-google-workspace-pr',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2032000000000001,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.2032000000000001,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.24571888308615392,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.722 › Content similarity debug: {
+  nodeA: '2025 Work Trend Index Annual R',
+  nodeB: 'a-practical-guide-to-building-',
+  contentALength: 1041,
+  contentBLength: 3551,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 1',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 7',
+  hasContent: { A: true, B: true }
+}
+17:58:30.723 › Connection scoring detail {
+  nodeA: '2025 Work Trend Index Annual R',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0.33615323675871434,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33106666666666684,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.33615323675871434,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33106666666666684,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2590700614757913,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.724 › Content similarity debug: {
+  nodeA: '2025 Work Trend Index Annual R',
+  nodeB: 'A Prompt Pattern Catalog to En',
+  contentALength: 1041,
+  contentBLength: 4020,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 1',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 8',
+  hasContent: { A: true, B: true }
+}
+17:58:30.725 › Connection scoring detail {
+  nodeA: 'identifying-and-scaling-ai-use',
+  nodeB: 'Introducing Claude 4 _ Anthrop',
+  rawFactors: {
+    contentSimilarity: 0.05248543081173588,
+    tagSimilarity: 0.38749999999999996,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.05248543081173588,
+    tagSimilarity: 0.38749999999999996,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.4,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.18274099048017362,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.727 › Connection scoring detail {
+  nodeA: 'identifying-and-scaling-ai-use',
+  nodeB: 'Evidence of a social evaluatio',
+  rawFactors: {
+    contentSimilarity: 0.059167275383491605,
+    tagSimilarity: 0.18379629629629632,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.059167275383491605,
+    tagSimilarity: 0.18379629629629632,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.16402616374991844,
+  totalWeight: 0.8500000000000001,
+  status: 'CONNECTED'
+}
+17:58:30.730 › Connection scoring detail {
+  nodeA: 'Building Living Software Syste',
+  nodeB: 'quantifying-genai-opportunity.',
+  rawFactors: {
+    contentSimilarity: 0.04633174681821139,
+    tagSimilarity: 0.287962962962963,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3112000000000001,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.287962962962963,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3112000000000001,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2685262432763184,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.731 › Connection scoring detail {
+  nodeA: 'Building Living Software Syste',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0.3523406445709057,
+    tagSimilarity: 0.24047619047619045,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3320000000000001,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.3523406445709057,
+    tagSimilarity: 0.24047619047619045,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3320000000000001,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.23427228346507487,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.732 › Connection scoring detail {
+  nodeA: 'Building Living Software Syste',
+  nodeB: 'A Prompt Pattern Catalog to En',
+  rawFactors: {
+    contentSimilarity: 0.021106384732910963,
+    tagSimilarity: 0.365,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.27120000000000005,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.365,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.27120000000000005,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.35041464211414164,
+  totalWeight: 0.55,
+  status: 'CONNECTED'
+}
+17:58:30.732 › Connection scoring detail {
+  nodeA: 'Building Living Software Syste',
+  nodeB: 'Evidence of a social evaluatio',
+  rawFactors: {
+    contentSimilarity: 0.06255633940819126,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3112000000000001,
+    vendorSimilarity: 1
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.06255633940819126,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.3112000000000001,
+    vendorSimilarity: 1
+  },
+  finalScore: 0.16141130371817494,
+  totalWeight: 0.8500000000000001,
+  status: 'CONNECTED'
+}
+17:58:30.732 › Content similarity debug: {
+  nodeA: 'Introducing Claude 4 _ Anthrop',
+  nodeB: 'codex_system_card.pdf',
+  contentALength: 2409,
+  contentBLength: 2675,
+  contentAPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  contentBPreview: '✨ AI Attribution: 3 prompts (📝 2 from Notion) • 6',
+  hasContent: { A: true, B: true }
+}
+17:58:30.734 › Connection scoring detail {
+  nodeA: 'Introducing Claude 4 _ Anthrop',
+  nodeB: 'Evidence of a social evaluatio',
+  rawFactors: {
+    contentSimilarity: 0.04773674175552574,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0.4
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.23073952931320868,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.735 › Connection scoring detail {
+  nodeA: 'codex_system_card.pdf',
+  nodeB: "Humanity's Last Exam.pdf",
+  rawFactors: {
+    contentSimilarity: 0.04517249763862002,
+    tagSimilarity: 0.36587301587301585,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.36587301587301585,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33333333333333337,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.31158355618477823,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.736 › Connection scoring detail {
+  nodeA: 'quantifying-genai-opportunity.',
+  nodeB: "Bloom's Taxonomy - the Ultimat",
+  rawFactors: {
+    contentSimilarity: 0.04414325644995877,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.24320000000000014,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.2833333333333333,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.24320000000000014,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.2532731981125789,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.737 › Connection scoring detail {
+  nodeA: 'quantifying-genai-opportunity.',
+  nodeB: 'A Prompt Pattern Catalog to En',
+  rawFactors: {
+    contentSimilarity: 0.02626634958382877,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0,
+    tagSimilarity: 0.3446428571428571,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.36000000000000004,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.30622795343392684,
+  totalWeight: 0.5,
+  status: 'CONNECTED'
+}
+17:58:30.739 › Connection scoring detail {
+  nodeA: 'Building Effective AI Agents _',
+  nodeB: "Humanity's Last Exam.pdf",
+  rawFactors: {
+    contentSimilarity: 0.05326991676575504,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33919999999999995,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.05326991676575504,
+    tagSimilarity: 0.18839285714285714,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.33919999999999995,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.12687891591001246,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.741 › Connection scoring detail {
+  nodeA: "Humanity's Last Exam.pdf",
+  nodeB: 'Evidence of a social evaluatio',
+  rawFactors: {
+    contentSimilarity: 0.050411495014034684,
+    tagSimilarity: 0.24047619047619045,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.37333333333333335,
+    vendorSimilarity: 0
+  },
+  thresholdedFactors: {
+    contentSimilarity: 0.050411495014034684,
+    tagSimilarity: 0.24047619047619045,
+    temporalProximity: 0.7,
+    semanticSimilarity: 0,
+    qualitySimilarity: 0.37333333333333335,
+    vendorSimilarity: 0
+  },
+  finalScore: 0.1418342090938694,
+  totalWeight: 0.8,
+  status: 'CONNECTED'
+}
+17:58:30.741 › Filtering 21399 edges...
+17:58:30.741 › Starting edge filtering: 21399 edges, 219 nodes
+17:58:30.783 › Edge filtering complete: 21399 → 214 edges (42ms)
+17:58:30.783 › Edges reduced from 21399 to 214
+17:58:30.783 › Applying clustering algorithm...
+17:58:30.783 › Starting clustering for 219 nodes
+17:58:30.785 › Clustering complete: 1 clusters created (2ms)
+17:58:30.785 › Created 1 clusters
+17:58:30.938 › Graph transformation completed { nodes: 219, edges: 214, duration: 24470 }
+17:58:30.948 › Starting graph transformation {}
+17:58:30.949 › Returning cached graph
+17:58:30.955 › Starting sync operation...
+17:58:30.956 › Sync completed in 1ms
+17:58:30.967 › Graph query requested {
+  options: {
+    includeInsights: true,
+    includeTags: true,
+    includeReferences: true,
+    maxDepth: 3,
+    minStrength: 0.1,
+    clustering: 'semantic',
+    layout: 'force-directed'
+  }
+}
+17:58:30.968 › Starting graph transformation {
+  includeInsights: true,
+  includeTags: true,
+  includeReferences: true,
+  maxDepth: 3,
+  minStrength: 0.1,
+  clustering: 'semantic',
+  layout: 'force-directed'
+}
+17:58:30.968 › Returning cached graph
+17:58:30.975 › Graph query requested {
+  options: {
+    includeInsights: true,
+    includeTags: true,
+    includeReferences: true,
+    maxDepth: 3,
+    minStrength: 0.1,
+    clustering: 'semantic',
+    layout: 'force-directed'
+  }
+}
+17:58:30.976 › Starting graph transformation {
+  includeInsights: true,
+  includeTags: true,
+  includeReferences: true,
+  maxDepth: 3,
+  minStrength: 0.1,
+  clustering: 'semantic',
+  layout: 'force-directed'
+}
+17:58:30.976 › Returning cached graph
+17:58:31.618 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Content Creation' ],
+    topical: [ 'Creator Monetization', 'Platform Economics' ],
+    domain: [ 'Social Media', 'Consumer Technology' ],
+    general: []
+  }
+}
+17:58:32.686 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Content Creation' ],
+    topical: [ 'Political Alliances', 'AI And Society' ],
+    domain: [ 'Technology News', 'Social Media' ],
+    general: []
+  }
+}
+17:58:34.619 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Research' ],
+    topical: [ 'Decentralized Media', 'Fediverse' ],
+    domain: [ 'Social Media', 'Consumer Technology' ],
+    general: []
+  }
+}
+17:58:35.488 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Generative AI', 'AI-Assisted Coding' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+17:58:35.920 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Data Analysis' ],
+    topical: [ 'Affective Use', 'Emotional Well-Being' ],
+    domain: [ 'Artificial Intelligence', 'Mental Health' ],
+    general: []
+  }
+}
+17:58:37.365 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Research' ],
+    topical: [ 'Content Reformatting', 'Swot Analysis' ],
+    domain: [ 'Artificial Intelligence', 'Management Consulting' ],
+    general: []
+  }
+}
+17:58:37.777 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Large Language Models', 'Mental Models' ],
+    domain: [ 'Artificial Intelligence', 'Psychology' ],
+    general: []
+  }
+}
+17:58:37.778 › Hierarchical tag extraction: {
+  aiPrimitives: 0,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [],
+    topical: [ 'Organizational Change', 'Employee Empowerment' ],
+    domain: [ 'Organizational Change', 'Management Consulting' ],
+    general: []
+  }
+}
+17:58:37.778 › No vendor field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Vendor',    'vendor',
+    'AI Vendor', 'AI-Vendor',
+    'ai-vendor', 'Source',
+    'Provider',  'Company'
+  ]
+}
+17:58:38.625 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Research' ],
+    topical: [ 'Content Reformatting', 'Swot Analysis' ],
+    domain: [ 'Artificial Intelligence', 'Management Consulting' ],
+    general: []
+  }
+}
+17:58:38.875 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Emergence', 'Large Language Models' ],
+    domain: [ 'Artificial Intelligence', 'Technology News' ],
+    general: []
+  }
+}
+17:58:38.875 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Coding', 'Ideation/Strategy' ],
+    topical: [ 'AI-Assisted Coding', 'Software Engineering Best Practices' ],
+    domain: [ 'Software Development', 'Artificial Intelligence' ],
+    general: []
+  }
+}
+17:58:38.876 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI-First Organizations', 'AI-Driven Growth' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:58:38.876 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Mental Health', 'Large Language Models' ],
+    domain: [ 'Healthcare', 'Mental Health' ],
+    general: []
+  }
+}
+17:58:41.065 › Vendor extracted and normalized: {
+  originalValue: 'Salesforce',
+  normalizedValue: 'Salesforce',
+  foundInField: 'Vendor'
+}
+17:58:41.066 › Hierarchical tag extraction: {
+  aiPrimitives: 0,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [],
+    topical: [ 'AI Product Development', 'Go-To-Market Strategy' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+17:58:41.066 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Strategy', 'AI Implementation' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:58:43.066 › Vendor extracted and normalized: {
+  originalValue: 'OpenAI',
+  normalizedValue: 'OpenAI',
+  foundInField: 'Vendor'
+}
+17:58:44.072 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Data Analysis' ],
+    topical: [ 'AI Evaluation Practices', 'Retrieval-Augmented Generation' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+17:58:44.073 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'AI In Biology', 'Protein Folding' ],
+    domain: [ 'Artificial Intelligence', 'Healthcare' ],
+    general: []
+  }
+}
+17:58:44.608 › Found 219 files in Notion out of 257 checked
+Page loaded successfully
+17:58:45.228 › Graph refresh requested
+17:58:45.229 › Starting graph transformation {}
+17:58:45.229 › Fetching Notion pages with content...
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:58:45.231 › Graph refresh requested
+17:58:45.231 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:58:45.254 › Connecting to Notion...
+17:58:45.255 › NotionService destroyed
+17:58:45.255 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:58:45.255 › Testing Notion connection...
+17:58:45.255 › Connecting to Notion...
+17:58:45.255 › NotionService destroyed
+17:58:45.255 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:58:45.256 › Testing Notion connection...
+17:58:45.401 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+[5770:0801/175845.456040:ERROR:CONSOLE(1)] "Request Storage.getStorageKeyForFrame failed. {"code":-32602,"message":"Frame tree node for given frame not found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[5770:0801/175845.456231:ERROR:CONSOLE(1)] "Request Storage.getStorageKeyForFrame failed. {"code":-32602,"message":"Frame tree node for given frame not found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+17:58:45.569 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'Content Reformatting', 'Audience Persona Identification' ],
+    domain: [ 'Artificial Intelligence', 'Management Consulting' ],
+    general: []
+  }
+}
+17:58:45.569 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+17:58:46.166 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+Page loaded successfully
+17:58:50.769 › Graph refresh requested
+17:58:50.770 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:58:50.771 › Graph refresh requested
+17:58:50.771 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:58:50.796 › Connecting to Notion...
+17:58:50.796 › NotionService destroyed
+17:58:50.796 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:58:50.796 › Testing Notion connection...
+17:58:50.797 › Connecting to Notion...
+17:58:50.797 › NotionService destroyed
+17:58:50.797 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:58:50.797 › Testing Notion connection...
+17:58:50.960 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:58:50.980 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:58:51.816 › Vendor extracted and normalized: {
+  originalValue: 'Google',
+  normalizedValue: 'Google',
+  foundInField: 'Vendor'
+}
+17:58:52.763 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'Audience Persona Identification', 'Content Reformatting' ],
+    domain: [ 'Artificial Intelligence', 'Management Consulting' ],
+    general: []
+  }
+}
+17:58:55.400 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'Audience Persona Identification', 'Content Reformatting' ],
+    domain: [ 'Artificial Intelligence', 'Management Consulting' ],
+    general: []
+  }
+}
+17:58:55.432 › Running performance optimization...
+17:58:55.432 › Low cache hit rate, cache may need optimization
+17:58:57.141 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Application Development', 'AI Code Generation' ],
+    domain: [ 'Software Development', 'Artificial Intelligence' ],
+    general: []
+  }
+}
+17:58:57.141 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Automation' ],
+    topical: [ 'AI Infrastructure', 'Data Processing' ],
+    domain: [ 'Artificial Intelligence', 'Data Management' ],
+    general: []
+  }
+}
+17:59:00.955 › Starting sync operation...
+17:59:00.955 › Sync completed in 0ms
+17:59:01.745 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+17:59:02.031 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Research' ],
+    topical: [ 'AI Risk Management', 'Existential Risk' ],
+    domain: [ 'Artificial Intelligence', 'Technology News' ],
+    general: []
+  }
+}
+17:59:02.364 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'AI Governance', 'Risk Management' ],
+    domain: [ 'Professional Services', 'Artificial Intelligence' ],
+    general: []
+  }
+}
+17:59:05.692 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Agentic Misalignment', 'Insider Threats' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:59:06.050 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Research' ],
+    topical: [ 'Confidence Scoring', 'Generative AI' ],
+    domain: [ 'Artificial Intelligence', 'Financial Services' ],
+    general: []
+  }
+}
+17:59:06.051 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Data Analysis' ],
+    topical: [ 'AI Implementation', 'Digital Transformation' ],
+    domain: [ 'Military', 'Government' ],
+    general: []
+  }
+}
+17:59:06.051 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Automation', 'Ideation/Strategy' ],
+    topical: [ 'Generative AI', 'Intelligent Document Processing' ],
+    domain: [ 'Artificial Intelligence', 'Financial Services' ],
+    general: []
+  }
+}
+17:59:07.725 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'Sustainability', 'Market Insights' ],
+    domain: [ 'Business Strategy', 'Professional Services' ],
+    general: []
+  }
+}
+17:59:09.326 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Adoption', 'AI Agent Integration' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:59:09.839 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Research', 'Data Analysis' ],
+    topical: [ 'AI Adoption', 'AI Assistants' ],
+    domain: [ 'Government', 'Public Sector' ],
+    general: []
+  }
+}
+17:59:09.839 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Automation' ],
+    topical: [ 'Agent-To-Agent Negotiation', 'AI Agents' ],
+    domain: [ 'Artificial Intelligence', 'Consumer Technology' ],
+    general: []
+  }
+}
+17:59:09.839 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Agents', 'AI Automation' ],
+    domain: [ 'Financial Services', 'Healthcare' ],
+    general: []
+  }
+}
+17:59:12.054 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Agentic AI', 'Business Process Automation' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:59:12.499 › Hierarchical tag extraction: {
+  aiPrimitives: 0,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [],
+    topical: [ 'Consulting Value Assessment', 'Management Consulting' ],
+    domain: [ 'Management Consulting', 'Professional Services' ],
+    general: []
+  }
+}
+17:59:14.933 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'AI Competition', 'AI Investments' ],
+    domain: [ 'Artificial Intelligence', 'Consumer Technology' ],
+    general: []
+  }
+}
+17:59:15.144 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'AI Applications', 'Content Reformatting' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:59:16.493 › Vendor extracted and normalized: {
+  originalValue: 'Claude',
+  normalizedValue: 'Anthropic',
+  foundInField: 'Vendor'
+}
+17:59:18.091 › Vendor extracted and normalized: {
+  originalValue: 'OpenAI',
+  normalizedValue: 'OpenAI',
+  foundInField: 'Vendor'
+}
+17:59:18.091 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'AI Partnerships', 'Antitrust Issues' ],
+    domain: [ 'Artificial Intelligence', 'Technology News' ],
+    general: []
+  }
+}
+17:59:21.162 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'Age Verification', 'Digital Privacy' ],
+    domain: [ 'Consumer Technology', 'Digital Transformation' ],
+    general: []
+  }
+}
+17:59:21.617 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Coding', 'Research' ],
+    topical: [ 'AI Code Generation', 'AI Advancements' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+Page loaded successfully
+17:59:22.628 › Graph refresh requested
+17:59:22.629 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:59:22.631 › Graph refresh requested
+17:59:22.631 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:59:22.662 › Connecting to Notion...
+17:59:22.662 › NotionService destroyed
+17:59:22.662 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:59:22.662 › Testing Notion connection...
+17:59:22.664 › Connecting to Notion...
+17:59:22.664 › NotionService destroyed
+17:59:22.664 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:59:22.664 › Testing Notion connection...
+17:59:22.744 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+17:59:22.745 › Vendor extracted and normalized: {
+  originalValue: 'Capgemini',
+  normalizedValue: 'Google',
+  foundInField: 'Vendor'
+}
+17:59:22.928 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:59:23.007 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'AI Applications', 'Content Reformatting' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:59:23.009 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:59:23.766 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Coding', 'Research' ],
+    topical: [ 'AI Code Generation', 'AI Advancements' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+17:59:29.198 › Vendor extracted and normalized: {
+  originalValue: 'Microsoft',
+  normalizedValue: 'Microsoft',
+  foundInField: 'Vendor'
+}
+17:59:29.199 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Strategy', 'AI Implementation' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+[5771:0801/175930.710921:ERROR:shared_image_manager.cc(272)] SharedImageManager::ProduceOverlay: Trying to Produce a Overlay representation from a non-existent mailbox.
+[5771:0801/175930.710987:ERROR:skia_output_device_buffer_queue.cc(372)] Invalid mailbox.
+[5771:0801/175930.728701:ERROR:shared_image_manager.cc(272)] SharedImageManager::ProduceOverlay: Trying to Produce a Overlay representation from a non-existent mailbox.
+[5771:0801/175930.728723:ERROR:skia_output_device_buffer_queue.cc(372)] Invalid mailbox.
+17:59:30.959 › Starting sync operation...
+17:59:30.960 › Sync completed in 1ms
+Page loaded successfully
+17:59:34.695 › Graph refresh requested
+17:59:34.696 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:59:34.698 › Graph refresh requested
+17:59:34.698 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:59:34.721 › Connecting to Notion...
+17:59:34.722 › NotionService destroyed
+17:59:34.722 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:59:34.722 › Testing Notion connection...
+17:59:34.722 › Connecting to Notion...
+17:59:34.723 › NotionService destroyed
+17:59:34.723 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:59:34.723 › Testing Notion connection...
+17:59:34.991 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:59:34.992 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:59:36.933 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'AI Agent Marketplaces', 'Agent-Centric Economy' ],
+    domain: [ 'Artificial Intelligence', 'Digital Transformation' ],
+    general: []
+  }
+}
+[5771:0801/175937.985381:ERROR:shared_image_manager.cc(272)] SharedImageManager::ProduceOverlay: Trying to Produce a Overlay representation from a non-existent mailbox.
+[5771:0801/175937.985402:ERROR:skia_output_device_buffer_queue.cc(372)] Invalid mailbox.
+[5771:0801/175938.000271:ERROR:shared_image_manager.cc(272)] SharedImageManager::ProduceOverlay: Trying to Produce a Overlay representation from a non-existent mailbox.
+[5771:0801/175938.000290:ERROR:skia_output_device_buffer_queue.cc(372)] Invalid mailbox.
+17:59:38.239 › Vendor extracted and normalized: {
+  originalValue: 'Claude Code',
+  normalizedValue: 'Anthropic',
+  foundInField: 'Vendor'
+}
+17:59:38.707 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+17:59:40.328 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+Page loaded successfully
+17:59:41.832 › Graph refresh requested
+17:59:41.833 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:59:41.834 › Graph refresh requested
+17:59:41.835 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:59:41.858 › Connecting to Notion...
+17:59:41.858 › NotionService destroyed
+17:59:41.858 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:59:41.859 › Testing Notion connection...
+17:59:41.859 › Connecting to Notion...
+17:59:41.859 › NotionService destroyed
+17:59:41.859 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:59:41.860 › Testing Notion connection...
+17:59:42.050 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:59:42.146 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:59:42.406 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'Market Insights', 'Swot Analysis' ],
+    domain: [ 'Business Strategy', 'Management Consulting' ],
+    general: []
+  }
+}
+17:59:43.097 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Content Creation' ],
+    topical: [ 'AI Applications', 'AI Strategy' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:59:50.081 › Vendor extracted and normalized: {
+  originalValue: 'OpenAI',
+  normalizedValue: 'OpenAI',
+  foundInField: 'Vendor'
+}
+Page loaded successfully
+17:59:56.035 › Graph refresh requested
+17:59:56.036 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:59:56.038 › Graph refresh requested
+17:59:56.038 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+17:59:56.062 › Connecting to Notion...
+17:59:56.063 › NotionService destroyed
+17:59:56.063 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:59:56.063 › Testing Notion connection...
+17:59:56.064 › Connecting to Notion...
+17:59:56.064 › NotionService destroyed
+17:59:56.064 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+17:59:56.064 › Testing Notion connection...
+17:59:56.246 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:59:56.253 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+17:59:58.286 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+17:59:58.785 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Building Blocks', 'AI Development Best Practices' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+17:59:59.192 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Content Creation', 'Ideation/Strategy' ],
+    topical: [ 'AI Governance', 'AI Ethics' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+17:59:59.193 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'AI Innovations', 'AI Strategy' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+18:00:00.963 › Starting sync operation...
+18:00:00.964 › Sync completed in 1ms
+18:00:02.982 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'Large Language Models', 'AI Applications' ],
+    domain: [ 'Artificial Intelligence', 'Management Consulting' ],
+    general: []
+  }
+}
+Page loaded successfully
+18:00:03.182 › Graph refresh requested
+18:00:03.183 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+18:00:03.184 › Graph refresh requested
+18:00:03.185 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+18:00:03.208 › Connecting to Notion...
+18:00:03.209 › NotionService destroyed
+18:00:03.209 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:03.209 › Testing Notion connection...
+18:00:03.209 › Connecting to Notion...
+18:00:03.210 › NotionService destroyed
+18:00:03.210 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:03.210 › Testing Notion connection...
+18:00:03.377 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:04.052 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:04.166 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Ethical Requirements', 'AI Ethics' ],
+    domain: [ 'Artificial Intelligence', 'Healthcare' ],
+    general: []
+  }
+}
+18:00:06.565 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 0,
+  domainTags: 0,
+  generalTags: 0,
+  totalTags: 2,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [],
+    domain: [],
+    general: []
+  }
+}
+18:00:12.996 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Multi-Agent Systems', 'Misinformation Spread' ],
+    domain: [ 'Artificial Intelligence', 'Social Media' ],
+    general: []
+  }
+}
+18:00:13.419 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'Content Reformatting', 'Audience Persona Identification' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+18:00:13.419 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+18:00:17.404 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Research' ],
+    topical: [ 'Social Media Engineering', 'Content Reformatting' ],
+    domain: [ 'Technology News', 'Social Media' ],
+    general: []
+  }
+}
+18:00:17.405 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+18:00:18.024 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Coding' ],
+    topical: [ 'Execution Speed', 'Concrete Ideas' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+18:00:18.075 › Checking 257 files against Notion database
+18:00:18.155 › Checking 257 files against Notion database
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+18:00:20.031 › Connecting to Notion...
+18:00:20.032 › NotionService destroyed
+18:00:20.032 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:20.032 › Testing Notion connection...
+18:00:20.033 › Connecting to Notion...
+18:00:20.033 › NotionService destroyed
+18:00:20.033 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:20.033 › Testing Notion connection...
+18:00:20.049 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Coding', 'Ideation/Strategy' ],
+    topical: [ 'AI Code Generation', 'AI Development Best Practices' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+18:00:20.217 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:21.007 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:21.300 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'AI In Healthcare', 'AI Evaluation Practices' ],
+    domain: [ 'Healthcare', 'Artificial Intelligence' ],
+    general: []
+  }
+}
+18:00:21.956 › Vendor extracted and normalized: {
+  originalValue: 'Google',
+  normalizedValue: 'Google',
+  foundInField: 'Vendor'
+}
+18:00:22.367 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Governance', 'Agent Management' ],
+    domain: [ 'Artificial Intelligence', 'Digital Transformation' ],
+    general: []
+  }
+}
+Page loaded successfully
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+18:00:24.110 › Connecting to Notion...
+18:00:24.110 › NotionService destroyed
+18:00:24.110 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:24.110 › Testing Notion connection...
+18:00:24.111 › Connecting to Notion...
+18:00:24.111 › NotionService destroyed
+18:00:24.111 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:24.111 › Testing Notion connection...
+18:00:24.259 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:24.571 › Checking 257 files against Notion database
+18:00:24.579 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:24.656 › Checking 257 files against Notion database
+18:00:26.861 › Vendor extracted and normalized: {
+  originalValue: 'Chromebook Plus',
+  normalizedValue: 'Chromebook Plus',
+  foundInField: 'Vendor'
+}
+18:00:28.647 › Graph refresh requested
+18:00:28.648 › Transformation already in progress, queuing request
+18:00:28.649 › Graph refresh requested
+18:00:28.649 › Transformation already in progress, queuing request
+18:00:30.016 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Research' ],
+    topical: [ 'AI Leadership', 'AI Regulation' ],
+    domain: [ 'Artificial Intelligence', 'Technology News' ],
+    general: []
+  }
+}
+18:00:30.631 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'Action Items', 'Content Reformatting' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+18:00:30.966 › Starting sync operation...
+18:00:30.967 › Sync completed in 1ms
+18:00:31.335 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Governance', 'Agent Management' ],
+    domain: [ 'Artificial Intelligence', 'Digital Transformation' ],
+    general: []
+  }
+}
+18:00:36.639 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 0,
+  domainTags: 0,
+  generalTags: 0,
+  totalTags: 2,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [],
+    domain: [],
+    general: []
+  }
+}
+Page loaded successfully
+18:00:38.450 › Graph refresh requested
+18:00:38.450 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+18:00:38.452 › Graph refresh requested
+18:00:38.452 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+18:00:38.476 › Connecting to Notion...
+18:00:38.476 › NotionService destroyed
+18:00:38.476 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:38.477 › Testing Notion connection...
+18:00:38.477 › Connecting to Notion...
+18:00:38.477 › NotionService destroyed
+18:00:38.478 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:38.478 › Testing Notion connection...
+18:00:38.743 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:38.832 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Content Creation' ],
+    topical: [ 'AI Companions', 'AI Ethics' ],
+    domain: [ 'Artificial Intelligence', 'Consumer Technology' ],
+    general: []
+  }
+}
+18:00:38.938 › Hierarchical tag extraction: {
+  aiPrimitives: 0,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [],
+    topical: [ 'Organizational Change', 'Employee Empowerment' ],
+    domain: [ 'Organizational Change', 'Management Consulting' ],
+    general: []
+  }
+}
+18:00:38.968 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:40.587 › Vendor extracted and normalized: {
+  originalValue: 'Meta',
+  normalizedValue: 'Meta',
+  foundInField: 'Vendor'
+}
+18:00:43.507 › Vendor extracted and normalized: {
+  originalValue: 'xAI',
+  normalizedValue: 'Xai',
+  foundInField: 'Vendor'
+}
+18:00:46.502 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Large Language Models', 'Mental Models' ],
+    domain: [ 'Artificial Intelligence', 'Psychology' ],
+    general: []
+  }
+}
+18:00:50.351 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 0,
+  domainTags: 0,
+  generalTags: 0,
+  totalTags: 2,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [],
+    domain: [],
+    general: []
+  }
+}
+Page loaded successfully
+18:00:50.819 › Graph refresh requested
+18:00:50.819 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+18:00:50.822 › Graph refresh requested
+18:00:50.822 › Transformation already in progress, queuing request
+Loading configuration...
+Configuration loaded: Success
+Graph3D integration already initialized
+18:00:50.846 › Connecting to Notion...
+18:00:50.846 › NotionService destroyed
+18:00:50.846 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:50.846 › Testing Notion connection...
+18:00:50.847 › Connecting to Notion...
+18:00:50.847 › NotionService destroyed
+18:00:50.847 › NotionService initialized { databaseId: '1fd6d7f5...', rateLimitDelay: 0.3, batchSize: 10 }
+18:00:50.848 › Testing Notion connection...
+18:00:51.084 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:51.145 › Notion connection successful {
+  databaseId: '1fd6d7f5-23bc-81bc-8357-cea3d287ec72',
+  title: '📥 Sources'
+}
+18:00:52.093 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Building Blocks', 'AI Development Best Practices' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+18:00:52.580 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'Context Engineering', 'AI Agent Architecture' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+18:00:52.860 › Hierarchical tag extraction: {
+  aiPrimitives: 0,
+  topicalTags: 0,
+  domainTags: 0,
+  generalTags: 0,
+  totalTags: 0,
+  sample: { ai: [], topical: [], domain: [], general: [] }
+}
+18:00:54.747 › Vendor extracted and normalized: {
+  originalValue: 'Meta',
+  normalizedValue: 'Meta',
+  foundInField: 'Vendor'
+}
+18:00:56.332 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Data Analysis' ],
+    topical: [ 'AI Productivity', 'AI Economic Implications' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+18:00:56.742 › Vendor extracted and normalized: {
+  originalValue: 'Microsoft',
+  normalizedValue: 'Microsoft',
+  foundInField: 'Vendor'
+}
+18:00:57.829 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Research' ],
+    topical: [ 'AI Synthesis', 'Feedback Loops' ],
+    domain: [ 'Artificial Intelligence', 'Digital Transformation' ],
+    general: []
+  }
+}
+18:00:58.008 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'Business Strategy', 'Market Insights' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+18:01:00.967 › Starting sync operation...
+18:01:00.967 › Sync completed in 0ms
+18:01:01.507 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Coding', 'Research' ],
+    topical: [ 'AI Code Generation', 'AI Advancements' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+18:01:05.978 › Vendor extracted and normalized: {
+  originalValue: 'Microsoft',
+  normalizedValue: 'Microsoft',
+  foundInField: 'Vendor'
+}
+18:01:06.414 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Data Analysis' ],
+    topical: [ 'AI Decision-Making', 'Financial Analysis' ],
+    domain: [ 'Financial Services', 'Artificial Intelligence' ],
+    general: []
+  }
+}
+18:01:11.770 › Hierarchical tag extraction: {
+  aiPrimitives: 0,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [],
+    topical: [ 'Course Notes', 'Chat Craft' ],
+    domain: [ 'Education', 'Professional Services' ],
+    general: []
+  }
+}
+18:01:18.348 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Browser', 'AI Assistant' ],
+    domain: [ 'Consumer Technology', 'Software Development' ],
+    general: []
+  }
+}
+18:01:18.807 › Vendor extracted and normalized: {
+  originalValue: 'Reflection AI',
+  normalizedValue: 'Reflection Ai',
+  foundInField: 'Vendor'
+}
+18:01:20.372 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Automation' ],
+    topical: [ 'AI Infrastructure', 'Data Processing' ],
+    domain: [ 'Artificial Intelligence', 'Data Management' ],
+    general: []
+  }
+}
+18:01:21.633 › Vendor extracted and normalized: {
+  originalValue: 'Anthropic',
+  normalizedValue: 'Anthropic',
+  foundInField: 'Vendor'
+}
+18:01:22.649 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'AI Risk Management', 'AI Ethics' ],
+    domain: [ 'Artificial Intelligence', 'Technology News' ],
+    general: []
+  }
+}
+18:01:26.745 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'AI Talent Acquisition', 'AI Recruitment Strategies' ],
+    domain: [ 'Artificial Intelligence', 'Technology News' ],
+    general: []
+  }
+}
+18:01:27.257 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+18:01:30.970 › Starting sync operation...
+18:01:30.971 › Sync completed in 1ms
+18:01:31.964 › Checking 257 files against Notion database
+18:01:32.965 › Vendor extracted and normalized: {
+  originalValue: 'Google',
+  normalizedValue: 'Google',
+  foundInField: 'Vendor'
+}
+18:01:33.844 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+18:01:35.082 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Data Analysis' ],
+    topical: [ 'AI Strategy', 'Supply Chain Optimization' ],
+    domain: [ 'Manufacturing', 'Artificial Intelligence' ],
+    general: []
+  }
+}
+18:01:35.620 › Vendor extracted and normalized: {
+  originalValue: 'OpenAI',
+  normalizedValue: 'OpenAI',
+  foundInField: 'Vendor'
+}
+18:01:35.707 › Graph refresh requested
+18:01:35.708 › Transformation already in progress, queuing request
+18:01:35.709 › Graph refresh requested
+18:01:35.709 › Transformation already in progress, queuing request
+18:01:36.122 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Agent Architecture', 'AI Agent Integration' ],
+    domain: [ 'Artificial Intelligence', 'Consumer Technology' ],
+    general: []
+  }
+}
+18:01:37.070 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Human-AI Coevolution', 'Feedback Loops' ],
+    domain: [ 'Artificial Intelligence', 'Consumer Technology' ],
+    general: []
+  }
+}
+18:01:37.070 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Data Analysis' ],
+    topical: [ 'AI Impact Assessment', 'AI Evaluation Practices' ],
+    domain: [ 'Artificial Intelligence', 'Public Sector' ],
+    general: []
+  }
+}
+18:01:37.071 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+18:01:37.071 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Agent Limitations', 'AI Production Systems' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+18:01:37.071 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Coding' ],
+    topical: [ 'AI Workflows', 'AI Prototyping' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+18:01:37.971 › Vendor extracted and normalized: {
+  originalValue: 'Apple',
+  normalizedValue: 'Apple',
+  foundInField: 'Vendor'
+}
+18:01:38.534 › Vendor extracted and normalized: {
+  originalValue: 'xAI',
+  normalizedValue: 'Xai',
+  foundInField: 'Vendor'
+}
+18:01:40.730 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Content Creation' ],
+    topical: [ 'Political Pressure On AI', 'Censorship In AI' ],
+    domain: [ 'Artificial Intelligence', 'Government' ],
+    general: []
+  }
+}
+18:01:40.891 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Data Analysis' ],
+    topical: [ 'AI Search Strategies', 'Digital Visibility' ],
+    domain: [ 'Artificial Intelligence', 'Digital Transformation' ],
+    general: []
+  }
+}
+18:01:42.564 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Automation', 'Data Analysis' ],
+    topical: [ 'Supply Chain Optimization', 'Demand Forecasting' ],
+    domain: [ 'Manufacturing', 'Artificial Intelligence' ],
+    general: []
+  }
+}
+18:01:42.564 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Research', 'Automation' ],
+    topical: [ 'AI Agent Architecture', 'AI Agent Workflows' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+18:01:43.757 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Research' ],
+    topical: [ 'Swot Analysis', 'Market Insights' ],
+    domain: [ 'Management Consulting', 'Business Strategy' ],
+    general: []
+  }
+}
+18:01:44.869 › Vendor extracted and normalized: {
+  originalValue: 'Boomi',
+  normalizedValue: 'Boomi',
+  foundInField: 'Vendor'
+}
+18:01:47.057 › Vendor extracted and normalized: {
+  originalValue: 'OpenAI',
+  normalizedValue: 'OpenAI',
+  foundInField: 'Vendor'
+}
+18:01:47.057 › Vendor extracted and normalized: {
+  originalValue: 'Meta',
+  normalizedValue: 'Meta',
+  foundInField: 'Vendor'
+}
+18:01:47.057 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Research' ],
+    topical: [ 'AI Predictions', 'AI Limitations' ],
+    domain: [ 'Artificial Intelligence', 'Technology News' ],
+    general: []
+  }
+}
+18:01:47.058 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'AI Transformation', 'Talent Development' ],
+    domain: [ 'Artificial Intelligence', 'Management Consulting' ],
+    general: []
+  }
+}
+18:01:51.693 › Vendor extracted and normalized: {
+  originalValue: 'Google',
+  normalizedValue: 'Google',
+  foundInField: 'Vendor'
+}
+18:01:53.061 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Large Language Models', 'Mental Models' ],
+    domain: [ 'Artificial Intelligence', 'Psychology' ],
+    general: []
+  }
+}
+18:01:54.062 › Vendor extracted and normalized: {
+  originalValue: 'Other',
+  normalizedValue: 'Other',
+  foundInField: 'Vendor'
+}
+18:01:54.362 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI Browser', 'AI Assistant' ],
+    domain: [ 'Consumer Technology', 'Software Development' ],
+    general: []
+  }
+}
+18:01:54.548 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Data Analysis' ],
+    topical: [ 'Human-AI Collaboration', 'Cultural Evolution' ],
+    domain: [ 'Artificial Intelligence', 'Education' ],
+    general: []
+  }
+}
+18:01:54.778 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 0,
+  domainTags: 0,
+  generalTags: 0,
+  totalTags: 2,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [],
+    domain: [],
+    general: []
+  }
+}
+18:01:55.532 › Hierarchical tag extraction: {
+  aiPrimitives: 0,
+  topicalTags: 0,
+  domainTags: 0,
+  generalTags: 0,
+  totalTags: 0,
+  sample: { ai: [], topical: [], domain: [], general: [] }
+}
+18:01:57.807 › No quality field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Quality',
+    'quality',
+    'Quality Score',
+    'Quality-Score',
+    'quality-score',
+    'Score'
+  ]
+}
+18:02:00.174 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'Machine Bullshit', 'Large Language Models' ],
+    domain: [ 'Artificial Intelligence', 'Technology News' ],
+    general: []
+  }
+}
+18:02:00.976 › Starting sync operation...
+18:02:00.976 › Sync completed in 0ms
+18:02:01.802 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 3,
+  generalTags: 0,
+  totalTags: 9,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'Android Enterprise', 'Market Insights' ],
+    domain: [ 'Technology News', 'Software Development' ],
+    general: []
+  }
+}
+18:02:02.829 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'Trust And Safety', 'Content Moderation' ],
+    domain: [ 'Social Media', 'Technology News' ],
+    general: []
+  }
+}
+18:02:04.740 › Vendor extracted and normalized: {
+  originalValue: 'Microsoft',
+  normalizedValue: 'Microsoft',
+  foundInField: 'Vendor'
+}
+18:02:04.890 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'AI Prompt Engineering', 'AI Applications' ],
+    domain: [ 'Artificial Intelligence', 'Digital Transformation' ],
+    general: []
+  }
+}
+18:02:05.324 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Research', 'Ideation/Strategy' ],
+    topical: [ 'AI Adoption', 'AI Collaboration' ],
+    domain: [ 'Artificial Intelligence', 'Digital Transformation' ],
+    general: []
+  }
+}
+18:02:06.574 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Research' ],
+    topical: [ 'AI Synthesis', 'Feedback Loops' ],
+    domain: [ 'Artificial Intelligence', 'Digital Transformation' ],
+    general: []
+  }
+}
+18:02:07.134 › Hierarchical tag extraction: {
+  aiPrimitives: 0,
+  topicalTags: 0,
+  domainTags: 0,
+  generalTags: 0,
+  totalTags: 0,
+  sample: { ai: [], topical: [], domain: [], general: [] }
+}
+18:02:08.060 › No vendor field found in properties {
+  availableFields: [
+    'Vendor',
+    'Drive URL',
+    'Content-Type',
+    'AI-Primitive',
+    'Created Date',
+    'Topical-Tags',
+    'Hash',
+    'Domain-Tags',
+    'Status',
+    'Title'
+  ],
+  searchedFields: [
+    'Vendor',    'vendor',
+    'AI Vendor', 'AI-Vendor',
+    'ai-vendor', 'Source',
+    'Provider',  'Company'
+  ]
+}
+18:02:11.104 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'AI Applications', 'Business Strategy' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+18:02:12.908 › Hierarchical tag extraction: {
+  aiPrimitives: 2,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 11,
+  sample: {
+    ai: [ 'Ideation/Strategy', 'Automation' ],
+    topical: [ 'AI-First Organizations', 'AI-Driven Growth' ],
+    domain: [ 'Artificial Intelligence', 'Business Strategy' ],
+    general: []
+  }
+}
+18:02:14.259 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Ideation/Strategy' ],
+    topical: [ 'Age Verification', 'Digital Privacy' ],
+    domain: [ 'Consumer Technology', 'Digital Transformation' ],
+    general: []
+  }
+}
+18:02:14.770 › Hierarchical tag extraction: {
+  aiPrimitives: 3,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 12,
+  sample: {
+    ai: [ 'Coding', 'Research' ],
+    topical: [ 'AI Code Generation', 'AI Advancements' ],
+    domain: [ 'Artificial Intelligence', 'Software Development' ],
+    general: []
+  }
+}
+18:02:15.049 › Vendor extracted and normalized: {
+  originalValue: 'Google',
+  normalizedValue: 'Google',
+  foundInField: 'Vendor'
+}
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:20.096 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:20.371 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:20.449 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:20.509 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:20.782 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:21.822 › Rate limited, retrying after 5s...
+18:02:21.991 › Hierarchical tag extraction: {
+  aiPrimitives: 1,
+  topicalTags: 5,
+  domainTags: 4,
+  generalTags: 0,
+  totalTags: 10,
+  sample: {
+    ai: [ 'Content Creation' ],
+    topical: [ 'Content Reformatting', 'Swot Analysis' ],
+    domain: [ 'Management Consulting', 'Social Media' ],
+    general: []
+  }
+}
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:22.810 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:22.959 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:23.071 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:23.181 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:25.245 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:25.503 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:25.587 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:25.623 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:25.890 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:26.928 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:28.594 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:28.760 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:28.871 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:28.989 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:30.366 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:30.907 › Rate limited, retrying after 5s...
+18:02:30.979 › Starting sync operation...
+18:02:30.979 › Sync completed in 0ms
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:31.056 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:31.208 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:31.978 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:32.040 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:33.701 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:33.873 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:33.986 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:34.106 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:35.485 › Database query failed: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:35.522 › Failed to check for updates: NotionAPIError: Failed to query database
+    at NotionService.queryDatabase (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:844879:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async DataIntegrationService.checkForUpdates (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:843056:33)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:36.029 › Failed to fetch content for page 20d6d7f5-23bc-81cd-bf7c-e2cce4d7abe6: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:36.029 › Failed to fetch content for page 20d6d7f5-23bc-81cd-bf7c-e2cce4d7abe6: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:36.030 › Vendor extracted and normalized: {
+  originalValue: "Nate's Substack",
+  normalizedValue: "Nate's Substack",
+  foundInField: 'Vendor'
+}
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:36.143 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:36.160 › Failed to fetch content for page 2416d7f5-23bc-8174-b631-e4184b804aa1: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:36.160 › Failed to fetch content for page 2416d7f5-23bc-8174-b631-e4184b804aa1: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:36.339 › Failed to fetch content for page 2416d7f5-23bc-81cd-927f-f69192b233bc: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:36.339 › Failed to fetch content for page 2416d7f5-23bc-81cd-927f-f69192b233bc: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:37.121 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:37.268 › Failed to fetch content for page 2416d7f5-23bc-8154-85c8-caf5c238f8eb: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:37.268 › Failed to fetch content for page 2416d7f5-23bc-8154-85c8-caf5c238f8eb: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:37.386 › Rate limited, retrying after 5s...
+18:02:38.309 › Vendor extracted and normalized: {
+  originalValue: 'OpenAI',
+  normalizedValue: 'OpenAI',
+  foundInField: 'Vendor'
+}
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:38.426 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:38.648 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:39.039 › Failed to fetch content for page 2416d7f5-23bc-8157-9484-c7b528c30058: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:39.040 › Failed to fetch content for page 2416d7f5-23bc-8157-9484-c7b528c30058: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:39.446 › Failed to fetch content for page 20d6d7f5-23bc-81c5-b1ae-ee8c7cc6ef75: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:39.446 › Failed to fetch content for page 20d6d7f5-23bc-81c5-b1ae-ee8c7cc6ef75: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:39.563 › Failed to fetch content for page 20d6d7f5-23bc-81c5-b1ae-ee8c7cc6ef75: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:39.564 › Failed to fetch content for page 20d6d7f5-23bc-81c5-b1ae-ee8c7cc6ef75: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:39.673 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:39.850 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:39.999 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:40.112 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:41.256 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:42.233 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:42.490 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:43.532 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:43.952 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:44.987 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:45.153 › Failed to fetch content for page 2316d7f5-23bc-8179-a94c-c511d79393ae: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:45.153 › Failed to fetch content for page 2316d7f5-23bc-8179-a94c-c511d79393ae: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:45.258 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:45.378 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:45.500 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:46.371 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:47.633 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:48.662 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:49.149 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:50.100 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:50.376 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:50.486 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:50.623 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:51.487 › Failed to fetch content for page 20d6d7f5-23bc-81c5-b1ae-ee8c7cc6ef75: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:51.488 › Failed to fetch content for page 20d6d7f5-23bc-81c5-b1ae-ee8c7cc6ef75: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:51.650 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:52.151 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:52.887 › Failed to fetch content for page 2416d7f5-23bc-8187-902f-e714aab20e6c: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:52.887 › Failed to fetch content for page 2416d7f5-23bc-8187-902f-e714aab20e6c: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:53.016 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:53.781 › Failed to fetch content for page 2416d7f5-23bc-81ca-b19f-c4685dc13b41: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:53.781 › Failed to fetch content for page 2416d7f5-23bc-81ca-b19f-c4685dc13b41: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:53.920 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:54.656 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:55.454 › Failed to fetch content for page 2416d7f5-23bc-81e1-95b4-e0b75e6a5b70: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:55.454 › Failed to fetch content for page 2416d7f5-23bc-81e1-95b4-e0b75e6a5b70: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:55.586 › Failed to fetch content for page 20d6d7f5-23bc-81c5-8c86-f3bd5f2d06fa: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:55.587 › Failed to fetch content for page 20d6d7f5-23bc-81c5-8c86-f3bd5f2d06fa: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:55.694 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:55.803 › Failed to fetch content for page 20d6d7f5-23bc-81c5-8c86-f3bd5f2d06fa: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:02:55.803 › Failed to fetch content for page 20d6d7f5-23bc-81c5-8c86-f3bd5f2d06fa: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:55.903 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:56.042 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:56.157 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:56.775 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:57.276 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:58.128 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:59.071 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:02:59.767 › Rate limited, retrying after 5s...
+18:03:00.980 › Starting sync operation...
+18:03:00.980 › Sync completed in 0ms
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:03:01.256 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:03:01.442 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:03:01.596 › Failed to fetch content for page 2306d7f5-23bc-8014-9f76-fa727da3901b: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+18:03:01.596 › Failed to fetch content for page 2306d7f5-23bc-8014-9f76-fa727da3901b: APIResponseError: You have been rate limited. Please try again in a few minutes.
+    at buildRequestError (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:1107:16)
+    at Client.request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:514:54)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async request (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845562:36)
+    at async NotionService.processQueue (/Users/riverscornelson/PycharmProjects/knowledge-pipeline/desktop-app/.webpack/main/index.js:845625:17)
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}use
+18:03:01.715 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:03:01.820 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:03:02.337 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:03:02.895 › Rate limited, retrying after 5s...
+@notionhq/client warn: request fail {
+  code: 'rate_limited',
+  message: 'You have been rate limited. Please try again in a few minutes.'
+}
+18:03:03.253 › Rate limited, retrying after 5s...
+
+

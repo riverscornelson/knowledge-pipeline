@@ -31,6 +31,11 @@ describe('NotionService', () => {
       },
       pages: {
         create: jest.fn()
+      },
+      blocks: {
+        children: {
+          list: jest.fn()
+        }
       }
     };
 
@@ -257,12 +262,28 @@ describe('NotionService', () => {
 
   describe('queryDatabase', () => {
     it('should query with pagination', async () => {
+      mockClient.blocks.children.list.mockResolvedValue({
+        results: [
+          {
+            type: 'paragraph',
+            paragraph: {
+              rich_text: [{ type: 'text', text: { content: 'Sample content' } }]
+            }
+          }
+        ],
+        has_more: false,
+        next_cursor: null
+      } as any);
+
       mockClient.databases.query
         .mockResolvedValueOnce({
           results: [
             {
               id: 'page-1',
-              properties: { Name: { type: 'title', title: [{ plain_text: 'Page 1' }] } }
+              properties: { Name: { type: 'title', title: [{ plain_text: 'Page 1' }] } },
+              created_time: '2024-01-01T00:00:00Z',
+              last_edited_time: '2024-01-01T00:00:00Z',
+              url: 'https://notion.so/page-1'
             }
           ],
           has_more: true,
@@ -272,7 +293,10 @@ describe('NotionService', () => {
           results: [
             {
               id: 'page-2',
-              properties: { Name: { type: 'title', title: [{ plain_text: 'Page 2' }] } }
+              properties: { Name: { type: 'title', title: [{ plain_text: 'Page 2' }] } },
+              created_time: '2024-01-01T00:00:00Z',
+              last_edited_time: '2024-01-01T00:00:00Z',
+              url: 'https://notion.so/page-2'
             }
           ],
           has_more: false,
@@ -284,7 +308,10 @@ describe('NotionService', () => {
       expect(results).toHaveLength(2);
       expect(results[0].title).toBe('Page 1');
       expect(results[1].title).toBe('Page 2');
+      expect(results[0].content).toBe('Sample content');
+      expect(results[1].content).toBe('Sample content');
       expect(mockClient.databases.query).toHaveBeenCalledTimes(2);
+      expect(mockClient.blocks.children.list).toHaveBeenCalledTimes(2);
     });
 
     it('should apply filters and sorts', async () => {
@@ -346,6 +373,189 @@ describe('NotionService', () => {
       
       expect(result).toBe(true);
       expect(mockClient.databases.retrieve).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('content fetching', () => {
+    it('should fetch and parse different block types', async () => {
+      mockClient.blocks.children.list.mockResolvedValue({
+        results: [
+          {
+            type: 'paragraph',
+            paragraph: {
+              rich_text: [{ type: 'text', text: { content: 'This is a paragraph' } }]
+            }
+          },
+          {
+            type: 'heading_1',
+            heading_1: {
+              rich_text: [{ type: 'text', text: { content: 'Main Heading' } }]
+            }
+          },
+          {
+            type: 'bulleted_list_item',
+            bulleted_list_item: {
+              rich_text: [{ type: 'text', text: { content: 'List item' } }]
+            }
+          }
+        ],
+        has_more: false,
+        next_cursor: null
+      } as any);
+
+      mockClient.databases.query.mockResolvedValue({
+        results: [
+          {
+            id: 'page-1',
+            properties: { Name: { type: 'title', title: [{ plain_text: 'Test Page' }] } },
+            created_time: '2024-01-01T00:00:00Z',
+            last_edited_time: '2024-01-01T00:00:00Z',
+            url: 'https://notion.so/page-1'
+          }
+        ],
+        has_more: false,
+        next_cursor: null
+      } as any);
+
+      const results = await service.queryDatabase();
+      
+      expect(results).toHaveLength(1);
+      expect(results[0].content).toContain('This is a paragraph');
+      expect(results[0].content).toContain('Main Heading');
+      expect(results[0].content).toContain('• List item');
+    });
+
+    it('should handle pagination when fetching content', async () => {
+      mockClient.blocks.children.list
+        .mockResolvedValueOnce({
+          results: [
+            {
+              type: 'paragraph',
+              paragraph: {
+                rich_text: [{ type: 'text', text: { content: 'First part' } }]
+              }
+            }
+          ],
+          has_more: true,
+          next_cursor: 'content-cursor-1'
+        } as any)
+        .mockResolvedValueOnce({
+          results: [
+            {
+              type: 'paragraph',
+              paragraph: {
+                rich_text: [{ type: 'text', text: { content: 'Second part' } }]
+              }
+            }
+          ],
+          has_more: false,
+          next_cursor: null
+        } as any);
+
+      mockClient.databases.query.mockResolvedValue({
+        results: [
+          {
+            id: 'page-1',
+            properties: { Name: { type: 'title', title: [{ plain_text: 'Test Page' }] } },
+            created_time: '2024-01-01T00:00:00Z',
+            last_edited_time: '2024-01-01T00:00:00Z',
+            url: 'https://notion.so/page-1'
+          }
+        ],
+        has_more: false,
+        next_cursor: null
+      } as any);
+
+      const results = await service.queryDatabase();
+      
+      expect(results[0].content).toContain('First part');
+      expect(results[0].content).toContain('Second part');
+      expect(mockClient.blocks.children.list).toHaveBeenCalledTimes(2);
+    });
+
+    it('should skip content fetching when fetchContent is false', async () => {
+      mockClient.databases.query.mockResolvedValue({
+        results: [
+          {
+            id: 'page-1',
+            properties: { Name: { type: 'title', title: [{ plain_text: 'Test Page' }] } },
+            created_time: '2024-01-01T00:00:00Z',
+            last_edited_time: '2024-01-01T00:00:00Z',
+            url: 'https://notion.so/page-1'
+          }
+        ],
+        has_more: false,
+        next_cursor: null
+      } as any);
+
+      const results = await service.queryDatabase({ fetchContent: false });
+      
+      expect(results).toHaveLength(1);
+      expect(results[0].content).toBe('');
+      expect(mockClient.blocks.children.list).not.toHaveBeenCalled();
+    });
+
+    it('should cache content to avoid repeated fetches', async () => {
+      mockClient.blocks.children.list.mockResolvedValue({
+        results: [
+          {
+            type: 'paragraph',
+            paragraph: {
+              rich_text: [{ type: 'text', text: { content: 'Cached content' } }]
+            }
+          }
+        ],
+        has_more: false,
+        next_cursor: null
+      } as any);
+
+      mockClient.databases.query.mockResolvedValue({
+        results: [
+          {
+            id: 'page-1',
+            properties: { Name: { type: 'title', title: [{ plain_text: 'Test Page' }] } },
+            created_time: '2024-01-01T00:00:00Z',
+            last_edited_time: '2024-01-01T00:00:00Z',
+            url: 'https://notion.so/page-1'
+          }
+        ],
+        has_more: false,
+        next_cursor: null
+      } as any);
+
+      // First call should fetch content
+      const results1 = await service.queryDatabase();
+      expect(results1[0].content).toBe('Cached content');
+      expect(mockClient.blocks.children.list).toHaveBeenCalledTimes(1);
+
+      // Second call should use cached content
+      const results2 = await service.queryDatabase();
+      expect(results2[0].content).toBe('Cached content');
+      expect(mockClient.blocks.children.list).toHaveBeenCalledTimes(1); // Still only 1 call
+    });
+
+    it('should handle content fetching errors gracefully', async () => {
+      mockClient.blocks.children.list.mockRejectedValue(new Error('Content fetch failed'));
+
+      mockClient.databases.query.mockResolvedValue({
+        results: [
+          {
+            id: 'page-1',
+            properties: { Name: { type: 'title', title: [{ plain_text: 'Test Page' }] } },
+            created_time: '2024-01-01T00:00:00Z',
+            last_edited_time: '2024-01-01T00:00:00Z',
+            url: 'https://notion.so/page-1'
+          }
+        ],
+        has_more: false,
+        next_cursor: null
+      } as any);
+
+      const results = await service.queryDatabase();
+      
+      expect(results).toHaveLength(1);
+      expect(results[0].content).toBe(''); // Should fallback to empty content
+      expect(results[0].title).toBe('Test Page'); // Other properties should still work
     });
   });
 

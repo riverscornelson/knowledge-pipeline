@@ -6,17 +6,26 @@
   <component name="ChangeListManager">
     <list default="true" id="0200f2da-ba98-4297-afb5-4c517d38ef60" name="Changes" comment="Basic Pipeline Setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/desktop-app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/desktop-app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/graph3d-handlers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/graph3d-handlers.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/graph3d-integration.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/graph3d-integration.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/ipc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/ipc.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/components/3d-graph/components/IntelligentClustering.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/components/3d-graph/components/IntelligentClustering.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/components/3d-graph/components/SemanticConnections.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/components/3d-graph/components/SemanticConnections.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/components/3d-graph/components/SmartNodeRenderer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/components/3d-graph/components/SmartNodeRenderer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/components/3d-graph/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/components/3d-graph/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/index-secure.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/index-secure.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/preload.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/preload.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/desktop-app/src/main/services/DataIntegrationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/services/DataIntegrationService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/services/GraphIntegrationService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/services/GraphIntegrationService.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/desktop-app/src/main/services/NotionDriveStatusService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/services/NotionDriveStatusService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/components/3d/GraphEdge.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/components/3d/GraphEdge.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/screens/KnowledgeGraph3D.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/screens/KnowledgeGraph3D.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/services/NotionService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/services/NotionService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/main/services/SecureIPCService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/main/services/SecureIPCService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/components/AnimatedRoutes.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/components/AnimatedRoutes.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/components/GoogleDriveExplorer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/components/GoogleDriveExplorer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/components/Navigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/components/Navigation.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/hooks/useGoogleDrive.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/hooks/useGoogleDrive.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/renderer/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/renderer/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/src/shared/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/src/shared/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktop-app/tests/services/NotionService.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/desktop-app/tests/services/NotionService.test.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,28 +71,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.capture_websites.executor": "Run",
-    "Python.enrich_consolidated.executor": "Run",
-    "Python.python scripts/run_pipeline.py --process-local.executor": "Run",
-    "Python.python scripts/run_pipeline.py.executor": "Run",
-    "Python.setup_notion.executor": "Run",
-    "Python.shell.executor": "Run",
-    "Python.whoami.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "desktop-app-with-3d-viz",
-    "last_opened_file_path": "/Users/riverscornelson/PycharmProjects/knowledge-pipeline",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.capture_websites.executor&quot;: &quot;Run&quot;,
+    &quot;Python.enrich_consolidated.executor&quot;: &quot;Run&quot;,
+    &quot;Python.python scripts/run_pipeline.py --process-local.executor&quot;: &quot;Run&quot;,
+    &quot;Python.python scripts/run_pipeline.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.setup_notion.executor&quot;: &quot;Run&quot;,
+    &quot;Python.shell.executor&quot;: &quot;Run&quot;,
+    &quot;Python.whoami.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;desktop-app-with-3d-viz&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/riverscornelson/PycharmProjects/knowledge-pipeline&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/docs" />

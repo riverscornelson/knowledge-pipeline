@@ -11,6 +11,7 @@ interface SmartNodeRendererProps {
   onClick: () => void;
   onPointerOver: () => void;
   onPointerOut: () => void;
+  onDoubleClick?: () => void;
   highQualityMode?: boolean;
 }
 
@@ -82,15 +83,46 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
   onClick,
   onPointerOver,
   onPointerOut,
+  onDoubleClick,
   highQualityMode = true,
 }) => {
+  // Debug click handler
+  const handleClick = React.useCallback((e: any) => {
+    e.stopPropagation();
+    console.log('SmartNodeRenderer clicked:', node.id, node.title);
+    onClick();
+  }, [onClick, node.id, node.title]);
+  
+  const handlePointerDown = React.useCallback((e: any) => {
+    e.stopPropagation();
+    console.log('SmartNodeRenderer pointer down:', node.id, node.title);
+  }, [node.id, node.title]);
+  // Comprehensive safety checks
+  if (!node) {
+    console.warn('SmartNodeRenderer: node is undefined');
+    return null;
+  }
+  
+  if (!node.position || typeof node.position.x !== 'number' || 
+      typeof node.position.y !== 'number' || typeof node.position.z !== 'number') {
+    console.warn('SmartNodeRenderer: invalid node position', node.id);
+    return null;
+  }
+  
+  if (!node.type || typeof node.type !== 'string') {
+    console.warn('SmartNodeRenderer: invalid node type', node.id);
+    return null;
+  }
+  
   const config = nodeTypeConfig[node.type] || nodeTypeConfig.document;
   
   // Calculate node size based on importance metrics - 10x larger
   const baseSize = useMemo(() => {
-    const connectionFactor = Math.min(node.connections.length / 10, 1) * 0.5;
-    const qualityFactor = (node.metadata.qualityScore / 100) * 0.3;
-    const weightFactor = node.metadata.weight * 0.2;
+    const connections = node.connections || [];
+    const metadata = node.metadata || {};
+    const connectionFactor = Math.min(connections.length / 10, 1) * 0.5;
+    const qualityFactor = ((metadata.qualityScore || 0) / 100) * 0.3;
+    const weightFactor = (metadata.weight || 0) * 0.2;
     
     return (1 + connectionFactor + qualityFactor + weightFactor) * 3.33;  // Reduced from 10x to ~3.3x
   }, [node]);
@@ -123,19 +155,21 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
 
   // Animation for newly added nodes
   const scale = useMemo(() => {
-    if (node.metadata.isNew) {
+    if (node.metadata?.isNew) {
       return [0, 0, 0]; // Will be animated to full size
     }
     return [1, 1, 1];
-  }, [node.metadata.isNew]);
+  }, [node.metadata?.isNew]);
 
   return (
     <group position={[node.position.x, node.position.y, node.position.z]}>
       {/* Main node mesh */}
       <mesh
-        onClick={onClick}
+        onClick={handleClick}
+        onPointerDown={handlePointerDown}
         onPointerOver={onPointerOver}
         onPointerOut={onPointerOut}
+        onDoubleClick={onDoubleClick}
         scale={scale}
       >
         {geometry}
@@ -145,19 +179,19 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
           roughness={0.3}
           emissive={currentColor}
           emissiveIntensity={isHovered ? 0.8 : isSelected ? 0.6 : 0.4}
-          opacity={Math.max(0.7, node.metadata.confidence)}
-          transparent={node.metadata.confidence < 1}
+          opacity={Math.max(0.7, node.metadata?.confidence || 1)}
+          transparent={(node.metadata?.confidence || 1) < 1}
         />
       </mesh>
 
       {/* Outer glow for important nodes */}
-      {node.metadata.weight > 0.7 && highQualityMode && (
+      {(node.metadata?.weight || 0) > 0.7 && highQualityMode && (
         <mesh scale={[1.3, 1.3, 1.3]}>
           <sphereGeometry args={[currentSize * 1.1, 16, 8]} />
           <meshBasicMaterial
             color={currentColor}
             transparent
-            opacity={0.1 * node.metadata.weight}
+            opacity={0.1 * (node.metadata?.weight || 0)}
             side={THREE.BackSide}
           />
         </mesh>
@@ -172,7 +206,7 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
       )}
 
       {/* Quality indicator ring */}
-      {node.metadata.qualityScore > 80 && (
+      {(node.metadata?.qualityScore || 0) > 80 && (
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -currentSize * 0.5, 0]}>
           <ringGeometry args={[currentSize * 0.8, currentSize * 0.9, 16]} />
           <meshBasicMaterial 
@@ -184,7 +218,7 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
       )}
 
       {/* Node label - disabled due to CSP */}
-      {false && (isHovered || isSelected || node.metadata.weight > 0.8) && (
+      {false && (isHovered || isSelected || (node.metadata?.weight || 0) > 0.8) && (
         <Text
           position={[0, currentSize + 0.5, 0]}
           fontSize={0.4}
@@ -195,12 +229,12 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
           outlineColor="#FFFFFF"
           font="/fonts/Inter-Medium.woff"
         >
-          {node.title.length > 20 ? node.title.substring(0, 20) + '...' : node.title}
+          {(node.title || '').length > 20 ? (node.title || '').substring(0, 20) + '...' : (node.title || '')}
         </Text>
       )}
 
-      {/* Icon sprite */}
-      {highQualityMode && (
+      {/* Icon sprite - disabled due to R3F compatibility */}
+      {/* {highQualityMode && (
         <sprite position={[0, currentSize * 0.7, currentSize * 0.7]} scale={[0.5, 0.5, 1]}>
           <spriteMaterial
             map={null} // In real implementation, this would be a texture with the icon
@@ -209,10 +243,10 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
             transparent
           />
         </sprite>
-      )}
+      )} */}
 
       {/* Connection count indicator */}
-      {node.connections.length > 5 && (
+      {(node.connections?.length || 0) > 5 && (
         <group position={[currentSize * 0.8, currentSize * 0.8, 0]}>
           <mesh>
             <sphereGeometry args={[0.3, 16, 8]} />
@@ -226,13 +260,13 @@ const SmartNodeRenderer: React.FC<SmartNodeRendererProps> = ({
             anchorX="center"
             anchorY="middle"
           >
-            {node.connections.length}
+            {node.connections?.length || 0}
           </Text> */}
         </group>
       )}
 
       {/* New node pulse animation */}
-      {node.metadata.isNew && (
+      {node.metadata?.isNew && (
         <mesh scale={[2, 2, 2]}>
           <sphereGeometry args={[currentSize, 16, 8]} />
           <meshBasicMaterial

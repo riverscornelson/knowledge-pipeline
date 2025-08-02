@@ -75,6 +75,7 @@ export enum IPCChannel {
   DRIVE_NEW_FILE_DETECTED = 'drive:newFileDetected',
   DRIVE_PROCESS_FILES = 'drive:processFiles',
   DRIVE_GET_PROCESSING_STATUS = 'drive:getProcessingStatus',
+  DRIVE_GET_NOTION_METADATA = 'drive:getNotionMetadata',
   
   // Graph 3D channels
   GRAPH_QUERY = 'graph:query',
@@ -148,6 +149,15 @@ export interface DriveFileMetadata {
   webContentLink?: string;
   parents?: string[];
   md5Checksum?: string;
+}
+
+export interface DriveFileWithNotionMetadata extends DriveFileMetadata {
+  notionMetadata?: {
+    pageId: string;
+    contentType?: string;
+    status?: string;
+    url?: string;
+  };
 }
 
 export interface DriveDownloadProgress {

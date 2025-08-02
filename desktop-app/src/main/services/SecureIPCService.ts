@@ -8,6 +8,7 @@ import {
   IPCChannel, 
   PipelineConfiguration, 
   DriveFileMetadata,
+  DriveFileWithNotionMetadata,
   DriveListOptions,
   DriveSearchOptions,
   DriveMonitoringOptions,
@@ -15,6 +16,9 @@ import {
 } from '../../shared/types';
 import { RateLimiter } from '../utils/RateLimiter';
 import { IPCSecurityValidator } from '../utils/IPCSecurityValidator';
+import { initializeDriveNotionHandlers, registerDriveNotionHandlers } from '../drive-notion-handlers';
+import { Graph3DIntegration } from '../graph3d-integration';
+import { DataIntegrationService } from './DataIntegrationService';
 
 interface SecureIPCMessage {
   nonce: string;
@@ -38,6 +42,9 @@ export class SecureIPCService {
   private allowedOrigins: Set<string>;
   private requestNonces: Map<string, number>;
   private driveMonitors: Map<string, string> = new Map(); // monitorId -> renderer processId
+  private graph3dIntegration: Graph3DIntegration | null = null;
+  private graph3dInitializationPromise: Promise<void> | null = null;
+  private graph3dInitialized: boolean = false;
   
   // Security configuration
   private readonly MESSAGE_TIMEOUT = 30000; // 30 seconds
@@ -63,6 +70,16 @@ export class SecureIPCService {
     
     // Set up nonce cleanup
     this.startNonceCleanup();
+    
+    // Initialize Drive-Notion handlers after config service is ready
+    configService.loadConfig().then(config => {
+      if (config) {
+        initializeDriveNotionHandlers(config);
+        this.initializeGraph3DIntegration(config);
+      }
+    }).catch(error => {
+      console.error('Failed to initialize Drive-Notion handlers:', error);
+    });
   }
   
   /**
@@ -72,6 +89,45 @@ export class SecureIPCService {
     this.sessionKey = crypto.randomBytes(32);
   }
   
+  /**
+   * Initialize Graph3D integration
+   */
+  private async initializeGraph3DIntegration(config: any): Promise<void> {
+    // If already initializing, wait for the existing promise
+    if (this.graph3dInitializationPromise) {
+      return this.graph3dInitializationPromise;
+    }
+    
+    // Create initialization promise
+    this.graph3dInitializationPromise = (async () => {
+      try {
+        if (this.graph3dIntegration) {
+          this.graph3dIntegration.destroy();
+        }
+        
+        this.graph3dIntegration = new Graph3DIntegration({
+          config,
+          mainWindow: this.mainWindow,
+          enableRealTimeUpdates: true,
+          performanceProfile: 'balanced'
+        });
+        
+        await this.graph3dIntegration.initialize();
+        this.graph3dInitialized = true;
+        console.log('Graph3D integration initialized successfully');
+        
+        // Notify renderer that Graph3D is ready
+        this.mainWindow.webContents.send('graph3d:ready', { initialized: true });
+      } catch (error) {
+        console.error('Failed to initialize Graph3D integration:', error);
+        this.graph3dInitialized = false;
+        throw error;
+      }
+    })();
+    
+    return this.graph3dInitializationPromise;
+  }
+
   /**
    * Start periodic nonce cleanup
    */
@@ -115,6 +171,16 @@ export class SecureIPCService {
     this.setupSecureHandler(IPCChannel.DRIVE_START_MONITORING, this.handleDriveStartMonitoring.bind(this));
     this.setupSecureHandler(IPCChannel.DRIVE_STOP_MONITORING, this.handleDriveStopMonitoring.bind(this));
     this.setupSecureHandler(IPCChannel.DRIVE_GET_FOLDER_ID, this.handleDriveGetFolderId.bind(this));
+    
+    // Register Drive-Notion integration handlers
+    registerDriveNotionHandlers();
+    
+    // Graph3D handlers
+    this.setupSecureHandler('graph3d:test', this.handleGraph3DTest.bind(this));
+    this.setupSecureHandler('graph3d:refresh', this.handleGraph3DRefresh.bind(this));
+    this.setupSecureHandler('graph3d:getData', this.handleGraph3DGetData.bind(this));
+    this.setupSecureHandler('graph3d:getMetrics', this.handleGraph3DGetMetrics.bind(this));
+    this.setupSecureHandler('graph3d:isReady', this.handleGraph3DIsReady.bind(this));
   }
   
   /**
@@ -124,37 +190,49 @@ export class SecureIPCService {
     channel: string,
     handler: (event: IpcMainInvokeEvent, data: any) => Promise<any>
   ): void {
-    ipcMain.handle(channel, async (event, message: SecureIPCMessage) => {
+    ipcMain.handle(channel, async (event, message: SecureIPCMessage | any) => {
       try {
         // Validate origin
         if (!this.isAllowedOrigin(event)) {
           throw new Error('Unauthorized origin');
         }
         
-        // Validate message structure
-        if (!this.isValidMessage(message)) {
-          throw new Error('Invalid message structure');
-        }
+        // Check if this is a secure message or a legacy direct call
+        let data: any;
+        let isSecure = false;
         
-        // Check message size
-        const messageSize = JSON.stringify(message).length;
-        if (messageSize > this.MAX_MESSAGE_SIZE) {
-          throw new Error('Message too large');
-        }
-        
-        // Validate timestamp
-        if (!this.isValidTimestamp(message.timestamp)) {
-          throw new Error('Invalid or expired timestamp');
-        }
-        
-        // Validate nonce
-        if (!this.isValidNonce(message.nonce)) {
-          throw new Error('Invalid or reused nonce');
-        }
-        
-        // Validate signature
-        if (!this.isValidSignature(message)) {
-          throw new Error('Invalid message signature');
+        if (this.isValidMessage(message)) {
+          // Handle secure message
+          isSecure = true;
+          
+          // Check message size
+          const messageSize = JSON.stringify(message).length;
+          if (messageSize > this.MAX_MESSAGE_SIZE) {
+            throw new Error('Message too large');
+          }
+          
+          // Validate timestamp
+          if (!this.isValidTimestamp(message.timestamp)) {
+            throw new Error('Invalid or expired timestamp');
+          }
+          
+          // Validate nonce
+          if (!this.isValidNonce(message.nonce)) {
+            throw new Error('Invalid or reused nonce');
+          }
+          
+          // Validate signature
+          if (!this.isValidSignature(message)) {
+            throw new Error('Invalid message signature');
+          }
+          
+          // Store nonce to prevent replay
+          this.requestNonces.set(message.nonce, Date.now());
+          
+          data = message.data;
+        } else {
+          // Handle legacy non-secure message for backward compatibility
+          data = message;
         }
         
         // Check rate limit
@@ -163,14 +241,11 @@ export class SecureIPCService {
           throw new Error('Rate limit exceeded');
         }
         
-        // Store nonce to prevent replay
-        this.requestNonces.set(message.nonce, Date.now());
-        
         // Execute handler with validated data
-        const result = await handler(event, message.data);
+        const result = await handler(event, data);
         
-        // Sign response
-        return this.createSecureResponse(result);
+        // Return secure response for secure requests, plain response for legacy
+        return isSecure ? this.createSecureResponse(result) : result;
       } catch (error) {
         console.error(`Secure IPC error on ${channel}:`, error);
         throw error;
@@ -314,6 +389,10 @@ export class SecureIPCService {
     const sanitizedConfig = this.securityValidator.sanitizeConfig(config);
     
     await this.configService.saveConfig(sanitizedConfig);
+    
+    // Initialize or reinitialize Graph3D integration with new config
+    await this.initializeGraph3DIntegration(sanitizedConfig);
+    
     return { success: true };
   }
   
@@ -378,6 +457,105 @@ export class SecureIPCService {
     }
     
     await this.configService.wipeAllCredentials();
+  }
+  
+  // Graph3D handlers
+  
+  private async handleGraph3DTest(event: IpcMainInvokeEvent, data: any): Promise<any> {
+    return { success: true, message: 'Graph3D handlers are registered!' };
+  }
+  
+  private async handleGraph3DRefresh(event: IpcMainInvokeEvent, data: any): Promise<any> {
+    try {
+      // Wait for initialization if needed
+      if (!this.graph3dInitialized || !this.graph3dIntegration) {
+        console.log('Graph3D not initialized, attempting lazy initialization...');
+        
+        // Try to load config and initialize
+        const config = await this.configService.loadConfig();
+        if (config) {
+          await this.initializeGraph3DIntegration(config);
+        } else {
+          throw new Error('No configuration available for Graph3D initialization');
+        }
+      }
+      
+      // Double-check after initialization attempt
+      if (!this.graph3dIntegration) {
+        throw new Error('Graph3D integration failed to initialize');
+      }
+      
+      const dataService = this.graph3dIntegration.getDataIntegrationService();
+      if (!dataService) {
+        throw new Error('DataIntegrationService not available');
+      }
+      
+      const graph = await dataService.refreshGraph();
+      return graph;
+    } catch (error) {
+      console.error('Failed to refresh graph:', error);
+      return null;
+    }
+  }
+  
+  private async handleGraph3DGetData(event: IpcMainInvokeEvent, data: any): Promise<any> {
+    try {
+      // Wait for initialization if needed
+      if (!this.graph3dInitialized || !this.graph3dIntegration) {
+        console.log('Graph3D not initialized, attempting lazy initialization...');
+        
+        // Try to load config and initialize
+        const config = await this.configService.loadConfig();
+        if (config) {
+          await this.initializeGraph3DIntegration(config);
+        } else {
+          throw new Error('No configuration available for Graph3D initialization');
+        }
+      }
+      
+      // Double-check after initialization attempt
+      if (!this.graph3dIntegration) {
+        throw new Error('Graph3D integration failed to initialize');
+      }
+      
+      const dataService = this.graph3dIntegration.getDataIntegrationService();
+      if (!dataService) {
+        throw new Error('DataIntegrationService not available');
+      }
+      
+      const graph = await dataService.transformToGraph();
+      return graph;
+    } catch (error) {
+      console.error('Failed to get graph data:', error);
+      return null;
+    }
+  }
+  
+  private async handleGraph3DGetMetrics(event: IpcMainInvokeEvent, data: any): Promise<any> {
+    try {
+      if (!this.graph3dIntegration) {
+        return null;
+      }
+      
+      const dataService = this.graph3dIntegration.getDataIntegrationService();
+      if (!dataService) {
+        return null;
+      }
+      
+      const metrics = dataService.getMetrics();
+      return metrics;
+    } catch (error) {
+      console.error('Failed to get metrics:', error);
+      return null;
+    }
+  }
+  
+  private async handleGraph3DIsReady(event: IpcMainInvokeEvent, data: any): Promise<any> {
+    return {
+      ready: this.graph3dInitialized,
+      hasIntegration: !!this.graph3dIntegration,
+      hasDataService: this.graph3dIntegration ? !!this.graph3dIntegration.getDataIntegrationService() : false
+    };
   }
   
   /**
@@ -543,6 +721,7 @@ export class SecureIPCService {
     }
   }
   
+  
   private async ensureDriveAuthenticated(): Promise<void> {
     try {
       // Try to authenticate if not already
@@ -577,5 +756,13 @@ export class SecureIPCService {
     
     // Clean up Google Drive service
     this.googleDriveService.cleanup();
+    
+    // Clean up Graph3D integration
+    if (this.graph3dIntegration) {
+      this.graph3dIntegration.destroy();
+      this.graph3dIntegration = null;
+      this.graph3dInitialized = false;
+      this.graph3dInitializationPromise = null;
+    }
   }
 }

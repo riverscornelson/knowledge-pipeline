@@ -80,9 +80,11 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
     
     return connections
       .filter(conn => {
-        const passes = conn.strength >= qualityThreshold;
+        // Default strength to 1 if not provided
+        const strength = conn.strength ?? 1;
+        const passes = strength >= qualityThreshold;
         if (!passes) {
-          console.log('Connection filtered out due to strength:', conn.strength, '<', qualityThreshold);
+          console.log('Connection filtered out due to strength:', strength, '<', qualityThreshold);
         }
         return passes;
       })
@@ -95,11 +97,24 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
           return null;
         }
 
+        const style = connectionStyles[conn.type] || connectionStyles.semantic;
+
         const isHighlighted = 
           selectedNodeIds.has(conn.source) || 
           selectedNodeIds.has(conn.target) ||
           conn.source === hoveredNodeId ||
           conn.target === hoveredNodeId;
+        
+        if (isHighlighted) {
+          console.log('Connection highlighted:', conn.source, '->', conn.target);
+          console.log('  - selectedNodeIds:', Array.from(selectedNodeIds));
+          console.log('  - hoveredNodeId:', hoveredNodeId);
+          console.log('  - Connection will be:', {
+            color: '#FFFF00',
+            opacity: 1,
+            width: style.width * 2.5
+          });
+        }
 
         const isInPath = highlightedPaths.some(path => {
           for (let i = 0; i < path.length - 1; i++) {
@@ -110,8 +125,6 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
           }
           return false;
         });
-
-        const style = connectionStyles[conn.type] || connectionStyles.semantic;
 
         // Calculate curved path for better visualization
         const midPoint = sourcePos.clone().add(targetPos).divideScalar(2);
@@ -125,6 +138,7 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
 
         return {
           ...conn,
+          strength: conn.strength ?? 1, // Default strength to 1
           sourcePos,
           targetPos,
           midPoint,
@@ -132,7 +146,7 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
           isHighlighted,
           isInPath,
           opacity: isHighlighted ? 1 : 0.9,
-          width: style.width * (isHighlighted ? 1.5 : 1),
+          width: style.width * (isHighlighted ? 2.5 : 1),
         };
       })
       .filter(Boolean);
@@ -185,19 +199,30 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
         
         return (
           <group key={conn.id}>
-            {/* Connection line - using cylinder mesh for visibility */}
-            <mesh position={center} quaternion={quaternion}>
-              <cylinderGeometry args={[width * 0.3, width * 0.3, distance, 8]} />
-              <meshBasicMaterial
-                color={isHighlighted ? '#FFD700' : style.color}
-                opacity={opacity}
+            {/* Simple line connection */}
+            <line>
+              <bufferGeometry>
+                <bufferAttribute
+                  attach="attributes-position"
+                  count={2}
+                  array={new Float32Array([
+                    sourcePos.x, sourcePos.y, sourcePos.z,
+                    targetPos.x, targetPos.y, targetPos.z
+                  ])}
+                  itemSize={3}
+                />
+              </bufferGeometry>
+              <lineBasicMaterial
+                color={isHighlighted ? '#FFFF00' : style.color}
+                linewidth={isHighlighted ? 5 : 2}
+                opacity={isHighlighted ? 1 : 0.8}
                 transparent
               />
-            </mesh>
+            </line>
 
             {/* Connection strength indicator */}
             {isHighlighted && conn.strength > 0.7 && (
-              <mesh position={midPoint}>
+              <mesh position={midPoint} raycast={() => null}>
                 <sphereGeometry args={[0.2, 16, 8]} />
                 <meshBasicMaterial 
                   color={style.color} 
@@ -231,6 +256,7 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
                     targetPos.y - sourcePos.y,
                     targetPos.x - sourcePos.x
                   )]}
+                  raycast={() => null}
                 >
                   <coneGeometry args={[0.3, 0.6, 8]} />
                   <meshBasicMaterial color={style.color} opacity={opacity} transparent />
@@ -253,8 +279,8 @@ const SemanticConnections: React.FC<SemanticConnectionsProps> = ({
         );
       })}
 
-      {/* Citation chain visualization */}
-      {citationChains.length > 0 && (
+      {/* Citation chain visualization - disabled due to NaN issues */}
+      {false && citationChains.length > 0 && (
         <group>
           {citationChains.map((chain, index) => (
             <Line
@@ -375,14 +401,31 @@ const RelationshipDensityOverlay: React.FC<{
 
 // Helper function to calculate bounds
 const calculateBounds = (nodes: GraphNode[]) => {
+  if (!nodes || nodes.length === 0) {
+    return {
+      min: new THREE.Vector3(0, 0, 0),
+      max: new THREE.Vector3(100, 100, 100)
+    };
+  }
+  
   const min = new THREE.Vector3(Infinity, Infinity, Infinity);
   const max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
   
   nodes.forEach(node => {
-    const pos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
-    min.min(pos);
-    max.max(pos);
+    if (node.position) {
+      const pos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
+      min.min(pos);
+      max.max(pos);
+    }
   });
+  
+  // Ensure we have valid bounds
+  if (!isFinite(min.x) || !isFinite(max.x)) {
+    return {
+      min: new THREE.Vector3(0, 0, 0),
+      max: new THREE.Vector3(100, 100, 100)
+    };
+  }
   
   return { min, max };
 };

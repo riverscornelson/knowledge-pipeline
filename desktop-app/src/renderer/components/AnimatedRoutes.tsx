@@ -4,8 +4,9 @@ import { AnimatePresence } from 'framer-motion';
 import Dashboard from '../screens/Dashboard';
 import Configuration from '../screens/Configuration';
 import Logs from '../screens/Logs';
-import SimplifiedDriveExplorer from '../screens/SimplifiedDriveExplorer';
+import DriveExplorer from '../screens/DriveExplorer';
 import KnowledgeGraph3D from '../screens/KnowledgeGraph3D';
+import { KnowledgeGraphWorkspace } from '../screens/KnowledgeGraphWorkspace';
 import { AnimatedPage } from './AnimatedPage';
 import { IPCChannel, PipelineStatus } from '../../shared/types';
 
@@ -50,7 +51,7 @@ export const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({
           path="/drive" 
           element={
             <AnimatedPage>
-              <SimplifiedDriveExplorer />
+              <DriveExplorer />
             </AnimatedPage>
           } 
         />
@@ -59,6 +60,14 @@ export const AnimatedRoutes: React.FC<AnimatedRoutesProps> = ({
           element={
             <AnimatedPage>
               <KnowledgeGraph3D />
+            </AnimatedPage>
+          } 
+        />
+        <Route 
+          path="/graph-workspace" 
+          element={
+            <AnimatedPage>
+              <KnowledgeGraphWorkspace />
             </AnimatedPage>
           } 
         />

@@ -69,7 +69,29 @@ const electronAPI = {
     // Google Drive integration placeholders
     listDriveFolders: async (parentId?: string) => [],
     searchDriveFiles: async (query: string) => [],
-    downloadDriveFile: async (fileId: string) => ''
+    downloadDriveFile: async (fileId: string) => '',
+    
+    // Google Drive API
+    drive: {
+      listFiles: (options: any) => ipcRenderer.invoke(IPCChannel.DRIVE_LIST_FILES, options),
+      downloadFile: (fileId: string, fileName: string) => 
+        ipcRenderer.invoke(IPCChannel.DRIVE_DOWNLOAD_FILE, { fileId, fileName }),
+      searchFiles: (options: any) => ipcRenderer.invoke(IPCChannel.DRIVE_SEARCH_FILES, options),
+      startMonitoring: (options: any) => ipcRenderer.invoke(IPCChannel.DRIVE_START_MONITORING, options),
+      stopMonitoring: (monitorId: string) => ipcRenderer.invoke(IPCChannel.DRIVE_STOP_MONITORING, monitorId),
+      getFolderIdByName: (folderName: string, parentId?: string) => 
+        ipcRenderer.invoke(IPCChannel.DRIVE_GET_FOLDER_ID, { folderName, parentId }),
+      onDownloadProgress: (callback: (progress: any) => void) => {
+        const handler = (_: any, progress: any) => callback(progress);
+        ipcRenderer.on(IPCChannel.DRIVE_DOWNLOAD_PROGRESS, handler);
+        return () => ipcRenderer.removeListener(IPCChannel.DRIVE_DOWNLOAD_PROGRESS, handler);
+      },
+      onNewFileDetected: (callback: (file: any) => void) => {
+        const handler = (_: any, file: any) => callback(file);
+        ipcRenderer.on(IPCChannel.DRIVE_NEW_FILE_DETECTED, handler);
+        return () => ipcRenderer.removeListener(IPCChannel.DRIVE_NEW_FILE_DETECTED, handler);
+      }
+    }
   };
   
   // Expose in main world
@@ -162,6 +184,16 @@ declare global {
       listDriveFolders: (parentId?: string) => Promise<any[]>;
       searchDriveFiles: (query: string) => Promise<any[]>;
       downloadDriveFile: (fileId: string) => Promise<string>;
+      drive: {
+        listFiles: (options: any) => Promise<any[]>;
+        downloadFile: (fileId: string, fileName: string) => Promise<string>;
+        searchFiles: (options: any) => Promise<any[]>;
+        startMonitoring: (options: any) => Promise<string>;
+        stopMonitoring: (monitorId: string) => Promise<void>;
+        getFolderIdByName: (folderName: string, parentId?: string) => Promise<string | null>;
+        onDownloadProgress: (callback: (progress: any) => void) => () => void;
+        onNewFileDetected: (callback: (file: any) => void) => () => void;
+      };
     };
   }
 }

@@ -38,13 +38,15 @@ const detectClusters = (nodes: GraphNode[]): ClusterData[] => {
       if (visited.has(otherNode.id)) return;
 
       // Check semantic similarity (simplified)
-      const sharedTags = node.metadata.tags.filter(tag => 
-        otherNode.metadata.tags.includes(tag)
+      const nodeTags = node.metadata?.tags || [];
+      const otherNodeTags = otherNode.metadata?.tags || [];
+      const sharedTags = nodeTags.filter(tag => 
+        otherNodeTags.includes(tag)
       );
       
       const typeMatch = node.type === otherNode.type;
       const qualityMatch = Math.abs(
-        node.metadata.qualityScore - otherNode.metadata.qualityScore
+        (node.metadata?.qualityScore || 0) - (otherNode.metadata?.qualityScore || 0)
       ) < 20;
 
       if (sharedTags.length > 2 || (typeMatch && qualityMatch)) {
@@ -62,8 +64,8 @@ const detectClusters = (nodes: GraphNode[]): ClusterData[] => {
 
       cluster.forEach((n) => {
         centroid.add(new THREE.Vector3(n.position.x, n.position.y, n.position.z));
-        n.metadata.tags.forEach(tag => allTags.add(tag));
-        totalQuality += n.metadata.qualityScore;
+        (n.metadata?.tags || []).forEach(tag => allTags.add(tag));
+        totalQuality += n.metadata?.qualityScore || 0;
         typeCount[n.type] = (typeCount[n.type] || 0) + 1;
       });
 
@@ -147,7 +149,7 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
           <group key={cluster.id}>
             {/* Cluster boundary sphere */}
             <mesh
-              position={cluster.center}
+              position={[cluster.center.x, cluster.center.y, cluster.center.z]}
               onClick={() => {
                 handleClusterToggle(cluster.id);
                 onClusterClick?.(cluster);
@@ -165,21 +167,25 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
               />
             </mesh>
 
-            {/* Cluster boundary ring */}
-            <Line
-              points={generateCirclePoints(cluster.center, cluster.radius, 64)}
+            {/* Cluster boundary ring - disabled due to NaN errors */}
+            {/* <Line
+              points={generateCirclePoints(
+                [cluster.center.x, cluster.center.y, cluster.center.z], 
+                cluster.radius, 
+                64
+              )}
               color={cluster.color}
               lineWidth={2}
               transparent
               opacity={0.6}
-            />
+            /> */}
 
             {/* Cluster label - disabled due to CSP */}
             {/* <Text
               position={[
-                cluster.center[0],
-                cluster.center[1] + cluster.radius + 1,
-                cluster.center[2],
+                cluster.center.x,
+                cluster.center.y + cluster.radius + 1,
+                cluster.center.z,
               ]}
               fontSize={0.8}
               color={cluster.color}
@@ -193,15 +199,15 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
 
             {/* Cluster summary */}
             {!isExpanded && (
-              <group position={cluster.center}>
-                {/* Summary icon */}
-                <sprite scale={[2, 2, 1]}>
+              <group position={[cluster.center.x, cluster.center.y, cluster.center.z]}>
+                {/* Summary icon - disabled due to R3F compatibility */}
+                {/* <sprite scale={[2, 2, 1]}>
                   <spriteMaterial
                     color={cluster.color}
                     opacity={0.8}
                     transparent
                   />
-                </sprite>
+                </sprite> */}
 
                 {/* Quality indicator - disabled due to CSP */}
                 {/* <Text
@@ -239,7 +245,7 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
 
             {/* Collapsed state: show aggregated node */}
             {!isExpanded && (
-              <mesh position={cluster.center}>
+              <mesh position={[cluster.center.x, cluster.center.y, cluster.center.z]}>
                 <sphereGeometry args={[1.5, 32, 16]} />
                 <meshPhysicalMaterial
                   color={cluster.color}
@@ -256,7 +262,9 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
               <group>
                 {cluster.memberNodes.map((node, i) => {
                   const nextNode = cluster.memberNodes[(i + 1) % cluster.memberNodes.length];
-                  return (
+                  // Disabled Line due to NaN errors
+                  return null;
+                  /* return (
                     <Line
                       key={`${node.id}-${nextNode.id}`}
                       points={[[node.position.x, node.position.y, node.position.z], [nextNode.position.x, nextNode.position.y, nextNode.position.z]]}
@@ -269,7 +277,7 @@ const IntelligentClustering: React.FC<IntelligentClusteringProps> = ({
                       dashSize={3}
                       gapSize={1}
                     />
-                  );
+                  ); */
                 })}
               </group>
             )}
