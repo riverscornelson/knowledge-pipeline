@@ -1,0 +1,321 @@
+# Knowledge Pipeline - Technical Introduction
+
+## Overview
+
+The Knowledge Pipeline is a desktop application that synchronizes PDF documents between Google Drive and Notion, enriches them using AI, and provides a visual knowledge graph for exploring relationships between documents. The application serves as a bridge between raw document storage (Google Drive) and enriched knowledge management (Notion).
+
+## Technology Stack Requirements
+
+### Core Technologies
+
+### Desktop Framework
+
+- Rust-first application and technology stack, needs to be possible for a non-technical user to leverage on a Macbook with a 15 minute installation process.
+
+### Data Visualization
+
+- **Cytoscape.js** - Primary library for knowledge graph visualization
+
+### Backend & APIs
+
+- **Google Drive API** - For document synchronization
+- **Notion API** - For database and page management
+    - Needs to scale to 10,000 plus possible records and multiple databases with the same schema to cover different time periods.
+- **OpenAI APIs** - For AI enrichment capabilities using LLMs. If web search is required for a prompt, use the OOTB web search with o3 implementation pattern introduced by the Responses API.
+
+### Data Management
+
+- **SQLite or NoSQL, simplest database possible** - Local database for caching and application state
+
+### Development Tools
+
+- Rust
+- Current pipeline is in Python but should be repackaged to Rust - the pipeline runs with cli command “python scripts/run_pipeline.py”.
+
+### Architecture Constraints
+
+1. **Single Package Distribution**
+    - The application must be possible to distribute as a single executable
+    - All dependencies must be bundled within the app
+    - No external runtime requirements for end users beyond proper configuration of access.
+2. **Local-First Design**
+    - All processing happens locally on the user's machine, with the exception of LLM procesing which we will access via an API
+    - Cache Notion data locally to minimize API calls
+    - Queue system for handling API rate limits gracefully
+3. **Simple Installation**
+    - One-click installer for Windows/Mac/Linux
+    - Auto-update capability built-in
+    - Configuration stored in user's home directory
+4. **Performance Requirements**
+    - Knowledge graph must handle 1000+ nodes smoothly
+    - Incremental sync to respect API rate limits
+    - Background processing for AI enrichment
+
+### Key Design Principles
+
+1. **Minimal UI Development**
+    - Leverage native Notion and Google Drive UIs where possible
+    - Only build essential pipeline management interfaces
+    - Focus on the "Run Pipeline" control panel and Knowledge Graph
+2. **API-First Integration**
+    - All external services accessed via official APIs
+    - Proper error handling and retry mechanisms
+    - Clear status indicators for sync operations
+3. **Non-Technical User Focus**
+    - No command line interaction required
+    - Visual status indicators and progress tracking
+    - Clear error messages with actionable steps
+
+## Implementation Phases
+
+### Phase 1: Core Infrastructure
+
+- Electron app setup with React
+- Basic authentication flow for Google Drive and Notion
+- SQLite database schema for caching
+
+### Phase 2: Synchronization Engine
+
+- Google Drive monitoring and PDF detection
+- Notion database creation and duplicate detection
+- Status tracking system (Inbox → Enriched → Failed)
+
+### Phase 3: Pipeline Interface
+
+- "Run Pipeline" page with swimlane visualization
+- Real-time status updates
+- Batch processing controls
+- Prompts are defined in Notion database (different Notion DB ID than the one that we are writing to).
+
+### Phase 4: Knowledge Graph
+
+- Cytoscape.js integration
+- Node and edge generation from cached data
+- Interactive features (search, filter, layout options)
+
+### Phase 5: Polish & Distribution
+
+- Electron packaging and code signing
+- Auto-update implementation
+- Performance optimization
+
+## Development Environment Setup
+
+bash
+
+`*# Required global tools*
+npm install -g electron electron-builder
+
+*# Project structure*
+knowledge-pipeline/
+├── src/
+│   ├── main/           *# Electron main process*
+│   ├── renderer/       *# React frontend*
+│   ├── services/       *# API integrations*
+│   └── database/       *# SQLite schemas*
+├── scripts/
+│   └── run_pipeline.py *# Existing pipeline script*
+└── build/              *# Electron build configs*`
+
+## Security Considerations
+
+- API keys stored in system keychain (not in .env files)
+- OAuth2 flow for Google Drive authentication
+- Secure storage of Notion integration token
+- No sensitive data in application logs
+
+Functional Description
+
+Google Drive is used to store raw PDFs and also serves as the intake - net new entries to the Drive folder become net new entries in the Notion Sources database right when the pipeline starts, before any AI is used, based on duplicate detection based on the Drive URL that is in Notion / natively created in Drive.
+
+Notion is used to store enriched content, in addition to metadata like the full raw content sent to AI models, and the prompts that were used to build the enriched content on the Notion page.
+
+1:1 relationship between Google Drive PDFs and Notion database entries, and the Notion database entries will be in Status = Inbox, Status = Failed, or Status = Enriched.
+
+There will be a “Run Pipeline” page that shows data about the status of synchronization between Notion and Drive, and has swminlanes with cards that flow from different statuses:
+
+- In Drive, Not in Notion
+- In Drive and Notion, Inbox
+- In Drive and Notion, Enriched
+- In Drive and Notion, Failed
+
+Each swimlane should show top ten records with the ability to “show ten more”, and have links to Drive / Notion if people want to view the records in full, we want to use the Drive and Notion UIs as much as possible and only create what is needed to Run the pipeline successfully as a non-technical user. 
+
+There will be a Knowledge Graph page with the below appearance, this is meant to help users search among their Notion content for things that might be related to each other.
+
+![image.png](attachment:9e4806cd-9e0c-469a-9eb7-3266512c617d:image.png)
+
+We will use Cytoscape.js as the visualization library, and the visualization will be rendered based on data that the application prepares based on a Cache of the latest from the Notion API. For speed, we should cache what we need from Notion and only make incremental updates to the cache based on what has changed in order to respect Notion API rate limits. So we will need a cache database structure that integrates well with Cytoscape.js to make the, plus the documents tab, performant as implemented.
+
+Logs page is easy, I just want to display exactly what the pipeline logs show when scripts/run_pipeline.py is triggered in the terminal, and I want the Configuration file to work as the reading location of all values that we are currently setting in .env.
+
+## Notion Sources Database Structure - **Integration between your Notion Sources database and Cytoscape.js:**
+
+Below is what an entry in my Notion Sources database looks like once the pipeline enrichment is complete:
+
+![image.png](attachment:1119d51f-91b2-4d44-bb86-3e84b94fe502:image.png)
+
+Below is what the “Knowledge-Base” file in Google Drive looks like:
+
+![image.png](attachment:79d1aa14-8d38-4109-8822-b1b95ba21021:image.png)
+
+### Current Fields in Your Sources Database:
+
+1. **Title** (title) - Document/source name
+2. **Vendor** (select) - Source organization/company
+3. **Drive URL** (url) - Link to source document
+4. **Content-Type** (select) - Type of content (Research, Thought Leadership, etc.)
+5. **AI-Primitive** (multi_select) - AI use cases/capabilities
+6. **Created Date** (date) - When the source was created
+7. **Topical-Tags** (multi_select) - Topic-based tags
+8. **Domain-Tags** (multi_select) - Industry/domain categories
+9. **Status** (select) - Processing status
+10. **Hash** (rich_text) - Document hash/fingerprint
+
+### Page Content Structure:
+
+Each Source page contains:
+
+- Metadata blocks with AI processing information
+- Performance metrics
+- Content summaries and insights
+- Referenced relationships to other sources
+
+## Cytoscape.js Integration Design
+
+### 1. **Node Data Model**
+
+Each Notion Source page becomes a node with these properties:
+
+```jsx
+{
+  id: 'page_id',
+  data: {
+    id: 'notion_page_id',
+    label: 'title',
+    vendor: 'vendor_name',
+    contentType: 'content_type',
+    aiPrimitives: ['array', 'of', 'primitives'],
+    topicalTags: ['array', 'of', 'tags'],
+    domainTags: ['array', 'of', 'domains'],
+    status: 'status',
+    createdDate: 'date',
+    driveUrl: 'url',
+    // Node styling based on content type or domain
+    nodeColor: determineColorByContentType(),
+    nodeSize: calculateSizeByImportance()
+  }
+}
+
+```
+
+### 2. **Edge Generation Strategy**
+
+Create edges based on:
+
+- **Shared Tags**: Connect nodes with common topical/domain tags
+- **Vendor Relationships**: Link documents from the same vendor
+- **Temporal Proximity**: Connect documents created within similar timeframes (week-basis)
+- **AI Primitive Overlap**: Connect sources addressing similar AI capabilities
+
+### 3. **Graph Layout Options**
+
+Support the below visualization options:
+
+- **Force-directed layout** for organic clustering
+- **Concentric layout** with high-value nodes at center
+- **Hierarchical layout** by date or vendor
+
+### 4. **Integration Architecture**
+
+```jsx
+// Notion API Integration
+class NotionSourcesIntegration {
+  async fetchAllSources() {
+    // Query Notion database with pagination
+    // Transform to Cytoscape node format
+  }
+
+  async fetchSourceDetails(pageId) {
+    // Get full page content including blocks
+    // Extract relationships and metadata
+  }
+
+  generateEdges(nodes) {
+    // Calculate relationships based on:
+    // - Tag similarity (Jaccard index)
+    // - Vendor connections
+    // - Temporal clustering
+    // - Content references
+  }
+}
+
+// Cytoscape Configuration
+const cytoscapeConfig = {
+  container: document.getElementById('cy'),
+
+  style: [
+    {
+      selector: 'node',
+      style: {
+        'background-color': 'data(nodeColor)',
+        'label': 'data(label)',
+        'width': 'data(nodeSize)',
+        'height': 'data(nodeSize)',
+        'text-valign': 'center',
+        'text-halign': 'center',
+        'font-size': '12px',
+        'text-wrap': 'wrap',
+        'text-max-width': '100px'
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 3,
+        'line-color': '#ccc',
+        'target-arrow-color': '#ccc',
+        'target-arrow-shape': 'triangle',
+        'curve-style': 'bezier'
+      }
+    }
+  ],
+
+  layout: {
+    name: 'cose',
+    idealEdgeLength: 100,
+    nodeOverlap: 20,
+    refresh: 20,
+    fit: true,
+    padding: 30
+  }
+};
+
+```
+
+### 5. **Interactive Features**
+
+1. **Node Click**: Display full source details in right panel
+2. **Node Hover**: Show quick preview with key metadata
+3. **Edge Hover**: Display relationship strength/type
+4. **Search/Filter**:
+    - By vendor, content type, tags
+    - By date range
+    - By AI primitive
+5. **Layout Toggle**: Switch between different graph layouts
+6. **Zoom Controls**: Navigate large knowledge graphs
+7. **Export**: Save graph state or export to image
+
+### 6. **Right Panel Document View**
+
+When a node is selected, display:
+
+- Document title and metadata
+- Direct link to Notion page
+- Drive URL for original document
+- All tags and categories
+- AI processing metrics
+- Related documents (connected nodes)
+- Quick actions (edit in Notion, view source)
+
+This design will create a powerful knowledge graph that visualizes the relationships between your sources, making it easy to discover connections and navigate your knowledge base. The graph will automatically update as you add new sources to Notion, maintaining a living representation of your information architecture.
