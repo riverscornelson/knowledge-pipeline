@@ -210,8 +210,3 @@ claude-flow.bat
 claude-flow.ps1
 hive-mind-prompt-*.txt
 
-# Desktop App
-desktop-app/node_modules/
-desktop-app/.webpack/
-desktop-app/dist/
-desktop-app/out/

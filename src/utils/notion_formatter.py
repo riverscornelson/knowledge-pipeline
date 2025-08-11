@@ -4,7 +4,7 @@ Implements the formatting improvements to solve the "wall of text" problem.
 """
 import re
 from typing import List, Dict, Any, Optional, Tuple
-from ..utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 class NotionFormatter:

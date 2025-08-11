@@ -6,19 +6,19 @@ import os
 import time
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
-from ..core.config import PipelineConfig
-from ..core.models import SourceContent, EnrichmentResult, ContentStatus
-from ..core.notion_client import NotionClient
-from ..utils.logging import setup_logger
+from core.config import PipelineConfig
+from core.models import SourceContent, EnrichmentResult, ContentStatus
+from core.notion_client import NotionClient
+from utils.logging import setup_logger
 from .advanced_classifier import AdvancedContentClassifier
 from .enhanced_summarizer import EnhancedContentSummarizer
 from .enhanced_insights import EnhancedInsightsGenerator
 from .content_tagger import ContentTagger
-from ..utils.notion_formatter import NotionFormatter  # Enhanced formatting
-from ..core.prompt_config import PromptConfig
-from ..core.prompt_config_enhanced import EnhancedPromptConfig
+from utils.notion_formatter import NotionFormatter  # Enhanced formatting
+from core.prompt_config import PromptConfig
+from core.prompt_config_enhanced import EnhancedPromptConfig
 # Import enhanced attribution formatter later to avoid circular import
-from ..drive.pdf_processor import PDFProcessor
+from drive.pdf_processor import PDFProcessor
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import re
@@ -50,7 +50,7 @@ class PipelineProcessor:
         
         # Initialize enhanced attribution formatter (import here to avoid circular import)
         try:
-            from ..formatters.enhanced_attribution_formatter import EnhancedAttributionFormatter
+            from formatters.enhanced_attribution_formatter import EnhancedAttributionFormatter
             self.attribution_formatter = EnhancedAttributionFormatter(prompt_config=self.prompt_config)
         except ImportError:
             self.logger.warning("Enhanced attribution formatter not available")

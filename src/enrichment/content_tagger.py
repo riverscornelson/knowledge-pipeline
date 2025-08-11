@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from ..core.config import PipelineConfig
-from ..core.prompt_config import PromptConfig
-from ..core.notion_client import NotionClient
+from core.config import PipelineConfig
+from core.prompt_config import PromptConfig
+from core.notion_client import NotionClient
 from .base_analyzer import BaseAnalyzer
 
 

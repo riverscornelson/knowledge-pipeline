@@ -2,10 +2,10 @@
 Enhanced insights generator with full advanced capabilities, prompt configuration and web search support.
 """
 from typing import Optional, List, Dict, Any
-from ..core.config import PipelineConfig
-from ..core.prompt_config import PromptConfig
+from core.config import PipelineConfig
+from core.prompt_config import PromptConfig
 from .base_analyzer import BaseAnalyzer
-from ..utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 class EnhancedInsightsGenerator(BaseAnalyzer):

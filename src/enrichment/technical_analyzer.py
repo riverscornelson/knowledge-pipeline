@@ -1,8 +1,8 @@
 """Technical analysis for knowledge content."""
 
 from typing import Dict, Any, Optional
-from ..core.config import PipelineConfig
-from ..core.prompt_config import PromptConfig
+from core.config import PipelineConfig
+from core.prompt_config import PromptConfig
 from .base_analyzer import BaseAnalyzer
 
 

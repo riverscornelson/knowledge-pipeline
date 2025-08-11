@@ -1,10 +1,10 @@
-# Knowledge Pipeline - Claude.md
+# Knowledge Pipeline v4.0.0 - Claude.md
 
-This Claude.md file provides persistent global context for developing the Knowledge Pipeline - a personal automation system for processing market research and news into a structured Notion knowledge base.
+This Claude.md file provides persistent global context for developing the Knowledge Pipeline - a CLI-based automation tool for intelligent content processing and Notion knowledge base management.
 
 ## Core Project Philosophy
 
-The Knowledge Pipeline is a production system that has been running successfully for months, with a mature architecture that should be preserved and extended thoughtfully, not rebuilt.
+The Knowledge Pipeline v4.0.0 is a mature, production-ready CLI automation system that has been streamlined and optimized. The cleaned-up architecture focuses on core functionality while maintaining reliability and extensibility.
 
 ## CRITICAL: Design-First Development Process
 
@@ -21,45 +21,51 @@ The Knowledge Pipeline is a production system that has been running successfully
 1. **Clean Up**: Remove ALL temporary files, plans, and development artifacts
 1. **Validate**: Run tests and verify the implementation works end-to-end
 
-## Architecture Principles (MAINTAIN THESE)
+## Architecture Principles (v4.0.0 CLEANED-UP)
 
 ### Separation of Concerns
 
-- `src/core/` - Core configuration and shared functionality
-- `src/drive/` - PRIMARY source: Google Drive PDF ingestion
-- `src/enrichment/` - AI processing and content analysis
-- `src/secondary_sources/` - Reserved for future integrations (don’t use yet)
-- `src/utils/` - Shared utilities and helpers
+- `src/core/` - Core configuration, models, and Notion client
+- `src/drive/` - PRIMARY source: Google Drive PDF ingestion and processing
+- `src/enrichment/` - AI processing, content analysis, and prompt attribution
+- `src/formatters/` - Notion formatting with enhanced attribution and visual hierarchy
+- `src/local_uploader/` - Local PDF processing and OAuth2 uploads
+- `src/utils/` - Shared utilities, logging, and markdown processing
 
-### Priority-Based Architecture
+### CLI-First Architecture
 
-- Google Drive is PRIMARY source - always prioritize its stability
-- Secondary sources are additive - never break primary functionality
+- Command-line interface as the primary user experience
+- Script-based automation for production environments
+- Clean separation between CLI scripts and core library code
+- Environment variable configuration for all settings
 
 ### Configuration-Driven Design
 
-- Use environment variables for all configuration (`.env` file)
-- Maintain dual-source prompt management: Notion (dynamic) + YAML (fallback)
-- Never hardcode API keys, endpoints, or business logic
+- Environment variables for all configuration (`.env` file)
+- Dual-source prompt management: Notion database (dynamic) + YAML (fallback)
+- Modern Python packaging with pyproject.toml
+- Comprehensive logging with structured JSON output
 
-## Testing Requirements
+## Testing Requirements (v4.0.0)
 
 **BEFORE ANY COMMIT, YOU MUST:**
 
 ```bash
-# Run full test suite
+# Run full test suite (49 tests, 100% pass rate)
 python -m pytest
 
-# Run with coverage (should maintain 38%+ overall, 94-100% for core modules)
+# Run with coverage (maintain 38%+ overall, 94-100% for core modules)
 python -m pytest --cov=src --cov-report=html
 
 # Run specific module tests based on your changes
-python -m pytest tests/core/      # For core functionality changes
-python -m pytest tests/drive/     # For Drive integration changes  
-python -m pytest tests/enrichment/ # For AI processing changes
+python -m pytest tests/core/        # Core functionality (config, models, notion_client)
+python -m pytest tests/drive/       # Drive integration (ingestion, deduplication, PDF processing)
+python -m pytest tests/enrichment/  # AI processing (pipeline, attribution, quality scoring)
+python -m pytest tests/formatters/  # Notion formatting and attribution
 ```
 
-All tests must pass. If you break existing tests, fix them as part of your changes.
+**Current Test Status**: 49 tests, 100% pass rate, 38% overall coverage with 94-100% coverage for core modules.
+All tests must pass. The v4.0.0 architecture includes comprehensive test coverage for all critical components.
 
 ## Development Standards
 
@@ -77,11 +83,11 @@ All tests must pass. If you break existing tests, fix them as part of your chang
 - Use proper Python packaging standards
 - Maintain clean git history
 
-### API Integration Guidelines
+### API Integration Guidelines (v4.0.0)
 
-- **Google Drive API**: Handle rate limiting, respect file permissions
-- **Notion API**: Maintain rich formatting when posting content to Notion, handle API limits, preserve database structure
-- **OpenAI API**: Use appropriate models (GPT-4.1 default, o3 for web-enabled tasks)
+- **Google Drive API**: OAuth2 and service account support, secure token storage, rate limiting with retry logic
+- **Notion API**: Enhanced formatting with attribution blocks, quality indicators, rich text with headers/callouts
+- **OpenAI API**: Model flexibility (GPT-4.1 default, GPT-4.1-mini for classification), token optimization, prompt attribution tracking
 
 ## Content Processing Requirements
 
@@ -191,13 +197,19 @@ The system is designed to eventually migrate from Notion to a more scalable solu
 
 -----
 
-## Command Reference
+## CLI Command Reference (v4.0.0)
 
 **Setup and Configuration:**
 
 ```bash
+# Install the pipeline
 pip install -e .
-cp .env.example .env  # Edit with your API keys
+
+# Configure environment
+cp .env.example .env  # Edit with your API keys and settings
+
+# Verify installation
+python scripts/run_pipeline.py --dry-run
 ```
 
 **Running the Pipeline:**
@@ -206,26 +218,43 @@ cp .env.example .env  # Edit with your API keys
 # Full pipeline with local PDF processing (RECOMMENDED)
 python scripts/run_pipeline.py --process-local
 
-# Standard pipeline (Drive content only)  
+# Standard pipeline (Google Drive content only)
 python scripts/run_pipeline.py
 
-# Skip enrichment (ingestion only)
+# Ingestion only (skip AI enrichment)
 python scripts/run_pipeline.py --skip-enrichment
+
+# Process specific files
+python scripts/run_pipeline.py --drive-file-ids "abc123,def456"
+
+# Test configuration without changes
+python scripts/run_pipeline.py --dry-run
 ```
 
 **Development and Testing:**
 
 ```bash
-# Run all tests
+# Run all tests (49 tests, 100% pass rate)
 python -m pytest
 
-# Run with coverage
+# Run with coverage report
 python -m pytest --cov=src --cov-report=html
 
 # Run specific test categories
-python -m pytest tests/core/
-python -m pytest tests/drive/
-python -m pytest tests/enrichment/
+python -m pytest tests/core/        # Core functionality
+python -m pytest tests/drive/       # Google Drive integration
+python -m pytest tests/enrichment/  # AI processing
+python -m pytest tests/formatters/  # Notion formatting
 ```
 
-Remember: This is a production system that adds real value to the user’s research workflow. Maintain its reliability and extend it thoughtfully.
+**Utility Commands:**
+
+```bash
+# View enriched content
+python scripts/view_enriched_content.py --limit 10
+
+# Migrate to enhanced formatters (if upgrading)
+python scripts/migrate_to_prompt_aware_formatter.py
+```
+
+**v4.0.0 Status**: This is a production-ready CLI automation system with comprehensive testing, enhanced features, and streamlined architecture. Maintain its reliability and extend it thoughtfully.

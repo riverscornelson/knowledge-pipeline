@@ -38,22 +38,28 @@ class TestPromptConfig:
     
     def test_environment_variable_override(self):
         """Test environment variable overrides for web search."""
-        config = PromptConfig()
-        
-        # Set environment variable
+        # Set environment variables - need to enable global web search first
+        os.environ["ENABLE_WEB_SEARCH"] = "true"
         os.environ["SUMMARIZER_WEB_SEARCH"] = "true"
         
         try:
+            # Create new config to pick up env vars
+            config = PromptConfig()
             prompt_config = config.get_prompt("summarizer")
+            # Environment variable should override YAML config when global is enabled
             assert prompt_config["web_search"] is True
             
             # Test with global web search disabled
             config.web_search_enabled = False
             prompt_config = config.get_prompt("summarizer")
+            # Global setting should override env var when explicitly disabled
             assert prompt_config["web_search"] is False
             
         finally:
-            del os.environ["SUMMARIZER_WEB_SEARCH"]
+            # Clean up environment variables
+            for var in ["ENABLE_WEB_SEARCH", "SUMMARIZER_WEB_SEARCH"]:
+                if var in os.environ:
+                    del os.environ[var]
     
     def test_analyzer_enabled_check(self):
         """Test checking if analyzers are enabled."""

@@ -22,9 +22,9 @@ from typing import Dict, List, Optional, Any, Tuple, Set
 from dataclasses import dataclass, field
 from uuid import uuid4
 from collections import defaultdict
-from ..core.config import PipelineConfig
-from ..core.notion_client import NotionClient
-from ..utils.logging import setup_logger
+from core.config import PipelineConfig
+from core.notion_client import NotionClient
+from utils.logging import setup_logger
 from notion_client import Client
 
 

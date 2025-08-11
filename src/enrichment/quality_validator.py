@@ -6,7 +6,7 @@ import json
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
-from ..utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 @dataclass

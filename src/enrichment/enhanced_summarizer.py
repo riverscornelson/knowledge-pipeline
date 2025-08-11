@@ -2,10 +2,10 @@
 Enhanced content summarizer with full advanced capabilities, prompt configuration and web search support.
 """
 from typing import Optional, Dict, Any, List
-from ..core.config import PipelineConfig
-from ..core.prompt_config import PromptConfig
+from core.config import PipelineConfig
+from core.prompt_config import PromptConfig
 from .base_analyzer import BaseAnalyzer
-from ..utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 class EnhancedContentSummarizer(BaseAnalyzer):

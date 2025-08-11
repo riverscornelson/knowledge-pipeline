@@ -4,15 +4,15 @@ Provides seamless transition from the old formatting system to the new one.
 """
 from typing import Dict, Any, List, Optional
 from datetime import datetime
-from ..enrichment.pipeline_processor import PipelineProcessor
-from ..core.models import EnrichmentResult
+from enrichment.pipeline_processor import PipelineProcessor
+from core.models import EnrichmentResult
 from .prompt_aware_notion_formatter import (
     PromptAwareNotionFormatter, 
     PromptMetadata, 
     TrackedAnalyzerResult
 )
 from .enhanced_attribution_formatter import EnhancedAttributionFormatter
-from ..utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 class FormatterIntegration:

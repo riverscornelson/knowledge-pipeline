@@ -6,7 +6,7 @@ import yaml
 from typing import Dict, Any, Optional
 from pathlib import Path
 from dotenv import load_dotenv
-from ..utils.logging import setup_logger
+from utils.logging import setup_logger
 
 # Ensure environment variables are loaded
 load_dotenv()

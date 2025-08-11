@@ -6,8 +6,8 @@ import re
 from typing import List, Dict, Any, Optional, Tuple, Set
 from dataclasses import dataclass
 from datetime import datetime
-from ..utils.logging import setup_logger
-from ..core.notion_client import NotionClient
+from utils.logging import setup_logger
+from core.notion_client import NotionClient
 
 
 @dataclass

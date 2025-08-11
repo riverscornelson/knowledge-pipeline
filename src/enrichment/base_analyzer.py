@@ -6,9 +6,9 @@ from typing import Dict, Any, Optional
 import os
 from urllib.parse import urlparse
 from openai import OpenAI
-from ..core.config import PipelineConfig
-from ..core.prompt_config import PromptConfig
-from ..utils.logging import setup_logger
+from core.config import PipelineConfig
+from core.prompt_config import PromptConfig
+from utils.logging import setup_logger
 
 
 class BaseAnalyzer(ABC):

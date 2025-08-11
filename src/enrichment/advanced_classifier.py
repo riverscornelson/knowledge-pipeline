@@ -4,8 +4,8 @@ Advanced content classification using sophisticated multi-step reasoning.
 import json
 from typing import Dict, List, Any, Optional, Tuple
 from openai import OpenAI
-from ..core.config import OpenAIConfig
-from ..utils.logging import setup_logger
+from core.config import OpenAIConfig
+from utils.logging import setup_logger
 
 
 class AdvancedContentClassifier:

@@ -6,7 +6,7 @@ import io
 import re
 from typing import Optional, Set, Tuple, Dict, Any
 from googleapiclient.http import MediaIoBaseDownload
-from ..utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 class DeduplicationService:

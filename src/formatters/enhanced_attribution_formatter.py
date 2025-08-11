@@ -3,7 +3,7 @@ Enhanced attribution formatter that properly scales quality scores and shows Not
 """
 from typing import Dict, List, Any, Optional, Tuple, Union
 from datetime import datetime
-from ..utils.logging import setup_logger
+from utils.logging import setup_logger
 from .attribution_shared import (
     get_quality_level, get_quality_indicator, get_quality_color,
     scale_quality_score, create_metrics_summary, format_attribution_footer,

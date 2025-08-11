@@ -7,10 +7,10 @@ from datetime import datetime
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.oauth2.service_account import Credentials
-from ..core.config import GoogleDriveConfig, PipelineConfig
-from ..core.models import SourceContent, ContentStatus, ContentType
-from ..core.notion_client import NotionClient
-from ..utils.logging import setup_logger
+from core.config import GoogleDriveConfig, PipelineConfig
+from core.models import SourceContent, ContentStatus, ContentType
+from core.notion_client import NotionClient
+from utils.logging import setup_logger
 from .pdf_processor import PDFProcessor
 from .deduplication import DeduplicationService
 

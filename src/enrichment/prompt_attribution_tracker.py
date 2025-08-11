@@ -6,8 +6,8 @@ import os
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from collections import defaultdict
-from ..core.notion_client import NotionClient
-from ..utils.logging import setup_logger
+from core.notion_client import NotionClient
+from utils.logging import setup_logger
 
 
 class PromptAttributionTracker:
