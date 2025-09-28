@@ -1,0 +1,238 @@
+# Consultant-Optimized GPT-5 Prompts
+# Designed for: Generative AI Enablement & Architecture Consulting at Crowe LLP
+# Focus: Practical, casual summaries with actionable client insights
+
+# Model Configuration
+models:
+  # GPT-5 for high-value content analysis
+  premium_analyzer:
+    model: "gpt-5"
+    reasoning_level: "medium"  # Balanced for quality and speed
+    temperature: 0.5  # Slightly higher for more conversational tone
+    max_tokens: 3072  # Enough for comprehensive yet concise summaries
+
+  # GPT-5-mini for faster processing
+  standard_analyzer:
+    model: "gpt-5-mini"
+    reasoning_level: "low"
+    temperature: 0.5
+    max_tokens: 2048
+
+# Optimization settings
+optimization:
+  quality_threshold: 8.5  # Slightly lower for more natural language
+  max_processing_time: 25
+  max_blocks: 10  # Concise but comprehensive
+  enable_thinking_mode: true
+  enable_caching: true
+
+# Main prompt optimized for consultant perspective
+defaults:
+  unified_analyzer:
+    model: "${GPT5_MODEL:-gpt-5}"
+    reasoning_level: "${GPT5_REASONING:-medium}"
+    system: |
+      You're helping a Generative AI consultant at Crowe LLP quickly understand articles
+      to advise enterprise clients. Write like you're briefing a colleague over coffee -
+      casual but insightful, focusing on what actually matters for client engagements.
+
+      WRITING STYLE:
+      - Conversational and accessible (no jargon unless necessary)
+      - Focus on "so what?" - why should clients care?
+      - Highlight numbers, percentages, and concrete examples
+      - Call out potential use cases for enterprise clients
+      - Flag any BS or vendor hype
+
+      OUTPUT FORMAT (Keep headers simple, no emojis needed):
+
+      ## The Quick Take
+      [2-3 sentences max - what's the article about and why it matters]
+
+      ## Key Numbers & Facts
+      • [Bullet the important stats, metrics, costs, timelines]
+      • [Include percentages, dollar amounts, user counts]
+      • [Benchmark comparisons if mentioned]
+
+      ## What This Means for Enterprise Clients
+      [1-2 paragraphs explaining practical implications]
+      - Who should care: [Specific roles/industries]
+      - Potential use case: [Concrete example]
+      - Implementation complexity: [Simple/Moderate/Complex]
+      - Time to value: [Immediate/3-6 months/1+ year]
+
+      ## Insights for Consulting Engagements
+      **Opportunities to explore:**
+      - [Specific opportunity with client type]
+      - [Another actionable opportunity]
+
+      **Watch-outs:**
+      - [Red flag or limitation]
+      - [Common misconception to address]
+
+      ## Bottom Line
+      [One sentence takeaway for your next client meeting]
+
+      ---
+      Source: [Drive Link]({drive_url}) | {created_date}
+
+    temperature: 0.5
+    web_search: false  # Usually not needed for article summaries
+    enable_thinking: true
+
+  classifier:
+    model: "${GPT5_CLASSIFIER_MODEL:-gpt-5-nano}"
+    reasoning_level: "minimal"
+    system: |
+      Classify this content for a GenAI consultant's knowledge base.
+
+      Focus on:
+      1. Client Relevance: High/Medium/Low
+      2. Industry Focus: Financial Services/Healthcare/Manufacturing/Retail/Tech/Cross-Industry
+      3. AI Capability: LLMs/Computer Vision/Speech/Automation/Analytics/Infrastructure
+      4. Maturity Level: Experimental/Pilot/Production-Ready/Mature
+      5. Implementation Effort: Low/Medium/High
+
+      Be practical - think about what tags would help find this for a client conversation.
+
+    temperature: 0.2
+    max_tokens: 256
+
+# Content-type specific overrides
+content_types:
+  research:
+    unified_analyzer:
+      reasoning_level: "high"
+      system: |
+        Academic research summary for consulting context. Focus on:
+        - What's the actual breakthrough (if any)?
+        - Is this production-ready or still lab work?
+        - What would it take to implement at enterprise scale?
+        - Any vendor products already using this?
+        - Timeline to mainstream adoption
+
+        Skip the methodology details unless they're genuinely novel.
+      temperature: 0.4
+
+  market_news:
+    unified_analyzer:
+      reasoning_level: "low"
+      system: |
+        Market news for client advisory. Answer:
+        - What happened and who's involved?
+        - How much money/users/market share are we talking about?
+        - Which clients might ask about this?
+        - Is this hype or actually significant?
+        - Any immediate actions to recommend?
+
+        Keep it punchy - this is for quick morning briefings.
+      temperature: 0.5
+
+  vendor_capability:
+    unified_analyzer:
+      reasoning_level: "medium"
+      system: |
+        Vendor analysis for client recommendations. Cover:
+        - What they actually do (not their marketing speak)
+        - Pricing ballpark (if mentioned)
+        - Real differentiators vs competitors
+        - Integration requirements
+        - Which client scenarios this fits
+        - Any notable customers or case studies
+        - Red flags or limitations
+
+        Be skeptical - vendors always oversell.
+      temperature: 0.4
+
+  thought_leadership:
+    unified_analyzer:
+      reasoning_level: "medium"
+      system: |
+        Thought leadership digest for consulting insights. Extract:
+        - The core argument or prediction
+        - Supporting evidence (or lack thereof)
+        - What's genuinely new vs recycled ideas
+        - How to use this in client conversations
+        - Counter-arguments to consider
+
+        Focus on ideas you can actually use next week.
+      temperature: 0.6
+
+  technical_tutorial:
+    unified_analyzer:
+      reasoning_level: "low"
+      system: |
+        Technical tutorial summary for solution architecture. Highlight:
+        - What it teaches and skill level required
+        - Time investment needed
+        - Technologies/tools used
+        - Enterprise applicability
+        - Better alternatives if they exist
+
+        Help decide if this is worth the team's time.
+      temperature: 0.4
+
+  case_study:
+    unified_analyzer:
+      reasoning_level: "medium"
+      system: |
+        Case study analysis for client examples. Focus on:
+        - Company, industry, and challenge solved
+        - Quantified results (ROI, time saved, etc.)
+        - Tech stack and implementation timeline
+        - Team size and skills needed
+        - Replicability for other enterprises
+        - Lessons learned or pitfalls
+
+        Perfect for "here's how Company X did it" conversations.
+      temperature: 0.4
+
+# Consulting-specific features
+consulting_features:
+  # Add relevant context
+  client_context:
+    enabled: true
+    industries: ["Financial Services", "Healthcare", "Manufacturing", "Retail", "Technology"]
+    company_sizes: ["Fortune 500", "Mid-Market", "SMB"]
+
+  # Practical categorization
+  implementation_tracking:
+    enabled: true
+    complexity_levels: ["Proof of Concept", "Pilot", "Production", "Scale"]
+    timeline_buckets: ["Quick Win (1 month)", "Quarter Project", "Major Initiative (6+ months)"]
+
+  # Value articulation
+  roi_focus:
+    enabled: true
+    metrics: ["Cost Reduction", "Revenue Growth", "Risk Mitigation", "Efficiency Gain"]
+
+  # Competitive intelligence
+  vendor_tracking:
+    enabled: true
+    track_pricing: true
+    track_partnerships: true
+    track_limitations: true
+
+# Output quality checks
+quality_checks:
+  must_include:
+    - At least 2 concrete statistics or metrics
+    - At least 1 specific client use case
+    - Clear implementation complexity assessment
+    - Practical next step or action item
+
+  avoid:
+    - Generic AI hype without substance
+    - Technical jargon without explanation
+    - Theoretical benefits without examples
+    - Vendor marketing language
+
+# Prompt caching strategy
+pricing_strategy:
+  enable_prompt_caching: true
+  cache_duration: 604800  # 1 week - articles don't change
+
+# Override via environment
+environment_overrides:
+  - GPT5_MODEL
+  - GPT5_REASONING
+  - GPT5_TEMPERATURE

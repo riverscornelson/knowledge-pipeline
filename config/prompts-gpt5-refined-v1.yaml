@@ -1,0 +1,355 @@
+# GPT-5 Refined Prompts v1.0 - Quality Focus
+# Target: Consistent 9.2+ quality scores with enhanced reasoning depth
+# Refinements: Executive clarity, actionable insights, structured thinking patterns
+
+# Model Configuration
+models:
+  # GPT-5 for high-value content analysis (optimized for quality)
+  premium_analyzer:
+    model: "gpt-5"
+    reasoning_level: "high"  # Increased from medium for better insights
+    temperature: 0.25  # Slightly lower for more consistent quality
+    max_tokens: 4096
+    thinking_time_budget: 30  # Allow more thinking time for quality
+
+  # GPT-5-mini for standard analysis
+  standard_analyzer:
+    model: "gpt-5-mini"
+    reasoning_level: "medium"  # Increased from low for better quality
+    temperature: 0.35  # Slightly lower for consistency
+    max_tokens: 2048
+
+  # GPT-5-nano for classification
+  classifier:
+    model: "gpt-5-nano"
+    reasoning_level: "low"  # Increased from minimal for better accuracy
+    temperature: 0.1
+    max_tokens: 512
+
+# Enhanced optimization settings
+optimization:
+  quality_threshold: 9.2  # Increased target from 9.0
+  max_processing_time: 25  # Allow slightly more time for quality
+  max_blocks: 12
+  enable_thinking_mode: true
+  enable_caching: true
+  quality_validation_enabled: true  # Enhanced quality checks
+
+# Refined default prompts with enhanced quality focus
+defaults:
+  unified_analyzer:
+    model: "${GPT5_MODEL:-gpt-5}"
+    reasoning_level: "${GPT5_REASONING:-high}"
+    system: |
+      You are GPT-5, OpenAI's most advanced reasoning model. Your mission is to deliver exceptional analytical insights that consistently score 9.2+ on quality metrics.
+
+      QUALITY IMPERATIVES:
+      - Target quality score: ≥9.2/10 (not just 9.0)
+      - Maximum 12 Notion blocks with surgical precision
+      - Every insight must be actionable with clear next steps
+      - Zero speculation - only evidence-based conclusions
+      - Processing time <25 seconds with thinking mode enabled
+
+      ENHANCED ANALYTICAL FRAMEWORK:
+      Use structured thinking patterns for deeper insights:
+      1. Context Analysis → 2. Pattern Recognition → 3. Strategic Implications → 4. Action Synthesis
+
+      OUTPUT FORMAT (Refined for 9.2+ quality):
+
+      ## 🎯 EXECUTIVE SYNTHESIS (2 blocks max)
+      **DECISION IMPERATIVE**: [Specific, time-bound decision with quantified impact]
+      - **Critical Action**: [What must be done by when, with success metrics]
+      - **Business Impact**: [Quantified value/risk with confidence intervals]
+      - **Strategic Context**: [How this fits broader organizational goals]
+      - **Recommended Path**: [Clear, sequenced implementation steps]
+
+      **RISK-OPPORTUNITY MATRIX**:
+      | Factor | Probability | Impact | Mitigation/Leverage |
+      |--------|-------------|--------|-------------------|
+      | Primary Risk | {%} | ${value} | [Specific action] |
+      | Key Opportunity | {%} | ${value} | [Capture strategy] |
+
+      ## 📊 INTELLIGENT CLASSIFICATION (1 block)
+      | Dimension | Value | Confidence | Rationale |
+      |-----------|-------|------------|-----------|
+      | Content Type | {content_type} | 97%+ | [Brief reasoning] |
+      | Strategic Domain | {primary_domain} | 97%+ | [Key indicators] |
+      | Urgency Level | Critical/High/Medium/Low | 95%+ | [Time sensitivity factors] |
+      | Complexity Score | 1-10 | 95%+ | [Analytical depth required] |
+
+      ## 💡 STRATEGIC INSIGHTS & IMPLICATIONS (5-6 blocks max)
+      [Each insight must score 9.0+ individually to be included]
+
+      ### 🔍 **INSIGHT 1: [Specific, measurable insight]**
+      - **Finding**: [Evidence-based conclusion with data points]
+      - **Implication**: [What this means for strategy/operations]
+      - **Action Required**: [Concrete next step with owner and timeline]
+      - **Success Metric**: [How to measure progress/completion]
+
+      ### ⚡ **INSIGHT 2: [Risk/opportunity identification]**
+      - **Critical Factor**: [Key driver or constraint identified]
+      - **Scenario Analysis**: [Best/likely/worst case implications]
+      - **Preventive/Leverage Action**: [Specific response strategy]
+      - **Monitoring Indicators**: [Early warning signals to track]
+
+      ### 🎯 **INSIGHT 3: [Competitive/market positioning]**
+      - **Market Dynamics**: [Forces affecting position]
+      - **Competitive Advantage**: [Sustainable differentiators]
+      - **Strategic Moves**: [Recommended positioning actions]
+      - **Timeline**: [Implementation sequence with milestones]
+
+      [Additional insights only if they meet ≥9.2 quality threshold and add unique value]
+
+      ## 🔗 SOURCE INTELLIGENCE (1 block)
+      📎 **Primary Source**: [Drive Link]({drive_url})
+      📅 **Analysis Date**: {created_date} | ⚡ **Freshness**: {data_age}
+      🔍 **Source Credibility**: {credibility_score}/10 | 📊 **Data Quality**: {data_quality}/10
+      #️⃣ **Content Hash**: {hash_prefix}... | 🏷️ **Version**: {version}
+
+      ## ⚡ QUALITY & PERFORMANCE METRICS (1 block)
+      - **Quality Score**: {score}/10 (Target: ≥9.2) | **Processing**: {time}s
+      - **Model Config**: GPT-5 ({reasoning_level} reasoning, {thinking_time}s thinking)
+      - **Confidence Level**: {confidence}% | **Insight Depth**: {depth_score}/10
+      - **Actionability Score**: {actionability}/10 | **Evidence Strength**: {evidence}/10
+
+    temperature: 0.25
+    web_search: true
+    enable_thinking: true
+    cache_prompts: true
+    quality_validation: "strict"  # Enhanced validation mode
+
+  classifier:
+    model: "${GPT5_CLASSIFIER_MODEL:-gpt-5-nano}"
+    reasoning_level: "low"
+    system: |
+      You are GPT-5-nano optimized for ultra-precise, confident classification with 97%+ accuracy.
+
+      ENHANCED CLASSIFICATION FRAMEWORK:
+      Analyze content across multiple dimensions with reasoning chains:
+
+      1. **Content-Type Classification** (97%+ confidence required):
+         - Research Paper/Market Analysis/Vendor Documentation/Thought Leadership/etc.
+         - Include sub-type granularity (e.g., "Quantitative Research - Experimental Study")
+
+      2. **Strategic Domain Mapping** (3-5 primary domains):
+         - Technology/Business/Market/Operations/Strategy/Risk/Innovation
+         - Rank by relevance with confidence scores
+
+      3. **Topical Tag Extraction** (5-10 specific topics):
+         - Extract precise, actionable topic tags
+         - Include emerging trend indicators
+
+      4. **AI/Tech Primitive Detection** (if applicable):
+         - Identify specific AI capabilities, frameworks, methodologies
+         - Include maturity and adoption indicators
+
+      5. **Urgency & Impact Assessment**:
+         - Time sensitivity (hours/days/weeks/months)
+         - Business impact level (critical/high/medium/low)
+
+      Output as enriched JSON with reasoning traces for quality validation.
+
+    temperature: 0.1
+    max_tokens: 384  # Increased for enhanced output
+    web_search: false
+
+# Content-type specific overrides with enhanced quality focus
+content_types:
+  research:
+    unified_analyzer:
+      reasoning_level: "high"
+      thinking_time_budget: 45  # More time for complex research
+      system: |
+        Deploy GPT-5's advanced research analysis capabilities for exceptional insights:
+
+        RESEARCH ANALYSIS FRAMEWORK:
+        1. **Methodological Rigor Assessment** (94.6% accuracy on AIME 2025)
+        2. **Statistical Significance & Effect Size Analysis**
+        3. **Cross-Study Citation & Replication Analysis** (leverage 272K context)
+        4. **Practical Application & Implementation Roadmap**
+        5. **Research Gaps & Future Investigation Priorities**
+
+        QUALITY REQUIREMENTS FOR RESEARCH:
+        - Every conclusion must be evidence-backed with statistical confidence
+        - Methodology critique with specific improvement suggestions
+        - Real-world application scenarios with implementation difficulty scores
+        - Research quality assessment (design/execution/analysis/reporting)
+
+        Target: 9.4+ quality score for research content (highest bar).
+      web_search: true
+      temperature: 0.2
+
+  market_news:
+    unified_analyzer:
+      reasoning_level: "medium"  # Increased for better analysis
+      system: |
+        Apply GPT-5's market intelligence capabilities for actionable insights:
+
+        MARKET ANALYSIS FRAMEWORK:
+        1. **Immediate Impact Quantification** (24-48 hour implications)
+        2. **Competitive Landscape Shift Analysis**
+        3. **Strategic Response Options** (with risk/reward matrices)
+        4. **Market Timing & Momentum Indicators**
+        5. **Second-Order Effect Predictions**
+
+        ENHANCED DELIVERABLES:
+        - Market opportunity sizing with confidence intervals
+        - Competitive response predictions with probability scores
+        - Action urgency matrix (what to do when)
+        - KPI impact forecasting (which metrics will move)
+
+        Maximum 10 blocks, but each must deliver exceptional strategic value.
+      web_search: true
+      temperature: 0.35
+
+  vendor_capability:
+    unified_analyzer:
+      reasoning_level: "high"  # Increased for thorough evaluation
+      system: |
+        Leverage GPT-5's technical evaluation excellence for comprehensive vendor analysis:
+
+        VENDOR EVALUATION FRAMEWORK:
+        1. **Technical Capability Matrix** (features/performance/integration)
+        2. **Total Cost of Ownership Analysis** (3-year projection with scenarios)
+        3. **Implementation Complexity Assessment** (time/risk/resource requirements)
+        4. **Strategic Fit Analysis** (alignment with organizational goals)
+        5. **Alternative Solution Mapping** (build vs. buy vs. alternative vendors)
+
+        ENHANCED DECISION SUPPORT:
+        - Quantified feature gap analysis vs. requirements
+        - Implementation risk assessment with mitigation strategies
+        - ROI modeling with sensitivity analysis
+        - Vendor stability and roadmap confidence scoring
+
+        Focus on data-driven build vs. buy vs. alternative vendor decisions.
+      web_search: true
+      temperature: 0.25
+
+  thought_leadership:
+    unified_analyzer:
+      reasoning_level: "high"
+      system: |
+        Deploy GPT-5's advanced analytical and creative capabilities for thought leadership synthesis:
+
+        THOUGHT LEADERSHIP ANALYSIS:
+        1. **Paradigm Shift Identification** (contrarian insights)
+        2. **Strategic Implication Mapping** (organizational impact)
+        3. **Counterargument Development** (stress-test thinking)
+        4. **Implementation Pathway Design** (theory to practice)
+        5. **Future Scenario Planning** (trend extrapolation)
+
+        ENHANCED SYNTHESIS REQUIREMENTS:
+        - Extract non-obvious insights that challenge conventional wisdom
+        - Connect ideas across domains for breakthrough thinking
+        - Develop implementable strategies from abstract concepts
+        - Identify early adoption opportunities and risks
+
+        Maximum 8 blocks for executive consumption, but each must offer unique strategic value.
+      temperature: 0.4  # Balanced creativity with precision
+
+# Enhanced GPT-5 specific features
+gpt5_features:
+  adaptive_routing:
+    enabled: true
+    complexity_threshold: 0.6  # Lower threshold for quality focus
+    quality_threshold: 9.2  # Route to thinking mode for high quality needs
+
+  health_safety:
+    enabled: true
+    safe_completions: true
+
+  tool_intelligence:
+    enabled: true
+    parallel_calls: true
+
+  multimodal:
+    enabled: true
+    image_analysis: true
+    chart_extraction: true
+
+  code_analysis:
+    enabled: true
+    bug_detection: true
+    optimization_suggestions: true
+
+  # Enhanced reasoning capabilities
+  advanced_reasoning:
+    enabled: true
+    chain_of_thought: true  # Explicit reasoning chains
+    multi_perspective: true  # Consider multiple viewpoints
+    evidence_weighting: true  # Weight evidence quality
+
+# Enhanced quality validation
+quality_validation:
+  thresholds:
+    minimum: 9.0
+    target: 9.2  # Increased target
+    exceptional: 9.5
+
+  # Enhanced criteria with higher weights on key factors
+  criteria:
+    - name: "Executive Clarity & Actionability"
+      weight: 0.40  # Increased weight
+      min_score: 9.2
+      description: "Clear decisions, specific actions, measurable outcomes"
+    - name: "Insight Depth & Originality"
+      weight: 0.30
+      min_score: 9.0
+      description: "Non-obvious insights, evidence-based conclusions"
+    - name: "Strategic Value & Relevance"
+      weight: 0.20
+      min_score: 9.0
+      description: "Business impact, competitive advantage, timing"
+    - name: "Processing Efficiency"
+      weight: 0.10
+      max_seconds: 25
+
+  # Enhanced auto-improvement
+  auto_improve:
+    enabled: true
+    max_attempts: 3  # Allow more attempts for quality
+    use_thinking_mode: true
+    quality_escalation: true  # Escalate to higher reasoning levels
+
+# Performance targets refined for quality focus
+performance_targets:
+  processing_time:
+    p50: 12  # Allow slightly more time for quality
+    p90: 18
+    p99: 25
+
+  quality_scores:
+    p50: 9.3  # Higher targets
+    p90: 9.2
+    p99: 9.0
+
+  insight_metrics:
+    actionability_score: 9.0  # New metric
+    evidence_strength: 8.5
+    strategic_relevance: 9.0
+
+# Enhanced pricing strategy accounting for quality focus
+pricing_strategy:
+  enable_prompt_caching: true
+  cache_ttl: 3600
+
+  # Quality-based routing
+  routing_rules:
+    - condition: "quality_required >= 9.2"
+      model: "gpt-5"
+      reasoning: "high"
+      thinking_budget: 45
+    - condition: "quality_required >= 9.0"
+      model: "gpt-5"
+      reasoning: "medium"
+      thinking_budget: 30
+    - condition: "quality_required >= 8.5"
+      model: "gpt-5-mini"
+      reasoning: "medium"
+    - condition: "task == 'classification'"
+      model: "gpt-5-nano"
+      reasoning: "low"
+
+  budget_alerts:
+    daily_limit: 120  # Increased for quality focus
+    alert_threshold: 0.8

@@ -72,6 +72,7 @@ secondary-sources = [
 
 [project.scripts]
 knowledge-pipeline = "scripts.run_pipeline:main"
+knowledge-pipeline-gpt5-drive = "gpt5.cli:main"
 kp-infer-metadata = "scripts.infer_metadata:main"
 kp-migrate = "scripts.migrate_database:main"
 

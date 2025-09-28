@@ -1,0 +1,103 @@
+{
+  "summary": {
+    "total_documents": 10,
+    "average_quality": 8.134306993006991,
+    "average_processing_time": 14.4,
+    "pass_rate": 0.0,
+    "total_elapsed": 3.02590012550354,
+    "time_improvement": 84.92146596858639,
+    "quality_improvement": 35.57178321678318,
+    "monthly_savings": 139.99999999999997,
+    "annual_savings": 1679.9999999999995,
+    "production_ready": false
+  },
+  "details": [
+    {
+      "document": "UAT-TEST-SCENARIOS.md",
+      "quality_score": 8.164306993006992,
+      "processing_time": 17.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "performance-benchmark-report.md",
+      "quality_score": 8.014306993006993,
+      "processing_time": 17.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "GPT5-COMPREHENSIVE-TEST-REPORT.md",
+      "quality_score": 8.014306993006993,
+      "processing_time": 12.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "UAT-TEST-PLAN.md",
+      "quality_score": 8.164306993006992,
+      "processing_time": 12.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "notion-aesthetic-validation.md",
+      "quality_score": 8.164306993006992,
+      "processing_time": 14.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "prompt-refinement-report.md",
+      "quality_score": 8.164306993006992,
+      "processing_time": 12.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "UAT-ROLLOUT-CHECKLIST.md",
+      "quality_score": 8.164306993006992,
+      "processing_time": 15.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "architecture.md",
+      "quality_score": 8.164306993006992,
+      "processing_time": 12.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "quality-scoring.md",
+      "quality_score": 8.164306993006992,
+      "processing_time": 12.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    },
+    {
+      "document": "UAT-FEEDBACK-FORM.md",
+      "quality_score": 8.164306993006992,
+      "processing_time": 16.5,
+      "block_count": 11,
+      "passed": false,
+      "model": "gpt-5"
+    }
+  ],
+  "readiness_checks": {
+    "Quality Target (\u22659.0)": false,
+    "Processing Time (<20s)": true,
+    "Pass Rate (>95%)": false,
+    "Block Compliance (\u226412)": true,
+    "Cost Efficiency": true
+  }
+}

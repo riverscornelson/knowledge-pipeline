@@ -21,9 +21,9 @@ def main():
     parser = argparse.ArgumentParser(description="Knowledge Pipeline Runner")
     parser.add_argument(
         "--source",
-        choices=["drive"],
+        choices=["drive", "gpt5-drive"],
         default="drive",
-        help="Source to process (currently only Google Drive supported)"
+        help="Source to process: 'drive' (standard) or 'gpt5-drive' (GPT-5 enhanced)"
     )
     parser.add_argument(
         "--skip-enrichment",
@@ -75,22 +75,42 @@ def main():
             else:
                 logger.info("Dry run - skipping local PDF upload")
         
-        # Run Google Drive ingestion
-        logger.info("Starting Drive ingestion")
-        drive_ingester = DriveIngester(config, notion_client)
-        
-        if not args.dry_run:
-            if args.process_specific_files and args.drive_file_ids:
-                # Process only specific files
-                file_ids = args.drive_file_ids.split(',')
-                logger.info(f"Processing specific files: {file_ids}")
-                stats = drive_ingester.process_specific_files(file_ids)
+        # Run ingestion based on source type
+        if args.source == "gpt5-drive":
+            logger.info("Starting GPT-5 enhanced Drive processing")
+            from gpt5.drive_processor import GPT5DriveProcessor
+            gpt5_processor = GPT5DriveProcessor(config)
+
+            if not args.dry_run:
+                if args.process_specific_files and args.drive_file_ids:
+                    # Process only specific files
+                    file_ids = args.drive_file_ids.split(',')
+                    logger.info(f"Processing specific files with GPT-5: {file_ids}")
+                    stats = gpt5_processor.process_specific_files(file_ids)
+                else:
+                    # Process all unprocessed files
+                    stats = gpt5_processor.process_all_unprocessed()
+                logger.info(f"GPT-5 Drive processing complete: {stats}")
             else:
-                # Regular ingestion
-                stats = drive_ingester.ingest()
-            logger.info(f"Drive ingestion complete: {stats}")
+                logger.info("Dry run - skipping actual GPT-5 processing")
+
         else:
-            logger.info("Dry run - skipping actual ingestion")
+            # Standard Drive ingestion
+            logger.info("Starting Drive ingestion")
+            drive_ingester = DriveIngester(config, notion_client)
+
+            if not args.dry_run:
+                if args.process_specific_files and args.drive_file_ids:
+                    # Process only specific files
+                    file_ids = args.drive_file_ids.split(',')
+                    logger.info(f"Processing specific files: {file_ids}")
+                    stats = drive_ingester.process_specific_files(file_ids)
+                else:
+                    # Regular ingestion
+                    stats = drive_ingester.ingest()
+                logger.info(f"Drive ingestion complete: {stats}")
+            else:
+                logger.info("Dry run - skipping actual ingestion")
         
         # Run enrichment unless skipped
         if not args.skip_enrichment and not args.dry_run:

@@ -1,0 +1,17 @@
+{
+  "args": {
+    "all": true,
+    "file_ids": null,
+    "status_filter": null,
+    "dry_run": false,
+    "batch_size": 2,
+    "force": true,
+    "config": null,
+    "log_level": "INFO"
+  },
+  "results": {
+    "success": true,
+    "message": "No files to process"
+  },
+  "processing_details": []
+}

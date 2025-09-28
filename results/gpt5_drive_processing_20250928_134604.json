@@ -1,0 +1,69 @@
+{
+  "args": {
+    "all": true,
+    "file_ids": null,
+    "status_filter": null,
+    "dry_run": false,
+    "batch_size": 3,
+    "force": false,
+    "config": null,
+    "log_level": "INFO"
+  },
+  "results": {
+    "success": true,
+    "total_files": 5,
+    "completed": 0,
+    "failed": 5,
+    "skipped": 0,
+    "total_processing_time": 21.311831951141357,
+    "average_quality": 0,
+    "average_processing_time": 1.0395050048828125e-05
+  },
+  "processing_details": [
+    {
+      "file_id": "1Qu8Kr4iA4K1dbKMg8jt-G64X-ragJpOs",
+      "file_name": "Unknown",
+      "status": "failed",
+      "processing_time": 1.2159347534179688e-05,
+      "quality_score": null,
+      "block_count": null,
+      "error_message": "type object 'ContentStatus' has no attribute 'PROCESSING'"
+    },
+    {
+      "file_id": "1GJvrjf5KMMXbtW_ctaIBLAYww7JY0pAG",
+      "file_name": "Unknown",
+      "status": "failed",
+      "processing_time": 1.1920928955078125e-05,
+      "quality_score": null,
+      "block_count": null,
+      "error_message": "type object 'ContentStatus' has no attribute 'PROCESSING'"
+    },
+    {
+      "file_id": "1TKinjiqK0dh902wZ51oYko7myOEhW6e-",
+      "file_name": "Unknown",
+      "status": "failed",
+      "processing_time": 9.5367431640625e-06,
+      "quality_score": null,
+      "block_count": null,
+      "error_message": "type object 'ContentStatus' has no attribute 'PROCESSING'"
+    },
+    {
+      "file_id": "11_2BkLWzGap-MamKHmnu6xtV08Y6BZXs",
+      "file_name": "Unknown",
+      "status": "failed",
+      "processing_time": 9.059906005859375e-06,
+      "quality_score": null,
+      "block_count": null,
+      "error_message": "type object 'ContentStatus' has no attribute 'PROCESSING'"
+    },
+    {
+      "file_id": "1gxczu543GcycZgZoOKP1d1HUsXXfya50",
+      "file_name": "Unknown",
+      "status": "failed",
+      "processing_time": 9.298324584960938e-06,
+      "quality_score": null,
+      "block_count": null,
+      "error_message": "type object 'ContentStatus' has no attribute 'PROCESSING'"
+    }
+  ]
+}

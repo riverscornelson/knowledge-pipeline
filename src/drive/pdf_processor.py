@@ -1,13 +1,14 @@
 """
 PDF processing utilities for Drive content.
+Enhanced with robust PDF extraction supporting multiple libraries.
 """
 import io
 import logging
 import warnings
 from typing import Optional, Dict, Any
-from pdfminer.high_level import extract_text
-from pdfminer.layout import LAParams
 from googleapiclient.http import MediaIoBaseDownload
+from pdfminer.layout import LAParams
+from .robust_pdf_extractor import RobustPDFExtractor
 
 # Suppress specific pdfminer warnings about font descriptors
 logging.getLogger('pdfminer').setLevel(logging.ERROR)
@@ -18,7 +19,11 @@ class PDFProcessor:
     """Handles PDF extraction and processing."""
     
     def __init__(self):
-        """Initialize PDF processor."""
+        """Initialize PDF processor with robust extraction."""
+        self.robust_extractor = RobustPDFExtractor()
+        self.logger = logging.getLogger(__name__)
+
+        # Keep LAParams for legacy compatibility if needed
         self.laparams = LAParams(
             line_overlap=0.5,
             char_margin=2.0,
@@ -42,20 +47,23 @@ class PDFProcessor:
         return buffer.getvalue()
     
     def extract_text_from_pdf(self, pdf_content: bytes) -> Optional[str]:
-        """Extract text from PDF content."""
+        """Extract text from PDF content using robust multi-library approach."""
         try:
-            text = extract_text(
-                io.BytesIO(pdf_content),
-                laparams=self.laparams,
-                maxpages=0  # Process all pages
-            )
-            
-            # Clean up the text
-            text = self._clean_text(text)
-            return text if text.strip() else None
-            
+            # Use robust extractor with multiple fallback methods
+            pdf_io = io.BytesIO(pdf_content)
+            text, method_used = self.robust_extractor.extract_text(pdf_io)
+
+            if text:
+                self.logger.info(f"PDF extraction successful using {method_used}")
+                # Clean up the text
+                text = self._clean_text(text)
+                return text if text.strip() else None
+            else:
+                self.logger.error(f"PDF extraction failed: {method_used}")
+                return None
+
         except Exception as e:
-            print(f"Error extracting PDF text: {str(e)}")
+            self.logger.error(f"Error extracting PDF text: {str(e)}")
             return None
     
     def _clean_text(self, text: str) -> str:

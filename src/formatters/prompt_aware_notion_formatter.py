@@ -6,6 +6,7 @@ import re
 from typing import List, Dict, Any, Optional, Tuple, Set
 from dataclasses import dataclass
 from datetime import datetime
+import os
 from utils.logging import setup_logger
 from core.notion_client import NotionClient
 
@@ -872,5 +873,135 @@ class PromptAwareNotionFormatter:
                 original_text = rich_text[0]["text"]["content"]
                 wrapped_text = self._wrap_text(original_text, self.mobile_line_length)
                 rich_text[0]["text"]["content"] = wrapped_text
-                
+
         return block
+
+    def use_optimized_formatter(self) -> bool:
+        """Check if optimized formatter should be used."""
+        return os.getenv("USE_OPTIMIZED_FORMATTER", "true").lower() == "true"
+
+    def format_optimized_analysis(self,
+                                 unified_content: str,
+                                 content_type: str,
+                                 quality_score: float,
+                                 processing_time: float,
+                                 drive_link: str,
+                                 web_search_used: bool = False) -> List[Dict[str, Any]]:
+        """
+        Format using optimized formatter for unified analysis.
+
+        Args:
+            unified_content: Output from unified analyzer
+            content_type: Content type classification
+            quality_score: Quality score from validator
+            processing_time: Processing time in seconds
+            drive_link: Google Drive link to original document
+            web_search_used: Whether web search was used
+
+        Returns:
+            List of Notion blocks (max 15)
+        """
+        if self.use_optimized_formatter():
+            try:
+                from formatters.optimized_notion_formatter import OptimizedNotionFormatter, OptimizedAnalysisResult
+
+                # Create optimized result object
+                result = OptimizedAnalysisResult(
+                    content=unified_content,
+                    content_type=content_type,
+                    quality_score=quality_score,
+                    processing_time=processing_time,
+                    web_search_used=web_search_used,
+                    drive_link=drive_link,
+                    metadata={
+                        "unified_analysis": True,
+                        "optimized_formatter": True,
+                        "timestamp": datetime.now().isoformat()
+                    }
+                )
+
+                # Use optimized formatter
+                optimizer = OptimizedNotionFormatter(self.notion)
+                blocks = optimizer.format_unified_analysis(result)
+
+                # Validate output constraints
+                validation = optimizer.validate_output_constraints(blocks)
+                self.logger.info(f"Optimized formatting validation: {validation}")
+
+                return blocks
+
+            except ImportError as e:
+                self.logger.warning(f"Optimized formatter not available, using fallback: {e}")
+                return self._format_unified_fallback(unified_content, content_type, drive_link)
+        else:
+            # Use fallback formatting
+            return self._format_unified_fallback(unified_content, content_type, drive_link)
+
+    def _format_unified_fallback(self,
+                                unified_content: str,
+                                content_type: str,
+                                drive_link: str) -> List[Dict[str, Any]]:
+        """Fallback formatting for unified content using existing methods."""
+        blocks = []
+
+        # Create basic header
+        blocks.append({
+            "type": "callout",
+            "callout": {
+                "rich_text": [{
+                    "type": "text",
+                    "text": {"content": f"📊 Unified Analysis - {content_type}"}
+                }],
+                "icon": {"type": "emoji", "emoji": "🤖"},
+                "color": "blue_background"
+            }
+        })
+
+        # Parse content into sections
+        sections = unified_content.split("###")
+
+        for section in sections:
+            if section.strip():
+                lines = section.strip().split('\n')
+                if lines:
+                    # Section header
+                    header = lines[0].strip()
+                    if header:
+                        blocks.append({
+                            "type": "heading_2",
+                            "heading_2": {
+                                "rich_text": [{
+                                    "type": "text",
+                                    "text": {"content": header}
+                                }]
+                            }
+                        })
+
+                    # Section content
+                    content_lines = lines[1:] if len(lines) > 1 else []
+                    if content_lines:
+                        content_text = '\n'.join(content_lines).strip()
+                        if content_text:
+                            blocks.append({
+                                "type": "paragraph",
+                                "paragraph": {
+                                    "rich_text": [{
+                                        "type": "text",
+                                        "text": {"content": content_text}
+                                    }]
+                                }
+                            })
+
+        # Add Drive link
+        blocks.append({
+            "type": "paragraph",
+            "paragraph": {
+                "rich_text": [{
+                    "type": "text",
+                    "text": {"content": f"📎 Original Document: [View in Drive]({drive_link})"}
+                }]
+            }
+        })
+
+        # Limit to 15 blocks
+        return blocks[:15]
