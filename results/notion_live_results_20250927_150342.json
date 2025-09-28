@@ -1,0 +1,26 @@
+{
+  "total": 3,
+  "success": 0,
+  "failed": 3,
+  "results": [
+    {
+      "document": "GPT5-OPTIMIZATION-SUMMARY.md",
+      "quality_score": 8.167735564435564,
+      "notion_url": "Error: 'NotionConfig' object has no attribute 'database_id'",
+      "status": "failed"
+    },
+    {
+      "document": "GPT5-COMPREHENSIVE-TEST-REPORT.md",
+      "quality_score": 8.167735564435564,
+      "notion_url": "Error: 'NotionConfig' object has no attribute 'database_id'",
+      "status": "failed"
+    },
+    {
+      "document": "performance-benchmark-report.md",
+      "quality_score": 8.167735564435564,
+      "notion_url": "Error: 'NotionConfig' object has no attribute 'database_id'",
+      "status": "failed"
+    }
+  ],
+  "notion_urls": []
+}

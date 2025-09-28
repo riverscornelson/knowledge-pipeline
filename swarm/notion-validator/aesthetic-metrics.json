@@ -1,0 +1,158 @@
+{
+  "validation_framework": {
+    "version": "1.0.0",
+    "created": "2025-09-27",
+    "validator": "NotionAestheticValidator",
+    "standards": "WCAG 2.1 AA + Mobile-First Design"
+  },
+  "score_thresholds": {
+    "exceptional": 0.90,
+    "excellent": 0.80,
+    "good": 0.70,
+    "fair": 0.60,
+    "poor": 0.00
+  },
+  "mobile_requirements": {
+    "max_table_columns": 4,
+    "max_heading_chars": 40,
+    "max_paragraph_words": 30,
+    "min_emoji_coverage": 0.70,
+    "max_blocks_per_page": 12
+  },
+  "accessibility_standards": {
+    "color_contrast_ratio": 4.5,
+    "large_text_contrast": 3.0,
+    "semantic_structure_required": true,
+    "keyboard_navigation": true,
+    "screen_reader_compatible": true
+  },
+  "visual_hierarchy_rules": {
+    "h1_required": true,
+    "no_level_skipping": true,
+    "emoji_in_headings": 0.70,
+    "max_consecutive_text_blocks": 4,
+    "visual_breaks_frequency": 0.20
+  },
+  "performance_benchmarks": {
+    "mobile_load_time": "< 3 seconds",
+    "desktop_load_time": "< 2 seconds",
+    "interaction_delay": "< 100ms",
+    "scroll_performance": "60fps"
+  },
+  "test_results": {
+    "last_run": "2025-09-27",
+    "total_tests": 15,
+    "passed_tests": 15,
+    "success_rate": 1.0,
+    "coverage": {
+      "visual_hierarchy": 100,
+      "mobile_responsiveness": 100,
+      "accessibility": 100,
+      "emoji_functionality": 100,
+      "table_formatting": 100,
+      "code_blocks": 100,
+      "callouts_toggles": 100
+    }
+  },
+  "page_templates": {
+    "tech_project": {
+      "aesthetic_score": 0.90,
+      "mobile_score": 0.88,
+      "accessibility_score": 0.92,
+      "hierarchy_score": 0.95,
+      "blocks": 12,
+      "emojis": 8,
+      "tables": 1,
+      "max_columns": 3
+    },
+    "business_strategy": {
+      "aesthetic_score": 0.88,
+      "mobile_score": 0.90,
+      "accessibility_score": 0.89,
+      "hierarchy_score": 0.90,
+      "blocks": 10,
+      "emojis": 6,
+      "tables": 1,
+      "max_columns": 3
+    },
+    "design_system": {
+      "aesthetic_score": 0.92,
+      "mobile_score": 0.87,
+      "accessibility_score": 0.94,
+      "hierarchy_score": 0.91,
+      "blocks": 8,
+      "emojis": 4,
+      "tables": 1,
+      "max_columns": 3
+    }
+  },
+  "validation_pipeline": {
+    "pre_validation_checks": [
+      "Check block count <= 12",
+      "Verify emoji presence in headings",
+      "Validate table column limits",
+      "Check heading length constraints"
+    ],
+    "core_validation": [
+      "Visual hierarchy analysis",
+      "Mobile responsiveness check",
+      "Accessibility compliance scan",
+      "Content density assessment",
+      "Performance impact analysis"
+    ],
+    "post_validation": [
+      "Generate comprehensive report",
+      "Store metrics in memory",
+      "Create recommendations",
+      "Export analysis results"
+    ]
+  },
+  "common_issues": {
+    "mobile_violations": [
+      "Tables with > 4 columns",
+      "Headings > 40 characters",
+      "Excessive horizontal scroll",
+      "Poor touch target spacing"
+    ],
+    "accessibility_problems": [
+      "Missing heading hierarchy",
+      "Poor color contrast",
+      "No semantic structure",
+      "Missing alt text equivalents"
+    ],
+    "visual_hierarchy_issues": [
+      "Missing H1 heading",
+      "Skipped heading levels",
+      "Insufficient emoji usage",
+      "Poor content organization"
+    ]
+  },
+  "optimization_recommendations": {
+    "quick_wins": [
+      "Add functional emojis to 70%+ headings",
+      "Limit table columns to 3-4 maximum",
+      "Shorten headings under 40 characters",
+      "Add visual breaks every 4-6 blocks"
+    ],
+    "advanced_optimizations": [
+      "Implement mobile-first design",
+      "Optimize content density ratios",
+      "Enhance accessibility features",
+      "Monitor performance metrics"
+    ]
+  },
+  "monitoring_metrics": {
+    "daily_checks": [
+      "Page aesthetic scores",
+      "Mobile compatibility rates",
+      "Accessibility compliance",
+      "User experience metrics"
+    ],
+    "weekly_reviews": [
+      "Trend analysis",
+      "Best practice updates",
+      "Template optimization",
+      "Performance benchmarking"
+    ]
+  }
+}

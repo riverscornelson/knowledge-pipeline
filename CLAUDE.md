@@ -1,260 +1,352 @@
-# Knowledge Pipeline v4.0.0 - Claude.md
+# Claude Code Configuration - SPARC Development Environment
 
-This Claude.md file provides persistent global context for developing the Knowledge Pipeline - a CLI-based automation tool for intelligent content processing and Notion knowledge base management.
+## 🚨 CRITICAL: CONCURRENT EXECUTION & FILE MANAGEMENT
 
-## Core Project Philosophy
+**ABSOLUTE RULES**:
+1. ALL operations MUST be concurrent/parallel in a single message
+2. **NEVER save working files, text/mds and tests to the root folder**
+3. ALWAYS organize files in appropriate subdirectories
+4. **USE CLAUDE CODE'S TASK TOOL** for spawning agents concurrently, not just MCP
 
-The Knowledge Pipeline v4.0.0 is a mature, production-ready CLI automation system that has been streamlined and optimized. The cleaned-up architecture focuses on core functionality while maintaining reliability and extensibility.
+### ⚡ GOLDEN RULE: "1 MESSAGE = ALL RELATED OPERATIONS"
 
-## CRITICAL: Design-First Development Process
+**MANDATORY PATTERNS:**
+- **TodoWrite**: ALWAYS batch ALL todos in ONE call (5-10+ todos minimum)
+- **Task tool (Claude Code)**: ALWAYS spawn ALL agents in ONE message with full instructions
+- **File operations**: ALWAYS batch ALL reads/writes/edits in ONE message
+- **Bash commands**: ALWAYS batch ALL terminal operations in ONE message
+- **Memory operations**: ALWAYS batch ALL memory store/retrieve in ONE message
 
-**IMPORTANT!!! ALWAYS FOLLOW THIS PROCESS BEFORE MAKING ANY CODE CHANGES:**
+### 🎯 CRITICAL: Claude Code Task Tool for Agent Execution
 
-1. **Planning Phase**: Before touching any code, create a detailed design document that includes:
-- Problem statement and requirements
-- Proposed changes to architecture/modules
-- Impact on existing functionality
-- Test plan for validation
-- Temporary files/artifacts needed (organize these properly)
-1. **Get Approval**: Present the design plan to the user for approval before implementation
-1. **Complete Implementation**: Implement the ENTIRE feature before stopping - no half-implemented functionality that could destabilize the codebase
-1. **Clean Up**: Remove ALL temporary files, plans, and development artifacts
-1. **Validate**: Run tests and verify the implementation works end-to-end
-
-## Architecture Principles (v4.0.0 CLEANED-UP)
-
-### Separation of Concerns
-
-- `src/core/` - Core configuration, models, and Notion client
-- `src/drive/` - PRIMARY source: Google Drive PDF ingestion and processing
-- `src/enrichment/` - AI processing, content analysis, and prompt attribution
-- `src/formatters/` - Notion formatting with enhanced attribution and visual hierarchy
-- `src/local_uploader/` - Local PDF processing and OAuth2 uploads
-- `src/utils/` - Shared utilities, logging, and markdown processing
-
-### CLI-First Architecture
-
-- Command-line interface as the primary user experience
-- Script-based automation for production environments
-- Clean separation between CLI scripts and core library code
-- Environment variable configuration for all settings
-
-### Configuration-Driven Design
-
-- Environment variables for all configuration (`.env` file)
-- Dual-source prompt management: Notion database (dynamic) + YAML (fallback)
-- Modern Python packaging with pyproject.toml
-- Comprehensive logging with structured JSON output
-
-## Testing Requirements (v4.0.0)
-
-**BEFORE ANY COMMIT, YOU MUST:**
-
-```bash
-# Run full test suite (49 tests, 100% pass rate)
-python -m pytest
-
-# Run with coverage (maintain 38%+ overall, 94-100% for core modules)
-python -m pytest --cov=src --cov-report=html
-
-# Run specific module tests based on your changes
-python -m pytest tests/core/        # Core functionality (config, models, notion_client)
-python -m pytest tests/drive/       # Drive integration (ingestion, deduplication, PDF processing)
-python -m pytest tests/enrichment/  # AI processing (pipeline, attribution, quality scoring)
-python -m pytest tests/formatters/  # Notion formatting and attribution
+**Claude Code's Task tool is the PRIMARY way to spawn agents:**
+```javascript
+// ✅ CORRECT: Use Claude Code's Task tool for parallel agent execution
+[Single Message]:
+  Task("Research agent", "Analyze requirements and patterns...", "researcher")
+  Task("Coder agent", "Implement core features...", "coder")
+  Task("Tester agent", "Create comprehensive tests...", "tester")
+  Task("Reviewer agent", "Review code quality...", "reviewer")
+  Task("Architect agent", "Design system architecture...", "system-architect")
 ```
 
-**Current Test Status**: 49 tests, 100% pass rate, 38% overall coverage with 94-100% coverage for core modules.
-All tests must pass. The v4.0.0 architecture includes comprehensive test coverage for all critical components.
+**MCP tools are ONLY for coordination setup:**
+- `mcp__claude-flow__swarm_init` - Initialize coordination topology
+- `mcp__claude-flow__agent_spawn` - Define agent types for coordination
+- `mcp__claude-flow__task_orchestrate` - Orchestrate high-level workflows
 
-## Development Standards
+### 📁 File Organization Rules
 
-### Code Quality
+**NEVER save to root folder. Use these directories:**
+- `/src` - Source code files
+- `/tests` - Test files
+- `/docs` - Documentation and markdown files
+- `/config` - Configuration files
+- `/scripts` - Utility scripts
+- `/examples` - Example code
 
-- Follow existing code patterns and naming conventions
-- Maintain structured JSON logging format
-- Use proper error handling with retry logic
-- Keep functions focused and testable
+## Project Overview
 
-### File Organization
+This project uses SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) methodology with Claude-Flow orchestration for systematic Test-Driven Development.
 
-- No temporary files left in repository
-- Development artifacts must be cleaned up
-- Use proper Python packaging standards
-- Maintain clean git history
+## SPARC Commands
 
-### API Integration Guidelines (v4.0.0)
+### Core Commands
+- `npx claude-flow sparc modes` - List available modes
+- `npx claude-flow sparc run <mode> "<task>"` - Execute specific mode
+- `npx claude-flow sparc tdd "<feature>"` - Run complete TDD workflow
+- `npx claude-flow sparc info <mode>` - Get mode details
 
-- **Google Drive API**: OAuth2 and service account support, secure token storage, rate limiting with retry logic
-- **Notion API**: Enhanced formatting with attribution blocks, quality indicators, rich text with headers/callouts
-- **OpenAI API**: Model flexibility (GPT-4.1 default, GPT-4.1-mini for classification), token optimization, prompt attribution tracking
+### Batchtools Commands
+- `npx claude-flow sparc batch <modes> "<task>"` - Parallel execution
+- `npx claude-flow sparc pipeline "<task>"` - Full pipeline processing
+- `npx claude-flow sparc concurrent <mode> "<tasks-file>"` - Multi-task processing
 
-## Content Processing Requirements
+### Build Commands
+- `npm run build` - Build project
+- `npm run test` - Run tests
+- `npm run lint` - Linting
+- `npm run typecheck` - Type checking
 
-### Prompt Attribution System (CRITICAL)
+## SPARC Workflow Phases
 
-**The pipeline tracks which prompts generate each piece of content. ALWAYS:**
+1. **Specification** - Requirements analysis (`sparc run spec-pseudocode`)
+2. **Pseudocode** - Algorithm design (`sparc run spec-pseudocode`)
+3. **Architecture** - System design (`sparc run architect`)
+4. **Refinement** - TDD implementation (`sparc tdd`)
+5. **Completion** - Integration (`sparc run integration`)
 
-- Preserve prompt attribution metadata in all content processing
-- Maintain the dual-source prompt system (Notion + YAML fallback)
-- Ensure prompts are loaded dynamically from Notion when test runs are taking place
-- Test prompt attribution is working after any enrichment changes
+## Code Style & Best Practices
 
-### Content Type Detection
+- **Modular Design**: Files under 500 lines
+- **Environment Safety**: Never hardcode secrets
+- **Test-First**: Write tests before implementation
+- **Clean Architecture**: Separate concerns
+- **Documentation**: Keep updated
 
-When modifying content classification:
+## 🚀 Available Agents (54 Total)
 
-- Test with sample PDFs of different types (research papers, market news, etc.)
-- Verify Notion formatting remains consistent
-- Ensure quality scoring continues to work
-- Validate that content-specific prompts are applied correctly
+### Core Development
+`coder`, `reviewer`, `tester`, `planner`, `researcher`
 
-### Model Selection Logic
+### Swarm Coordination
+`hierarchical-coordinator`, `mesh-coordinator`, `adaptive-coordinator`, `collective-intelligence-coordinator`, `swarm-memory-manager`
 
-- **GPT-4.1**: Default for processing, cost-effective
-- **o3**: Only when web search is enabled, for complex reasoning
-- Monitor costs and processing time in logs
-- Never switch models without considering cost implications
+### Consensus & Distributed
+`byzantine-coordinator`, `raft-manager`, `gossip-coordinator`, `consensus-builder`, `crdt-synchronizer`, `quorum-manager`, `security-manager`
 
-## Security & Operations
+### Performance & Optimization
+`perf-analyzer`, `performance-benchmarker`, `task-orchestrator`, `memory-coordinator`, `smart-agent`
 
-### Data Handling
+### GitHub & Repository
+`github-modes`, `pr-manager`, `code-review-swarm`, `issue-tracker`, `release-manager`, `workflow-automation`, `project-board-sync`, `repo-architect`, `multi-repo-swarm`
 
-- All processing happens locally on user’s machine, with the exception of LLM API calls
-- Tokens stored securely with strict file permissions (0600)
-- No data sharing beyond configured services (Google Drive, Notion)
-- Maintain audit logging for all operations
+### SPARC Methodology
+`sparc-coord`, `sparc-coder`, `specification`, `pseudocode`, `architecture`, `refinement`
 
-### Local Automation
+### Specialized Development
+`backend-dev`, `mobile-dev`, `ml-developer`, `cicd-engineer`, `api-docs`, `system-architect`, `code-analyzer`, `base-template-generator`
 
-- Pipeline runs nightly via local automation
-- Must handle graceful failures without user intervention
-- Log structured data for monitoring and debugging
-- Support incremental processing to avoid re-work
+### Testing & Validation
+`tdd-london-swarm`, `production-validator`
 
-## Prompt Management
+### Migration & Planning
+`migration-planner`, `swarm-init`
 
-### Dynamic Prompt Loading
+## 🎯 Claude Code vs MCP Tools
 
-**ALWAYS ensure prompts are loaded dynamically from Notion when available:**
+### Claude Code Handles ALL EXECUTION:
+- **Task tool**: Spawn and run agents concurrently for actual work
+- File operations (Read, Write, Edit, MultiEdit, Glob, Grep)
+- Code generation and programming
+- Bash commands and system operations
+- Implementation work
+- Project navigation and analysis
+- TodoWrite and task management
+- Git operations
+- Package management
+- Testing and debugging
 
-- Check Notion prompts database first
-- Fall back to YAML config if Notion unavailable
-- Maintain version control for prompt changes
-- Test both prompt sources work correctly
+### MCP Tools ONLY COORDINATE:
+- Swarm initialization (topology setup)
+- Agent type definitions (coordination patterns)
+- Task orchestration (high-level planning)
+- Memory management
+- Neural features
+- Performance tracking
+- GitHub integration
 
-### Prompt Development
+**KEY**: MCP coordinates the strategy, Claude Code's Task tool executes with real agents.
 
-When working with prompts:
-
-- Use the established content-type specific prompt structure
-- Maintain Jinja2 template syntax compatibility
-- Preserve prompt attribution tracking
-- Test with multiple content types before deploying
-
-## Quality Assurance
-
-### Before Each Commit
-
-1. **Run Tests**: All tests must pass
-1. **Check Logs**: Verify structured logging still works
-1. **Test Pipeline**: Run end-to-end with sample content
-1. **Validate Notion**: Ensure formatting and attribution work
-1. **Cost Check**: Monitor AI processing costs in development
-
-### Performance Considerations
-
-- Pipeline processes 6-10 minutes for batches
-- SHA-256 deduplication prevents unnecessary reprocessing
-- Respect API rate limits (Google Drive, Notion, OpenAI)
-- Monitor memory usage during local PDF processing
-
-## Extension Guidelines
-
-### Adding New Features
-
-- Follow the modular architecture
-- Add comprehensive tests for new functionality
-- Update documentation and migration guides
-- Consider impact on existing automation
-- Plan for future Notion migration path
-
-### Integration Patterns
-
-- Use existing patterns in `src/drive/` as reference
-- Implement proper error handling and logging
-- Support graceful degradation when services unavailable
-- Maintain user control over data and processing
-
-## Migration Preparedness
-
-The system is designed to eventually migrate from Notion to a more scalable solution:
-
-- Keep data structure logic separate from Notion-specific code
-- Use abstraction layers for data storage operations
-- Maintain export capabilities
-- Design new features with portability in mind
-
------
-
-## CLI Command Reference (v4.0.0)
-
-**Setup and Configuration:**
+## 🚀 Quick Setup
 
 ```bash
-# Install the pipeline
-pip install -e .
-
-# Configure environment
-cp .env.example .env  # Edit with your API keys and settings
-
-# Verify installation
-python scripts/run_pipeline.py --dry-run
+# Add MCP servers (Claude Flow required, others optional)
+claude mcp add claude-flow npx claude-flow@alpha mcp start
+claude mcp add ruv-swarm npx ruv-swarm mcp start  # Optional: Enhanced coordination
+claude mcp add flow-nexus npx flow-nexus@latest mcp start  # Optional: Cloud features
 ```
 
-**Running the Pipeline:**
+## MCP Tool Categories
 
+### Coordination
+`swarm_init`, `agent_spawn`, `task_orchestrate`
+
+### Monitoring
+`swarm_status`, `agent_list`, `agent_metrics`, `task_status`, `task_results`
+
+### Memory & Neural
+`memory_usage`, `neural_status`, `neural_train`, `neural_patterns`
+
+### GitHub Integration
+`github_swarm`, `repo_analyze`, `pr_enhance`, `issue_triage`, `code_review`
+
+### System
+`benchmark_run`, `features_detect`, `swarm_monitor`
+
+### Flow-Nexus MCP Tools (Optional Advanced Features)
+Flow-Nexus extends MCP capabilities with 70+ cloud-based orchestration tools:
+
+**Key MCP Tool Categories:**
+- **Swarm & Agents**: `swarm_init`, `swarm_scale`, `agent_spawn`, `task_orchestrate`
+- **Sandboxes**: `sandbox_create`, `sandbox_execute`, `sandbox_upload` (cloud execution)
+- **Templates**: `template_list`, `template_deploy` (pre-built project templates)
+- **Neural AI**: `neural_train`, `neural_patterns`, `seraphina_chat` (AI assistant)
+- **GitHub**: `github_repo_analyze`, `github_pr_manage` (repository management)
+- **Real-time**: `execution_stream_subscribe`, `realtime_subscribe` (live monitoring)
+- **Storage**: `storage_upload`, `storage_list` (cloud file management)
+
+**Authentication Required:**
+- Register: `mcp__flow-nexus__user_register` or `npx flow-nexus@latest register`
+- Login: `mcp__flow-nexus__user_login` or `npx flow-nexus@latest login`
+- Access 70+ specialized MCP tools for advanced orchestration
+
+## 🚀 Agent Execution Flow with Claude Code
+
+### The Correct Pattern:
+
+1. **Optional**: Use MCP tools to set up coordination topology
+2. **REQUIRED**: Use Claude Code's Task tool to spawn agents that do actual work
+3. **REQUIRED**: Each agent runs hooks for coordination
+4. **REQUIRED**: Batch all operations in single messages
+
+### Example Full-Stack Development:
+
+```javascript
+// Single message with all agent spawning via Claude Code's Task tool
+[Parallel Agent Execution]:
+  Task("Backend Developer", "Build REST API with Express. Use hooks for coordination.", "backend-dev")
+  Task("Frontend Developer", "Create React UI. Coordinate with backend via memory.", "coder")
+  Task("Database Architect", "Design PostgreSQL schema. Store schema in memory.", "code-analyzer")
+  Task("Test Engineer", "Write Jest tests. Check memory for API contracts.", "tester")
+  Task("DevOps Engineer", "Setup Docker and CI/CD. Document in memory.", "cicd-engineer")
+  Task("Security Auditor", "Review authentication. Report findings via hooks.", "reviewer")
+  
+  // All todos batched together
+  TodoWrite { todos: [...8-10 todos...] }
+  
+  // All file operations together
+  Write "backend/server.js"
+  Write "frontend/App.jsx"
+  Write "database/schema.sql"
+```
+
+## 📋 Agent Coordination Protocol
+
+### Every Agent Spawned via Task Tool MUST:
+
+**1️⃣ BEFORE Work:**
 ```bash
-# Full pipeline with local PDF processing (RECOMMENDED)
-python scripts/run_pipeline.py --process-local
-
-# Standard pipeline (Google Drive content only)
-python scripts/run_pipeline.py
-
-# Ingestion only (skip AI enrichment)
-python scripts/run_pipeline.py --skip-enrichment
-
-# Process specific files
-python scripts/run_pipeline.py --drive-file-ids "abc123,def456"
-
-# Test configuration without changes
-python scripts/run_pipeline.py --dry-run
+npx claude-flow@alpha hooks pre-task --description "[task]"
+npx claude-flow@alpha hooks session-restore --session-id "swarm-[id]"
 ```
 
-**Development and Testing:**
-
+**2️⃣ DURING Work:**
 ```bash
-# Run all tests (49 tests, 100% pass rate)
-python -m pytest
-
-# Run with coverage report
-python -m pytest --cov=src --cov-report=html
-
-# Run specific test categories
-python -m pytest tests/core/        # Core functionality
-python -m pytest tests/drive/       # Google Drive integration
-python -m pytest tests/enrichment/  # AI processing
-python -m pytest tests/formatters/  # Notion formatting
+npx claude-flow@alpha hooks post-edit --file "[file]" --memory-key "swarm/[agent]/[step]"
+npx claude-flow@alpha hooks notify --message "[what was done]"
 ```
 
-**Utility Commands:**
-
+**3️⃣ AFTER Work:**
 ```bash
-# View enriched content
-python scripts/view_enriched_content.py --limit 10
-
-# Migrate to enhanced formatters (if upgrading)
-python scripts/migrate_to_prompt_aware_formatter.py
+npx claude-flow@alpha hooks post-task --task-id "[task]"
+npx claude-flow@alpha hooks session-end --export-metrics true
 ```
 
-**v4.0.0 Status**: This is a production-ready CLI automation system with comprehensive testing, enhanced features, and streamlined architecture. Maintain its reliability and extend it thoughtfully.
+## 🎯 Concurrent Execution Examples
+
+### ✅ CORRECT WORKFLOW: MCP Coordinates, Claude Code Executes
+
+```javascript
+// Step 1: MCP tools set up coordination (optional, for complex tasks)
+[Single Message - Coordination Setup]:
+  mcp__claude-flow__swarm_init { topology: "mesh", maxAgents: 6 }
+  mcp__claude-flow__agent_spawn { type: "researcher" }
+  mcp__claude-flow__agent_spawn { type: "coder" }
+  mcp__claude-flow__agent_spawn { type: "tester" }
+
+// Step 2: Claude Code Task tool spawns ACTUAL agents that do the work
+[Single Message - Parallel Agent Execution]:
+  // Claude Code's Task tool spawns real agents concurrently
+  Task("Research agent", "Analyze API requirements and best practices. Check memory for prior decisions.", "researcher")
+  Task("Coder agent", "Implement REST endpoints with authentication. Coordinate via hooks.", "coder")
+  Task("Database agent", "Design and implement database schema. Store decisions in memory.", "code-analyzer")
+  Task("Tester agent", "Create comprehensive test suite with 90% coverage.", "tester")
+  Task("Reviewer agent", "Review code quality and security. Document findings.", "reviewer")
+  
+  // Batch ALL todos in ONE call
+  TodoWrite { todos: [
+    {id: "1", content: "Research API patterns", status: "in_progress", priority: "high"},
+    {id: "2", content: "Design database schema", status: "in_progress", priority: "high"},
+    {id: "3", content: "Implement authentication", status: "pending", priority: "high"},
+    {id: "4", content: "Build REST endpoints", status: "pending", priority: "high"},
+    {id: "5", content: "Write unit tests", status: "pending", priority: "medium"},
+    {id: "6", content: "Integration tests", status: "pending", priority: "medium"},
+    {id: "7", content: "API documentation", status: "pending", priority: "low"},
+    {id: "8", content: "Performance optimization", status: "pending", priority: "low"}
+  ]}
+  
+  // Parallel file operations
+  Bash "mkdir -p app/{src,tests,docs,config}"
+  Write "app/package.json"
+  Write "app/src/server.js"
+  Write "app/tests/server.test.js"
+  Write "app/docs/API.md"
+```
+
+### ❌ WRONG (Multiple Messages):
+```javascript
+Message 1: mcp__claude-flow__swarm_init
+Message 2: Task("agent 1")
+Message 3: TodoWrite { todos: [single todo] }
+Message 4: Write "file.js"
+// This breaks parallel coordination!
+```
+
+## Performance Benefits
+
+- **84.8% SWE-Bench solve rate**
+- **32.3% token reduction**
+- **2.8-4.4x speed improvement**
+- **27+ neural models**
+
+## Hooks Integration
+
+### Pre-Operation
+- Auto-assign agents by file type
+- Validate commands for safety
+- Prepare resources automatically
+- Optimize topology by complexity
+- Cache searches
+
+### Post-Operation
+- Auto-format code
+- Train neural patterns
+- Update memory
+- Analyze performance
+- Track token usage
+
+### Session Management
+- Generate summaries
+- Persist state
+- Track metrics
+- Restore context
+- Export workflows
+
+## Advanced Features (v2.0.0)
+
+- 🚀 Automatic Topology Selection
+- ⚡ Parallel Execution (2.8-4.4x speed)
+- 🧠 Neural Training
+- 📊 Bottleneck Analysis
+- 🤖 Smart Auto-Spawning
+- 🛡️ Self-Healing Workflows
+- 💾 Cross-Session Memory
+- 🔗 GitHub Integration
+
+## Integration Tips
+
+1. Start with basic swarm init
+2. Scale agents gradually
+3. Use memory for context
+4. Monitor progress regularly
+5. Train patterns from success
+6. Enable hooks automation
+7. Use GitHub tools first
+
+## Support
+
+- Documentation: https://github.com/ruvnet/claude-flow
+- Issues: https://github.com/ruvnet/claude-flow/issues
+- Flow-Nexus Platform: https://flow-nexus.ruv.io (registration required for cloud features)
+
+---
+
+Remember: **Claude Flow coordinates, Claude Code creates!**
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+Never save working files, text/mds and tests to the root folder.

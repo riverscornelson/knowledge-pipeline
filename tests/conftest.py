@@ -149,9 +149,11 @@ def sample_notion_page():
 
 
 @pytest.fixture(autouse=True)
-def no_sleep(mocker):
+def no_sleep(monkeypatch):
     """Automatically mock time.sleep to speed up tests."""
-    mocker.patch('time.sleep')
+    def mock_sleep(duration):
+        pass
+    monkeypatch.setattr('time.sleep', mock_sleep)
 
 
 @pytest.fixture

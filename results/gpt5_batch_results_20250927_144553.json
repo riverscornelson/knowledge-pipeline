@@ -1,0 +1,103 @@
+{
+  "summary": {
+    "total_documents": 10,
+    "average_quality": 7.619619484681984,
+    "average_processing_time": 16.0,
+    "pass_rate": 0.0,
+    "total_elapsed": 5.0248448848724365,
+    "performance_improvement": 83.24607329842932,
+    "monthly_savings": 99.99999999999997
+  },
+  "details": [
+    {
+      "document": "UAT-TEST-SCENARIOS.md",
+      "quality_score": 7.45389361055611,
+      "processing_time": 17.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "performance-benchmark-report.md",
+      "quality_score": 7.440705715118216,
+      "processing_time": 19.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "GPT5-COMPREHENSIVE-TEST-REPORT.md",
+      "quality_score": 7.45389361055611,
+      "processing_time": 13.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "UAT-TEST-PLAN.md",
+      "quality_score": 7.45389361055611,
+      "processing_time": 12.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "notion-aesthetic-validation.md",
+      "quality_score": 7.787982937895438,
+      "processing_time": 18.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "prompt-refinement-report.md",
+      "quality_score": 7.787982937895438,
+      "processing_time": 15.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "UAT-ROLLOUT-CHECKLIST.md",
+      "quality_score": 7.45389361055611,
+      "processing_time": 12.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "architecture.md",
+      "quality_score": 7.787982937895438,
+      "processing_time": 19.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "quality-scoring.md",
+      "quality_score": 7.787982937895438,
+      "processing_time": 14.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    },
+    {
+      "document": "enriched-content-examples.md",
+      "quality_score": 7.787982937895438,
+      "processing_time": 16.5,
+      "block_count": 10,
+      "passed": false,
+      "model": "gpt-5",
+      "reasoning_level": "high"
+    }
+  ]
+}

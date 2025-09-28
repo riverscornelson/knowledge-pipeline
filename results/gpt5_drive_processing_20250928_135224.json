@@ -1,0 +1,33 @@
+{
+  "args": {
+    "all": true,
+    "file_ids": null,
+    "status_filter": null,
+    "dry_run": false,
+    "batch_size": 2,
+    "force": true,
+    "config": null,
+    "log_level": "INFO"
+  },
+  "results": {
+    "success": true,
+    "total_files": 1,
+    "completed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "total_processing_time": 10.038172721862793,
+    "average_quality": 0,
+    "average_processing_time": 1.399644136428833
+  },
+  "processing_details": [
+    {
+      "file_id": "1TKinjiqK0dh902wZ51oYko7myOEhW6e-",
+      "file_name": "Unknown",
+      "status": "failed",
+      "processing_time": 1.399644136428833,
+      "quality_score": null,
+      "block_count": null,
+      "error_message": "'EnhancedQualityValidator' object has no attribute 'validate_content'"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "total": 3,
+  "success": 3,
+  "failed": 0,
+  "results": [
+    {
+      "document": "GPT5-OPTIMIZATION-SUMMARY.md",
+      "quality_score": 8.167735564435564,
+      "notion_url": "https://www.notion.so/27b6d7f523bc8187b992f6ce43d8c084",
+      "status": "success"
+    },
+    {
+      "document": "GPT5-COMPREHENSIVE-TEST-REPORT.md",
+      "quality_score": 8.167735564435564,
+      "notion_url": "https://www.notion.so/27b6d7f523bc81b686bfd0a1f986d21d",
+      "status": "success"
+    },
+    {
+      "document": "performance-benchmark-report.md",
+      "quality_score": 8.167735564435564,
+      "notion_url": "https://www.notion.so/27b6d7f523bc8154834dcde31ae42284",
+      "status": "success"
+    }
+  ],
+  "notion_urls": [
+    "https://www.notion.so/27b6d7f523bc8187b992f6ce43d8c084",
+    "https://www.notion.so/27b6d7f523bc81b686bfd0a1f986d21d",
+    "https://www.notion.so/27b6d7f523bc8154834dcde31ae42284"
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "document_id": "1DxYZa5C0i1J4K7L8M9N0O1P2Q3R4S5T6U7V8W9X0Y1Z2A3",
+  "document_type": "application/pdf",
+  "title": "CloudTech Enterprise Platform API Documentation v3.2",
+  "authors": ["CloudTech Engineering Team", "API Documentation Team"],
+  "created_time": "2024-01-08T10:00:00Z",
+  "modified_time": "2024-02-22T15:45:00Z",
+  "size": 8934567,
+  "page_count": 156,
+  "section_count": 23,
+  "code_examples": 89,
+  "metadata": {
+    "vendor": "CloudTech Solutions Inc.",
+    "product": "Enterprise Platform API",
+    "version": "3.2.0",
+    "api_version": "2024-02",
+    "classification": "Customer Accessible",
+    "target_audience": "Enterprise Developers",
+    "programming_languages": ["JavaScript", "Python", "Java", "C#", "Go", "Ruby"],
+    "last_review": "2024-02-20",
+    "next_review": "2024-05-20"
+  },
+  "content": {
+    "overview": "The CloudTech Enterprise Platform API provides comprehensive access to our cloud infrastructure management, monitoring, and automation services. This documentation covers all available endpoints, authentication methods, data formats, and integration patterns. The API follows REST principles and supports both synchronous and asynchronous operations for large-scale enterprise deployments.",
+    "sections": [
+      {
+        "title": "1. Getting Started",
+        "subsections": [
+          {
+            "title": "1.1 Introduction",
+            "content": "Welcome to the CloudTech Enterprise Platform API. This RESTful API enables developers to programmatically manage cloud infrastructure, monitor system performance, and automate deployment workflows. The API is designed for enterprise-scale applications with robust security, comprehensive logging, and 99.99% uptime SLA.\n\nKey Features:\n• Multi-cloud infrastructure management\n• Real-time monitoring and alerting\n• Automated scaling and load balancing\n• Advanced security and compliance tools\n• Comprehensive audit logging\n• Webhook-based event notifications\n• GraphQL query support for complex data retrieval"
+          },
+          {
+            "title": "1.2 API Overview",
+            "content": "Base URL: https://api.cloudtech.enterprise.com/v3\n\nSupported Protocols:\n• HTTPS (TLS 1.3)\n• WebSocket (WSS) for real-time updates\n• GraphQL endpoint: /graphql\n\nData Formats:\n• JSON (primary)\n• XML (legacy support)\n• Protocol Buffers (high-performance scenarios)\n\nRate Limits:\n• Standard: 1,000 requests/minute\n• Premium: 10,000 requests/minute\n• Enterprise: 100,000 requests/minute\n\nRegional Endpoints:\n• US East: api-us-east.cloudtech.enterprise.com\n• US West: api-us-west.cloudtech.enterprise.com\n• EU: api-eu.cloudtech.enterprise.com\n• Asia-Pacific: api-apac.cloudtech.enterprise.com"
+          },
+          {
+            "title": "1.3 Authentication",
+            "content": "The CloudTech API supports multiple authentication methods:\n\n1.3.1 API Key Authentication\nInclude your API key in the Authorization header:\nAuthorization: Bearer your-api-key-here\n\n1.3.2 OAuth 2.0\nSupported flows:\n• Authorization Code with PKCE (recommended for web applications)\n• Client Credentials (for server-to-server communication)\n• Device Code (for CLI tools and IoT devices)\n\nOAuth Endpoints:\n• Authorization: /oauth/authorize\n• Token: /oauth/token\n• Revocation: /oauth/revoke\n\n1.3.3 JWT Tokens\nFor enterprise SSO integration:\n• Issuer: https://auth.cloudtech.enterprise.com\n• Audience: cloudtech-api\n• Algorithm: RS256\n• Token lifetime: 1 hour (configurable)\n\n1.3.4 mTLS (Mutual TLS)\nFor highest security requirements:\n• Client certificate required\n• Certificate must be issued by CloudTech CA\n• Automatic certificate rotation supported"
+          }
+        ]
+      },
+      {
+        "title": "2. Core Concepts",
+        "subsections": [
+          {
+            "title": "2.1 Resource Model",
+            "content": "The CloudTech API organizes resources in a hierarchical structure:\n\nOrganization\n└── Projects\n    ├── Environments (dev, staging, prod)\n    │   ├── Services\n    │   │   ├── Instances\n    │   │   ├── Configurations\n    │   │   └── Deployments\n    │   ├── Networks\n    │   ├── Storage\n    │   └── Security Groups\n    └── Users & Permissions\n\nResource Identifiers:\n• Organization ID: org_abc123def456\n• Project ID: proj_789ghi012jkl\n• Environment ID: env_345mno678pqr\n• Service ID: svc_901stu234vwx"
+          },
+          {
+            "title": "2.2 Request/Response Format",
+            "content": "Standard Request Format:\n```json\n{\n  \"api_version\": \"2024-02\",\n  \"request_id\": \"req_unique_identifier\",\n  \"timestamp\": \"2024-02-22T15:30:00Z\",\n  \"data\": {\n    // Request payload\n  },\n  \"metadata\": {\n    \"client_version\": \"1.2.3\",\n    \"user_agent\": \"CloudTech-SDK/1.2.3\"\n  }\n}\n```\n\nStandard Response Format:\n```json\n{\n  \"api_version\": \"2024-02\",\n  \"request_id\": \"req_unique_identifier\",\n  \"timestamp\": \"2024-02-22T15:30:01Z\",\n  \"status\": \"success\",\n  \"data\": {\n    // Response payload\n  },\n  \"metadata\": {\n    \"processing_time_ms\": 245,\n    \"server_region\": \"us-east-1\"\n  },\n  \"pagination\": {\n    \"page\": 1,\n    \"per_page\": 50,\n    \"total_items\": 1247,\n    \"total_pages\": 25,\n    \"next_page\": \"/v3/services?page=2\"\n  }\n}\n```"
+          }
+        ]
+      },
+      {
+        "title": "3. Service Management API",
+        "subsections": [
+          {
+            "title": "3.1 Create Service",
+            "content": "Creates a new service in the specified environment.\n\nEndpoint: POST /v3/projects/{project_id}/environments/{env_id}/services\n\nRequest Body:\n```json\n{\n  \"name\": \"web-app\",\n  \"description\": \"Main web application service\",\n  \"service_type\": \"web\",\n  \"runtime\": {\n    \"platform\": \"nodejs\",\n    \"version\": \"18.17.0\",\n    \"memory_mb\": 512,\n    \"cpu_cores\": 1,\n    \"disk_gb\": 10\n  },\n  \"scaling\": {\n    \"min_instances\": 2,\n    \"max_instances\": 20,\n    \"target_cpu_percent\": 70,\n    \"target_memory_percent\": 80\n  },\n  \"network\": {\n    \"port\": 3000,\n    \"health_check_path\": \"/health\",\n    \"load_balancer\": true\n  },\n  \"environment_variables\": {\n    \"NODE_ENV\": \"production\",\n    \"LOG_LEVEL\": \"info\",\n    \"DATABASE_URL\": \"${SECRET:database_url}\"\n  },\n  \"tags\": {\n    \"team\": \"backend\",\n    \"cost_center\": \"engineering\",\n    \"environment\": \"production\"\n  }\n}\n```\n\nResponse:\n```json\n{\n  \"api_version\": \"2024-02\",\n  \"status\": \"success\",\n  \"data\": {\n    \"service_id\": \"svc_901stu234vwx\",\n    \"name\": \"web-app\",\n    \"status\": \"creating\",\n    \"created_at\": \"2024-02-22T15:30:01Z\",\n    \"endpoints\": {\n      \"public\": \"https://web-app.prod.example.cloudtech.app\",\n      \"internal\": \"http://web-app.internal:3000\"\n    },\n    \"deployment_id\": \"dep_abc123def456\"\n  }\n}\n```"
+          },
+          {
+            "title": "3.2 Update Service Configuration",
+            "content": "Updates service configuration with zero-downtime deployment.\n\nEndpoint: PATCH /v3/services/{service_id}\n\nSupported Update Types:\n• Rolling update (default)\n• Blue-green deployment\n• Canary deployment\n• Immediate update (for configuration-only changes)\n\nExample Request:\n```json\n{\n  \"scaling\": {\n    \"max_instances\": 30,\n    \"target_cpu_percent\": 60\n  },\n  \"environment_variables\": {\n    \"LOG_LEVEL\": \"debug\",\n    \"FEATURE_FLAG_X\": \"enabled\"\n  },\n  \"deployment_strategy\": {\n    \"type\": \"rolling\",\n    \"max_unavailable\": 1,\n    \"max_surge\": 2\n  }\n}\n```"
+          },
+          {
+            "title": "3.3 Service Monitoring",
+            "content": "Retrieve real-time metrics and health status.\n\nEndpoint: GET /v3/services/{service_id}/metrics\n\nQuery Parameters:\n• timeframe: 1h, 6h, 24h, 7d, 30d\n• metrics: cpu,memory,requests,errors,latency\n• granularity: 1m, 5m, 15m, 1h, 1d\n\nResponse includes:\n• Resource utilization (CPU, memory, disk, network)\n• Application metrics (requests/sec, error rate, latency percentiles)\n• Health check status\n• Instance status and distribution\n• Alert status and recent events\n\nExample Response:\n```json\n{\n  \"data\": {\n    \"current_status\": \"healthy\",\n    \"instances\": {\n      \"running\": 5,\n      \"starting\": 0,\n      \"stopping\": 0,\n      \"failed\": 0\n    },\n    \"metrics\": {\n      \"cpu_percent\": 45.2,\n      \"memory_percent\": 62.8,\n      \"requests_per_second\": 234.5,\n      \"error_rate_percent\": 0.12,\n      \"avg_response_time_ms\": 89,\n      \"p95_response_time_ms\": 156,\n      \"p99_response_time_ms\": 234\n    },\n    \"alerts\": {\n      \"active\": 0,\n      \"recent\": []\n    }\n  }\n}\n```"
+          }
+        ]
+      },
+      {
+        "title": "4. Infrastructure Management",
+        "subsections": [
+          {
+            "title": "4.1 Virtual Machines",
+            "content": "Manage virtual machine instances across multiple cloud providers.\n\nSupported Providers:\n• AWS EC2\n• Google Cloud Compute Engine\n• Microsoft Azure Virtual Machines\n• DigitalOcean Droplets\n• Vultr Instances\n\nVM Instance Types:\n• General Purpose (t3, n1-standard, B-series)\n• Compute Optimized (c5, c2, F-series)\n• Memory Optimized (r5, n1-highmem, E-series)\n• Storage Optimized (i3, n1-highcpu, L-series)\n• GPU Instances (p3, n1-accelerator, N-series)\n\nCreate VM Instance:\nPOST /v3/infrastructure/vms\n\n```json\n{\n  \"name\": \"web-server-01\",\n  \"provider\": \"aws\",\n  \"region\": \"us-east-1\",\n  \"instance_type\": \"t3.medium\",\n  \"image\": {\n    \"type\": \"ami\",\n    \"id\": \"ami-0abcdef1234567890\",\n    \"name\": \"ubuntu-22.04-lts\"\n  },\n  \"storage\": {\n    \"root_volume_gb\": 20,\n    \"additional_volumes\": [\n      {\n        \"size_gb\": 100,\n        \"type\": \"gp3\",\n        \"mount_point\": \"/data\"\n      }\n    ]\n  },\n  \"network\": {\n    \"vpc_id\": \"vpc-12345678\",\n    \"subnet_id\": \"subnet-87654321\",\n    \"security_groups\": [\"sg-web-servers\"],\n    \"public_ip\": true\n  },\n  \"ssh_key\": \"my-key-pair\",\n  \"user_data\": \"#!/bin/bash\\napt-get update\\napt-get install -y docker.io\",\n  \"tags\": {\n    \"Environment\": \"production\",\n    \"Team\": \"backend\",\n    \"Project\": \"web-app\"\n  }\n}\n```"
+          },
+          {
+            "title": "4.2 Container Orchestration",
+            "content": "Kubernetes cluster management and container deployment.\n\nSupported Orchestrators:\n• Amazon EKS\n• Google GKE\n• Azure AKS\n• Self-managed Kubernetes\n• Docker Swarm\n\nCluster Operations:\n• Create/delete clusters\n• Scale node groups\n• Update Kubernetes version\n• Configure networking (CNI, Ingress)\n• Manage RBAC and security policies\n\nDeploy Application:\nPOST /v3/infrastructure/kubernetes/deployments\n\n```yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-app\n  namespace: production\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: web-app\n  template:\n    metadata:\n      labels:\n        app: web-app\n    spec:\n      containers:\n      - name: web-app\n        image: myregistry/web-app:v2.1.0\n        ports:\n        - containerPort: 3000\n        env:\n        - name: NODE_ENV\n          value: \"production\"\n        - name: DATABASE_URL\n          valueFrom:\n            secretKeyRef:\n              name: db-credentials\n              key: url\n        resources:\n          requests:\n            memory: \"256Mi\"\n            cpu: \"250m\"\n          limits:\n            memory: \"512Mi\"\n            cpu: \"500m\"\n        livenessProbe:\n          httpGet:\n            path: /health\n            port: 3000\n          initialDelaySeconds: 30\n          periodSeconds: 10\n```"
+          }
+        ]
+      },
+      {
+        "title": "5. Monitoring and Observability",
+        "subsections": [
+          {
+            "title": "5.1 Metrics Collection",
+            "content": "Comprehensive metrics collection across all infrastructure components.\n\nMetric Categories:\n• System Metrics (CPU, memory, disk, network)\n• Application Metrics (custom business metrics)\n• Infrastructure Metrics (load balancer, database)\n• Security Metrics (authentication, authorization events)\n\nMetric Endpoints:\n• GET /v3/metrics/query - Query metrics with PromQL\n• GET /v3/metrics/series - List available metric series\n• POST /v3/metrics/custom - Send custom metrics\n\nQuery Examples:\n```promql\n# Average CPU usage across all instances\navg(cpu_usage_percent) by (service)\n\n# Request rate for specific service\nrate(http_requests_total[5m])\n\n# Memory usage trend\nincrease(memory_usage_bytes[1h])\n\n# Error rate calculation\n(rate(http_requests_total{status=~\"5..\"}[5m]) / rate(http_requests_total[5m])) * 100\n```"
+          },
+          {
+            "title": "5.2 Alerting System",
+            "content": "Configure intelligent alerts with multiple notification channels.\n\nAlert Types:\n• Threshold-based alerts\n• Anomaly detection alerts\n• Composite condition alerts\n• Predictive alerts\n\nNotification Channels:\n• Email\n• Slack\n• PagerDuty\n• Microsoft Teams\n• Webhook\n• SMS\n\nCreate Alert Rule:\nPOST /v3/alerts/rules\n\n```json\n{\n  \"name\": \"High CPU Usage Alert\",\n  \"description\": \"Alert when CPU usage exceeds 80% for 5 minutes\",\n  \"query\": \"avg(cpu_usage_percent) by (service) > 80\",\n  \"duration\": \"5m\",\n  \"severity\": \"warning\",\n  \"labels\": {\n    \"team\": \"backend\",\n    \"environment\": \"production\"\n  },\n  \"annotations\": {\n    \"summary\": \"High CPU usage detected\",\n    \"description\": \"Service {{ $labels.service }} has CPU usage of {{ $value }}%\",\n    \"runbook_url\": \"https://wiki.company.com/runbooks/high-cpu\"\n  },\n  \"notification_channels\": [\n    \"slack-backend-alerts\",\n    \"pagerduty-oncall\"\n  ],\n  \"escalation_policy\": {\n    \"repeat_interval\": \"1h\",\n    \"escalate_after\": \"15m\",\n    \"escalation_channels\": [\"pagerduty-manager\"]\n  }\n}\n```"
+          }
+        ]
+      },
+      {
+        "title": "6. Security and Compliance",
+        "subsections": [
+          {
+            "title": "6.1 Access Control",
+            "content": "Role-based access control (RBAC) with fine-grained permissions.\n\nBuilt-in Roles:\n• Owner: Full access to organization and all projects\n• Admin: Administrative access within assigned projects\n• Developer: Development and deployment permissions\n• Viewer: Read-only access to resources\n• Support: Limited access for troubleshooting\n\nCustom Roles:\nCreate custom roles with specific permission sets.\n\nPermission Categories:\n• Resource Management (create, read, update, delete)\n• Deployment (deploy, rollback, scale)\n• Monitoring (view metrics, manage alerts)\n• Security (manage users, configure policies)\n• Billing (view usage, manage subscriptions)\n\nCreate Custom Role:\nPOST /v3/organizations/{org_id}/roles\n\n```json\n{\n  \"name\": \"Database Administrator\",\n  \"description\": \"Manage database resources and configurations\",\n  \"permissions\": [\n    \"databases:create\",\n    \"databases:read\",\n    \"databases:update\",\n    \"databases:delete\",\n    \"databases:backup\",\n    \"databases:restore\",\n    \"metrics:read\",\n    \"alerts:manage\"\n  ],\n  \"resource_scope\": {\n    \"type\": \"projects\",\n    \"project_ids\": [\"proj_789ghi012jkl\"]\n  }\n}\n```"
+          },
+          {
+            "title": "6.2 Audit Logging",
+            "content": "Comprehensive audit trail for all API operations.\n\nLogged Events:\n• Authentication and authorization events\n• Resource creation, modification, deletion\n• Configuration changes\n• Deployment activities\n• Security policy changes\n• API key usage\n\nAudit Log Format:\n```json\n{\n  \"timestamp\": \"2024-02-22T15:30:01Z\",\n  \"event_id\": \"evt_abc123def456\",\n  \"actor\": {\n    \"type\": \"user\",\n    \"id\": \"user_789ghi012jkl\",\n    \"email\": \"john.doe@company.com\",\n    \"ip_address\": \"192.168.1.100\",\n    \"user_agent\": \"CloudTech-CLI/2.1.0\"\n  },\n  \"action\": {\n    \"type\": \"service.create\",\n    \"category\": \"resource_management\",\n    \"result\": \"success\"\n  },\n  \"resource\": {\n    \"type\": \"service\",\n    \"id\": \"svc_901stu234vwx\",\n    \"name\": \"web-app\",\n    \"project_id\": \"proj_789ghi012jkl\"\n  },\n  \"changes\": {\n    \"before\": null,\n    \"after\": {\n      \"name\": \"web-app\",\n      \"status\": \"creating\"\n    }\n  },\n  \"context\": {\n    \"request_id\": \"req_unique_identifier\",\n    \"session_id\": \"sess_987zyx654wvu\",\n    \"organization_id\": \"org_abc123def456\"\n  }\n}\n```\n\nQuery Audit Logs:\nGET /v3/audit/logs?start_time=2024-02-22T00:00:00Z&end_time=2024-02-22T23:59:59Z&actor=user_789ghi012jkl"
+          }
+        ]
+      }
+    ],
+    "code_examples": [
+      {
+        "language": "javascript",
+        "title": "Node.js SDK Usage",
+        "content": "const CloudTech = require('@cloudtech/sdk');\n\nconst client = new CloudTech({\n  apiKey: process.env.CLOUDTECH_API_KEY,\n  region: 'us-east-1'\n});\n\nasync function deployService() {\n  try {\n    const service = await client.services.create({\n      projectId: 'proj_789ghi012jkl',\n      environmentId: 'env_345mno678pqr',\n      name: 'api-server',\n      runtime: {\n        platform: 'nodejs',\n        version: '18.17.0'\n      },\n      scaling: {\n        minInstances: 2,\n        maxInstances: 10\n      }\n    });\n    \n    console.log('Service created:', service.id);\n    \n    // Wait for deployment to complete\n    await client.deployments.waitForCompletion(service.deploymentId);\n    \n    console.log('Service deployed successfully');\n  } catch (error) {\n    console.error('Deployment failed:', error.message);\n  }\n}"
+      },
+      {
+        "language": "python",
+        "title": "Python SDK Usage",
+        "content": "import cloudtech\nfrom cloudtech.exceptions import CloudTechError\n\nclient = cloudtech.Client(\n    api_key=os.environ['CLOUDTECH_API_KEY'],\n    region='us-east-1'\n)\n\ndef monitor_service_health(service_id):\n    try:\n        metrics = client.services.get_metrics(\n            service_id=service_id,\n            timeframe='1h',\n            metrics=['cpu', 'memory', 'requests']\n        )\n        \n        if metrics['cpu_percent'] > 80:\n            print(f\"Warning: High CPU usage: {metrics['cpu_percent']}%\")\n            \n        if metrics['error_rate_percent'] > 1:\n            print(f\"Warning: High error rate: {metrics['error_rate_percent']}%\")\n            \n        return metrics\n        \n    except CloudTechError as e:\n        print(f\"Failed to retrieve metrics: {e}\")\n        return None"
+      }
+    ],
+    "appendices": [
+      {
+        "title": "API Reference Quick Reference",
+        "content": "Complete endpoint listing with parameters and response schemas"
+      },
+      {
+        "title": "Error Codes and Troubleshooting",
+        "content": "Comprehensive error code reference with resolution steps"
+      },
+      {
+        "title": "SDK Documentation",
+        "content": "Language-specific SDK documentation and examples"
+      },
+      {
+        "title": "Webhook Event Reference",
+        "content": "Complete webhook event schemas and delivery mechanisms"
+      }
+    ]
+  },
+  "extraction_challenges": [
+    "Complex technical documentation with nested sections",
+    "Multiple programming language code examples",
+    "API endpoint documentation with request/response schemas",
+    "JSON and YAML code blocks with syntax highlighting",
+    "Cross-references and internal linking",
+    "Technical diagrams and architecture illustrations",
+    "Version-specific information and deprecation notices",
+    "Command-line examples and curl commands"
+  ],
+  "quality_metrics": {
+    "technical_accuracy": 9.6,
+    "completeness": 9.4,
+    "code_example_quality": 9.7,
+    "documentation_clarity": 9.2,
+    "api_coverage": 9.8
+  }
+}

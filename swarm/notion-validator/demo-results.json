@@ -1,0 +1,201 @@
+{
+  "ideal_tech": {
+    "page_title": "Analytics Platform Documentation",
+    "aesthetic_metrics": {
+      "overall_score": 0.9870000000000001,
+      "visual_hierarchy": 0.96,
+      "mobile_readability": 1.0,
+      "accessibility": 0.9666666666666668,
+      "emoji_functionality": 1.0,
+      "table_mobile_compliance": true
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.99,
+      "mobile_score": 0.9,
+      "desktop_score": 1.0,
+      "critical_issues": [],
+      "recommendations": []
+    }
+  },
+  "ideal_business": {
+    "page_title": "Q4 Growth Strategy",
+    "aesthetic_metrics": {
+      "overall_score": 0.9788,
+      "visual_hierarchy": 0.994,
+      "mobile_readability": 1.0,
+      "accessibility": 1.0,
+      "emoji_functionality": 1.0,
+      "table_mobile_compliance": true
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.9549999999999998,
+      "mobile_score": 0.9,
+      "desktop_score": 1.0,
+      "critical_issues": [],
+      "recommendations": []
+    }
+  },
+  "ideal_design": {
+    "page_title": "Design System Documentation",
+    "aesthetic_metrics": {
+      "overall_score": 0.968,
+      "visual_hierarchy": 0.9049999999999999,
+      "mobile_readability": 1.0,
+      "accessibility": 0.9133333333333333,
+      "emoji_functionality": 1.0,
+      "table_mobile_compliance": true
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.9749999999999999,
+      "mobile_score": 0.9,
+      "desktop_score": 1.0,
+      "critical_issues": [],
+      "recommendations": []
+    }
+  },
+  "problematic": {
+    "page_title": "Problematic Page Example",
+    "aesthetic_metrics": {
+      "overall_score": 0.8078000000000001,
+      "visual_hierarchy": 0.7689999999999999,
+      "mobile_readability": 0.75,
+      "accessibility": 0.96,
+      "emoji_functionality": 0.0,
+      "table_mobile_compliance": false
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.859,
+      "mobile_score": 0.55,
+      "desktop_score": 1.0,
+      "critical_issues": [
+        "Poor mobile readability - check heading and paragraph lengths",
+        "Table 1 has too many columns for mobile (8 columns)",
+        "Heading 1 too long for mobile (151 characters)"
+      ],
+      "recommendations": [
+        "Redesign tables to use maximum 3 columns for mobile",
+        "Consider using callout blocks instead of wide tables",
+        "Shorten headings to under 40 characters"
+      ]
+    }
+  },
+  "mobile_optimized": {
+    "page_title": "Mobile User Guide",
+    "aesthetic_metrics": {
+      "overall_score": 0.9403,
+      "visual_hierarchy": 0.954,
+      "mobile_readability": 1.0,
+      "accessibility": 0.93,
+      "emoji_functionality": 1.0,
+      "table_mobile_compliance": true
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.9849999999999999,
+      "mobile_score": 1.0,
+      "desktop_score": 1.0,
+      "critical_issues": [],
+      "recommendations": []
+    }
+  },
+  "comprehensive": {
+    "page_title": "Comprehensive Aesthetic Test Page",
+    "aesthetic_metrics": {
+      "overall_score": 0.9840000000000001,
+      "visual_hierarchy": 0.96,
+      "mobile_readability": 1.0,
+      "accessibility": 0.8800000000000001,
+      "emoji_functionality": 1.0,
+      "table_mobile_compliance": true
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.99,
+      "mobile_score": 0.9,
+      "desktop_score": 1.0,
+      "critical_issues": [],
+      "recommendations": []
+    }
+  },
+  "with_links": {
+    "page_title": "Project Resources Hub",
+    "aesthetic_metrics": {
+      "overall_score": 0.954,
+      "visual_hierarchy": 0.9549999999999998,
+      "mobile_readability": 1.0,
+      "accessibility": 0.9533333333333334,
+      "emoji_functionality": 1.0,
+      "table_mobile_compliance": true
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.9650000000000001,
+      "mobile_score": 1.0,
+      "desktop_score": 1.0,
+      "critical_issues": [],
+      "recommendations": []
+    }
+  },
+  "no_emojis": {
+    "page_title": "Analytics Platform Documentation (No Emojis)",
+    "aesthetic_metrics": {
+      "overall_score": 0.8800000000000001,
+      "visual_hierarchy": 0.9,
+      "mobile_readability": 1.0,
+      "accessibility": 1.0,
+      "emoji_functionality": 0.0,
+      "table_mobile_compliance": true
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.96,
+      "mobile_score": 0.9,
+      "desktop_score": 1.0,
+      "critical_issues": [],
+      "recommendations": []
+    }
+  },
+  "poor_mobile": {
+    "page_title": "User Portal Documentation (Poor Mobile)",
+    "aesthetic_metrics": {
+      "overall_score": 0.867,
+      "visual_hierarchy": 0.96,
+      "mobile_readability": 0.3999999999999999,
+      "accessibility": 0.9666666666666668,
+      "emoji_functionality": 1.0,
+      "table_mobile_compliance": false
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.905,
+      "mobile_score": 0.1999999999999999,
+      "desktop_score": 1.0,
+      "critical_issues": [
+        "Poor mobile readability - check heading and paragraph lengths",
+        "Table 1 has too many columns for mobile (5 columns)",
+        "Heading 1 too long for mobile (68 characters)",
+        "Heading 2 too long for mobile (75 characters)",
+        "Heading 3 too long for mobile (72 characters)",
+        "Heading 4 too long for mobile (78 characters)"
+      ],
+      "recommendations": [
+        "Redesign tables to use maximum 3 columns for mobile",
+        "Consider using callout blocks instead of wide tables",
+        "Shorten headings to under 40 characters"
+      ]
+    }
+  },
+  "accessibility_issues": {
+    "page_title": "Analytics Platform Documentation (A11y Issues)",
+    "aesthetic_metrics": {
+      "overall_score": 0.9560000000000001,
+      "visual_hierarchy": 0.96,
+      "mobile_readability": 1.0,
+      "accessibility": 0.96,
+      "emoji_functionality": 0.7,
+      "table_mobile_compliance": true
+    },
+    "responsive_metrics": {
+      "responsive_score": 0.99,
+      "mobile_score": 0.9,
+      "desktop_score": 1.0,
+      "critical_issues": [],
+      "recommendations": []
+    }
+  }
+}
