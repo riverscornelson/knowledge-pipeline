@@ -344,7 +344,13 @@ class EnhancedPromptConfig:
                 self.logger.debug(f"  └─ Found {len(matching_keys)} prompts for {analyzer} in Notion cache: {matching_keys}")
             else:
                 self.logger.debug(f"  └─ No prompts found for {analyzer} in Notion cache")
-        
+
+        # Check for optimized unified prompt override
+        if analyzer == "unified_analyzer" or os.getenv("USE_UNIFIED_ANALYZER", "false").lower() == "true":
+            unified_config = self._get_unified_prompt(content_type)
+            if unified_config:
+                return unified_config
+
         return config
     
     def _get_yaml_prompt(self, analyzer: str, content_type: Optional[str] = None) -> Dict[str, Any]:
@@ -461,3 +467,60 @@ class EnhancedPromptConfig:
             "notion_connected": self.notion_client is not None
         }
         return stats
+
+    def _get_unified_prompt(self, content_type: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """Get unified analyzer prompt from optimized configuration."""
+        # Try optimized config first
+        optimized_config_path = self.config_path.parent / "prompts-optimized.yaml"
+        if optimized_config_path.exists():
+            try:
+                with open(optimized_config_path) as f:
+                    optimized_config = yaml.safe_load(f)
+
+                base_config = optimized_config.get("defaults", {}).get("unified_analyzer", {})
+
+                # Apply content-type specific overrides
+                if content_type and "content_types" in optimized_config:
+                    content_type_key = content_type.lower().replace(" ", "_").replace("-", "_")
+                    content_type_config = optimized_config.get("content_types", {}).get(content_type_key, {}).get("unified_analyzer", {})
+                    base_config.update(content_type_config)
+
+                # Apply environment variable overrides
+                if not self.web_search_enabled:
+                    base_config["web_search"] = False
+
+                base_config["source"] = "optimized"
+                self.logger.info(f"Using optimized unified prompt for {content_type or 'default'}")
+                return base_config
+
+            except Exception as e:
+                self.logger.error(f"Failed to load optimized config: {e}")
+
+        # Fallback: check if unified_analyzer exists in main config
+        unified_config = self.yaml_prompts.get("defaults", {}).get("unified_analyzer")
+        if unified_config:
+            config = unified_config.copy()
+            config["source"] = "yaml"
+            self.logger.info(f"Using YAML unified prompt for {content_type or 'default'}")
+            return config
+
+        return None
+
+    def is_unified_analyzer_enabled(self) -> bool:
+        """Check if unified analyzer is enabled."""
+        return os.getenv("USE_UNIFIED_ANALYZER", "false").lower() == "true"
+
+    def get_optimization_settings(self) -> Dict[str, Any]:
+        """Get optimization settings from configuration."""
+        # Try optimized config first
+        optimized_config_path = self.config_path.parent / "prompts-optimized.yaml"
+        if optimized_config_path.exists():
+            try:
+                with open(optimized_config_path) as f:
+                    optimized_config = yaml.safe_load(f)
+                return optimized_config.get("optimization", {})
+            except Exception:
+                pass
+
+        # Fallback to main config
+        return self.yaml_prompts.get("optimization", {})
