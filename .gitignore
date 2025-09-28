@@ -212,3 +212,24 @@ coordination/orchestration/*
 claude-flow
 # Removed Windows wrapper files per user request
 hive-mind-prompt-*.txt
+
+# Secrets and credentials - NEVER commit these
+secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+*.env
+.env.*
+*_sa.json
+*-sa.json
+*_service_account.json
+service-account*.json
+credentials*.json
+gdrive_sa.json
+google-credentials*.json
+firebase-*.json
+aws-credentials*.json
+api-keys*.json
