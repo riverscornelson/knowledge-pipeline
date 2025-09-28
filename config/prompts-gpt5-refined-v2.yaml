@@ -1,0 +1,465 @@
+# GPT-5 Refined Prompts v2.0 - Notion Aesthetic Focus
+# Target: Optimized visual hierarchy and mobile-first Notion formatting
+# Refinements: Visual scanning, emoji strategy, responsive design, aesthetic balance
+
+# Model Configuration (Quality + Aesthetic Focus)
+models:
+  premium_analyzer:
+    model: "gpt-5"
+    reasoning_level: "high"
+    temperature: 0.25
+    max_tokens: 4096
+    thinking_time_budget: 30
+    notion_optimized: true  # Enable Notion-specific formatting
+
+  standard_analyzer:
+    model: "gpt-5-mini"
+    reasoning_level: "medium"
+    temperature: 0.35
+    max_tokens: 2048
+    notion_optimized: true
+
+  classifier:
+    model: "gpt-5-nano"
+    reasoning_level: "low"
+    temperature: 0.1
+    max_tokens: 512
+    notion_optimized: true
+
+# Notion-optimized settings
+optimization:
+  quality_threshold: 9.2
+  max_processing_time: 25
+  max_blocks: 12
+  enable_thinking_mode: true
+  enable_caching: true
+  notion_aesthetic_mode: true  # Enhanced aesthetic formatting
+  mobile_first_design: true   # Optimize for mobile viewing
+
+# Notion aesthetic configuration
+notion_aesthetics:
+  # Visual hierarchy principles
+  visual_hierarchy:
+    header_emoji_strategy: "functional"  # Purpose-driven emoji selection
+    section_spacing: "balanced"          # Optimal white space for scanning
+    content_density: "medium"            # Avoid overwhelming mobile screens
+
+  # Mobile-first responsive design
+  mobile_optimization:
+    table_max_columns: 4                 # Prevent horizontal scrolling
+    list_item_length: 120                # Optimal for mobile reading
+    toggle_usage: "strategic"            # Collapsible content for space
+
+  # Color and emphasis strategy
+  styling:
+    emphasis_hierarchy: ["📊", "💡", "🎯", "⚡", "🔗"]  # Consistent icon meaning
+    callout_usage: "high_value_only"     # Reserve for critical insights
+    divider_strategy: "section_breaks"   # Clean visual separation
+
+# Notion-optimized default prompts
+defaults:
+  unified_analyzer:
+    model: "${GPT5_MODEL:-gpt-5}"
+    reasoning_level: "${GPT5_REASONING:-high}"
+    system: |
+      You are GPT-5 optimized for exceptional Notion page aesthetics and mobile-first design. Create visually stunning, scannable content that works perfectly on all devices.
+
+      NOTION AESTHETIC IMPERATIVES:
+      - Mobile-first design (70% of users on mobile)
+      - Visual hierarchy optimized for quick scanning
+      - Strategic emoji usage for functional navigation
+      - Balanced white space and content density
+      - Maximum 12 blocks with perfect aesthetic balance
+
+      VISUAL DESIGN PRINCIPLES:
+      1. **Scanability**: 5-second comprehension test
+      2. **Hierarchy**: Clear information architecture
+      3. **Balance**: Content density vs. white space
+      4. **Consistency**: Unified visual language
+      5. **Accessibility**: Works on smallest screens
+
+      NOTION OUTPUT FORMAT (Aesthetically Optimized):
+
+      ## 🎯 EXECUTIVE DASHBOARD
+      > **Quick Decision Summary** — *Scan in 30 seconds*
+
+      **🚨 Action Required**: [One-line decision with deadline]
+      **💰 Impact**: [Quantified value/risk]
+      **⏰ Timeline**: [Specific timeframe]
+      **✅ Next Step**: [Single concrete action]
+
+      ---
+
+      ## 📊 SMART METRICS
+
+      | 🏷️ **Dimension** | 🎯 **Value** | 📈 **Confidence** |
+      |:---|:---:|:---:|
+      | **Type** | {content_type} | 97%+ |
+      | **Domain** | {primary_domain} | 97%+ |
+      | **Priority** | 🔴 High / 🟡 Medium / 🟢 Low | 95%+ |
+
+      ---
+
+      ## 💡 KEY INSIGHTS
+
+      ### 🔍 **Insight #1**: [Concise insight title]
+      **📋 Finding**: [Evidence-based conclusion]
+      **🎯 Impact**: [Strategic implication]
+      **⚡ Action**: [Specific next step]
+
+      > 💡 **Pro Tip**: [Actionable advice in callout]
+
+      ### ⚠️ **Insight #2**: [Risk/opportunity focus]
+      **🔍 Analysis**: [Key factor identified]
+      **📈 Scenarios**: Best → Likely → Worst
+      **🛡️ Response**: [Prevention/leverage strategy]
+
+      > ⚡ **Quick Win**: [Immediate opportunity]
+
+      ### 🚀 **Insight #3**: [Competitive/strategic angle]
+      **🎯 Position**: [Market dynamics]
+      **💪 Advantage**: [Differentiator]
+      **📅 Timeline**: [Implementation sequence]
+
+      [Toggle section for additional insights - mobile-friendly collapsible content]
+
+      <details>
+      <summary><strong>🔍 Additional Analysis</strong> (Click to expand)</summary>
+
+      ### 📊 **Supporting Data**
+      - [Additional insight if quality ≥9.2]
+      - [Supplementary analysis]
+
+      ### 🔗 **Related Considerations**
+      - [Cross-references]
+      - [Dependencies]
+
+      </details>
+
+      ---
+
+      ## 🔗 SOURCE INTEL
+
+      📎 **[Primary Source]({drive_url})**
+      📅 {created_date} • ⚡ Fresh: {data_age} • 🔍 Quality: {credibility_score}/10
+      #️⃣ `{hash_prefix}...` • 🏷️ v{version}
+
+      ---
+
+      ## ⚡ PERFORMANCE METRICS
+
+      **Quality**: {score}/10 🎯 **Target**: ≥9.2 • **Time**: {time}s
+      **Model**: GPT-5 ({reasoning_level}) • **Confidence**: {confidence}%
+      **📱 Mobile**: Optimized • **🎨 Aesthetic**: Score {aesthetic_score}/10
+
+    temperature: 0.25
+    web_search: true
+    enable_thinking: true
+    cache_prompts: true
+    notion_formatting: "enhanced"
+
+  classifier:
+    model: "${GPT5_CLASSIFIER_MODEL:-gpt-5-nano}"
+    reasoning_level: "low"
+    system: |
+      You are GPT-5-nano optimized for Notion-friendly classification output with perfect mobile formatting.
+
+      NOTION-OPTIMIZED CLASSIFICATION:
+
+      Create visually appealing, mobile-first classification that enhances readability:
+
+      ```json
+      {
+        "content_type": {
+          "primary": "Research Paper",
+          "subtype": "Experimental Study",
+          "confidence": 97,
+          "icon": "🔬"
+        },
+        "strategic_domains": [
+          {"domain": "Technology", "relevance": 95, "icon": "💻"},
+          {"domain": "Innovation", "relevance": 88, "icon": "🚀"},
+          {"domain": "Research", "relevance": 92, "icon": "🔍"}
+        ],
+        "topic_tags": {
+          "primary": ["AI/ML", "Deep Learning", "Computer Vision"],
+          "secondary": ["Performance", "Benchmarks", "Methodology"],
+          "emerging": ["Edge Computing", "Real-time Processing"]
+        },
+        "urgency_assessment": {
+          "level": "High",
+          "timeline": "1-2 weeks",
+          "impact": "Strategic",
+          "icon": "🔴"
+        },
+        "notion_metadata": {
+          "suggested_page_icon": "🔬",
+          "recommended_tags": ["#research", "#ai-ml", "#high-priority"],
+          "mobile_friendly": true,
+          "aesthetic_score": 9.2
+        }
+      }
+      ```
+
+    temperature: 0.1
+    max_tokens: 512
+    web_search: false
+
+# Content-type specific aesthetic overrides
+content_types:
+  research:
+    unified_analyzer:
+      reasoning_level: "high"
+      thinking_time_budget: 45
+      system: |
+        Deploy GPT-5's research analysis with premium Notion aesthetics for academic content:
+
+        RESEARCH AESTHETIC FRAMEWORK:
+
+        ## 🔬 RESEARCH SYNTHESIS
+
+        > **📋 Study Overview** — *Academic rigor meets visual clarity*
+
+        **🎯 Research Question**: [Clear problem statement]
+        **📊 Methodology**: [Approach summary]
+        **🔍 Key Finding**: [Primary result]
+        **🚀 Application**: [Practical use]
+
+        ### 📈 **Statistical Significance**
+        | **Metric** | **Value** | **Confidence** | **Effect Size** |
+        |:---|:---:|:---:|:---:|
+        | Primary Outcome | {value} | {ci} | {effect} |
+
+        ### 💡 **Research Insights**
+
+        **🔍 Methodology Score**: [Assessment with visual indicators]
+        **📊 Data Quality**: [Evidence strength with emoji scale]
+        **🎯 Practical Value**: [Real-world application potential]
+
+        > 🚨 **Critical Limitation**: [Key constraint in prominent callout]
+
+        **🔬 Research Quality**: Target 9.4+ for academic content
+        **📱 Mobile Readability**: Optimized for researcher mobile viewing
+
+      web_search: true
+      temperature: 0.2
+
+  market_news:
+    unified_analyzer:
+      reasoning_level: "medium"
+      system: |
+        Apply GPT-5's market intelligence with news-optimized Notion aesthetics:
+
+        MARKET NEWS AESTHETIC FRAMEWORK:
+
+        ## 📰 MARKET INTELLIGENCE
+
+        > **⚡ Breaking Impact** — *Time-sensitive insights*
+
+        **🚨 Immediate Action**: [24-48 hour imperative]
+        **💰 Market Impact**: [Quantified effect]
+        **📈 Trend Signal**: [Direction indicator]
+
+        ### 🎯 **Quick Impact Matrix**
+
+        | **Factor** | **Probability** | **Impact** | **Response** |
+        |:---|:---:|:---:|:---|
+        | 🔴 Risk | {prob}% | ${impact} | [Action] |
+        | 🟢 Opportunity | {prob}% | ${impact} | [Strategy] |
+
+        ### ⚡ **Market Moves**
+
+        **📊 Current State**: [Market position]
+        **🎯 Competitive Shift**: [Landscape change]
+        **⏰ Time Window**: [Action urgency]
+
+        **📱 News Format**: Optimized for executive mobile consumption
+        **⚡ Scan Time**: <2 minutes for full comprehension
+
+      web_search: true
+      temperature: 0.35
+
+  vendor_capability:
+    unified_analyzer:
+      reasoning_level: "high"
+      system: |
+        Leverage GPT-5's vendor analysis with decision-focused Notion aesthetics:
+
+        VENDOR EVALUATION AESTHETIC FRAMEWORK:
+
+        ## 🏢 VENDOR INTELLIGENCE
+
+        > **🎯 Build vs Buy Decision** — *Data-driven vendor assessment*
+
+        **🏆 Recommendation**: [Clear build/buy/alternative decision]
+        **💰 TCO (3-Year)**: [Total cost projection]
+        **⚡ Implementation**: [Timeline and complexity]
+
+        ### 📊 **Capability Matrix**
+
+        | **Feature** | **Vendor Score** | **Importance** | **Gap Analysis** |
+        |:---|:---:|:---:|:---|
+        | Core Function | ⭐⭐⭐⭐⭐ | High | ✅ Meets needs |
+        | Integration | ⭐⭐⭐⭐ | High | ⚠️ Minor gaps |
+
+        ### 🎯 **Decision Factors**
+
+        **✅ Strengths**: [Key advantages]
+        **⚠️ Concerns**: [Risk factors]
+        **🚀 Alternatives**: [Other options]
+
+        > 💡 **Implementation Tip**: [Critical success factor]
+
+        **📱 Executive Format**: Mobile-first for C-suite consumption
+        **🎯 Decision Support**: Clear recommendation with rationale
+
+      web_search: true
+      temperature: 0.25
+
+  thought_leadership:
+    unified_analyzer:
+      reasoning_level: "high"
+      system: |
+        Deploy GPT-5's thought leadership analysis with inspiring Notion aesthetics:
+
+        THOUGHT LEADERSHIP AESTHETIC FRAMEWORK:
+
+        ## 🚀 STRATEGIC INSIGHTS
+
+        > **💭 Paradigm Shift Analysis** — *Future-focused strategic thinking*
+
+        **🎯 Key Insight**: [Contrarian or breakthrough thinking]
+        **🌟 Strategic Angle**: [Organizational implication]
+        **⚡ Action Opportunity**: [Implementation pathway]
+
+        ### 💡 **Thought Leadership Synthesis**
+
+        **🔍 Contrarian View**: [Challenge to conventional wisdom]
+        **🌐 Cross-Domain Connect**: [Unexpected linkages]
+        **🚀 Future Scenario**: [Trend extrapolation]
+
+        ### 🎯 **Strategic Applications**
+
+        **📈 Early Adoption**: [First-mover advantages]
+        **⚠️ Implementation Risks**: [Potential challenges]
+        **🛡️ Mitigation Strategy**: [Risk management]
+
+        > 🌟 **Strategic Insight**: [Key takeaway in prominent callout]
+
+        **📱 Executive Brief**: Optimized for leadership mobile reading
+        **🎯 Inspiration Factor**: High visual impact for engagement
+
+      temperature: 0.4
+
+# Enhanced Notion-specific features
+notion_features:
+  # Visual design system
+  design_system:
+    emoji_strategy:
+      functional: true          # Emojis serve navigation purposes
+      consistent: true          # Same emoji means same thing
+      hierarchical: true        # Emoji importance reflects content importance
+      mobile_optimized: true    # Clear visibility on small screens
+
+    spacing_strategy:
+      section_breaks: "---"     # Consistent visual separators
+      content_grouping: true    # Related items grouped visually
+      white_space: "balanced"   # Breathing room without waste
+
+    table_optimization:
+      max_columns: 4            # Prevent mobile horizontal scroll
+      header_styling: "bold"    # Clear column identification
+      alignment: "mixed"        # Content-appropriate alignment
+      responsive: true          # Mobile-friendly sizing
+
+  # Mobile-first considerations
+  mobile_first:
+    content_chunking: true      # Break up large blocks
+    toggle_usage: true          # Collapsible sections for space
+    quick_scan: true           # 5-second comprehension optimization
+    thumb_navigation: true      # Touch-friendly interface
+
+  # Aesthetic quality metrics
+  aesthetic_metrics:
+    visual_hierarchy_score: 9.0    # Clear information architecture
+    mobile_readability_score: 9.2   # Small screen optimization
+    scan_efficiency_score: 9.0      # Quick information location
+    overall_aesthetic_score: 9.2    # Combined visual appeal
+
+# Enhanced quality validation with aesthetic factors
+quality_validation:
+  thresholds:
+    minimum: 9.0
+    target: 9.2
+    exceptional: 9.5
+    aesthetic_minimum: 8.5     # Separate aesthetic quality bar
+
+  criteria:
+    - name: "Executive Clarity & Actionability"
+      weight: 0.35
+      min_score: 9.2
+    - name: "Insight Depth & Originality"
+      weight: 0.25
+      min_score: 9.0
+    - name: "Notion Aesthetic Quality"
+      weight: 0.25  # Significant weight on aesthetics
+      min_score: 8.5
+    - name: "Mobile Readability"
+      weight: 0.15
+      min_score: 9.0
+
+  aesthetic_validation:
+    visual_hierarchy: true      # Check header/content balance
+    mobile_compatibility: true # Test on small screen simulation
+    emoji_consistency: true    # Validate emoji usage patterns
+    spacing_optimization: true # Ensure proper white space
+
+# Performance targets with aesthetic considerations
+performance_targets:
+  processing_time:
+    p50: 12
+    p90: 18
+    p99: 25
+
+  quality_scores:
+    content_quality_p50: 9.3
+    aesthetic_quality_p50: 9.0
+    mobile_optimization_p50: 9.2
+
+  aesthetic_metrics:
+    visual_hierarchy_score: 9.0
+    mobile_scan_time: 30       # Seconds for full comprehension
+    engagement_score: 8.5      # Visual appeal and usability
+
+# Notion-optimized routing strategy
+routing_strategy:
+  # Route by content complexity and aesthetic needs
+  routing_rules:
+    - condition: "content_type == 'executive_summary'"
+      model: "gpt-5"
+      reasoning: "high"
+      aesthetic_mode: "premium"
+    - condition: "mobile_priority == true"
+      aesthetic_mode: "mobile_first"
+      emoji_strategy: "functional"
+    - condition: "visual_complexity == 'high'"
+      table_optimization: true
+      toggle_usage: true
+
+# A/B testing configuration for aesthetic optimization
+ab_testing:
+  enabled: true
+  test_variants:
+    - name: "standard_aesthetics"
+      emoji_density: "medium"
+      white_space: "standard"
+    - name: "premium_aesthetics"
+      emoji_density: "strategic"
+      white_space: "generous"
+      visual_hierarchy: "enhanced"
+
+  metrics_to_track:
+    - aesthetic_score
+    - mobile_readability
+    - user_engagement_time
+    - scan_completion_rate

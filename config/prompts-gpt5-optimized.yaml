@@ -1,0 +1,309 @@
+# GPT-5 Consultant-Optimized Prompt Configuration
+# For Generative AI Enablement & Architecture Consulting
+# Focus: Practical, casual summaries with actionable client insights
+
+# Model Configuration
+models:
+  # GPT-5 for high-value content analysis (summarization, insights)
+  premium_analyzer:
+    model: "gpt-5"  # Full GPT-5 model for highest quality
+    reasoning_level: "low"  # Use low for casual, conversational tone
+    # Note: GPT-5 doesn't use temperature - reasoning_level controls output style
+    max_tokens: 4096  # Optimal for concise output
+
+  # GPT-5-mini for standard analysis (92% performance at 25% cost)
+  standard_analyzer:
+    model: "gpt-5-mini"
+    reasoning_level: "low"  # Casual, practical output
+    # Note: GPT-5 models don't use temperature
+    max_tokens: 2048
+
+  # GPT-5-nano for classification (cost optimization)
+  classifier:
+    model: "gpt-5-nano"
+    reasoning_level: "minimal"  # Fast, consistent classification
+    # Note: GPT-5 models don't use temperature
+    max_tokens: 512
+
+# Optimization settings for consultant use
+optimization:
+  quality_threshold: 8.5  # More natural language, still high quality
+  max_processing_time: 25  # Allow slightly more time for comprehensive analysis
+  max_blocks: 10  # Concise but comprehensive for Notion
+  enable_thinking_mode: true  # Maintain accuracy
+  enable_caching: true  # Cost optimization
+
+# Default prompts optimized for GPT-5's capabilities
+defaults:
+  unified_analyzer:
+    model: "${GPT5_MODEL:-gpt-5}"
+    reasoning_level: "${GPT5_REASONING:-medium}"
+    system: |
+      You're helping a Generative AI consultant at Crowe LLP quickly understand articles
+      to advise enterprise clients. Write like you're briefing a colleague - casual but
+      insightful, focusing on what actually matters for client engagements.
+
+      WRITING STYLE:
+      - Conversational and accessible (avoid unnecessary jargon)
+      - Focus on "so what?" - why should clients care?
+      - Highlight numbers, percentages, and concrete examples
+      - Call out potential use cases for enterprise clients
+      - Be honest about hype vs reality
+
+      OUTPUT FORMAT:
+
+      ## 📌 The Quick Take
+      [2-3 sentences max - what's this about and why it matters]
+
+      ## 📊 Key Numbers & Facts
+      • [Important stats, metrics, costs, timelines]
+      • [Percentages, dollar amounts, user counts]
+      • [Benchmark comparisons if mentioned]
+      • [Market size or adoption rates]
+
+      ## 🎯 What This Means for Enterprise Clients
+      **Who should care:** [Specific roles/industries]
+      **Use case:** [Concrete example application]
+      **Complexity:** Simple / Moderate / Complex
+      **Time to value:** Immediate / 3-6 months / 1+ year
+
+      [1-2 paragraphs explaining practical implications]
+
+      ## 💡 Insights for Consulting Engagements
+      **Opportunities:**
+      • [Specific opportunity with client type]
+      • [Another actionable opportunity]
+
+      **Watch-outs:**
+      • [Red flag or limitation]
+      • [Common misconception to address]
+
+      ## ✅ Bottom Line
+      [One sentence takeaway for your next client meeting]
+
+      ## 🏷️ Classification Tags
+      ```json
+      {
+        "content_type": "[Pick ONE: Research / Market News / Vendor Capability / Thought Leadership / Case Study / Technical Tutorial / Analysis / Report]",
+        "topical_tags": ["specific_topic_1", "specific_topic_2", "up_to_5_topics"],
+        "domain_tags": ["Industry_or_Domain_1", "up_to_3_domains"],
+        "ai_primitives": ["Relevant_AI_Tech_1", "if_applicable"],
+        "vendor": "Primary_Company_or_null"
+      }
+      ```
+
+      ---
+      📎 Source: [Drive Link]({drive_url})
+      📅 Date: {created_date}
+
+    # Note: GPT-5 uses reasoning_level (not temperature) to control output style
+    # Using "low" reasoning for casual, conversational tone
+    web_search: false  # Not needed for article summaries
+    enable_thinking: true  # 80% less hallucination with thinking mode
+    cache_prompts: true  # 90% cost savings on repeated prompts
+
+  classifier:
+    model: "${GPT5_CLASSIFIER_MODEL:-gpt-5-nano}"
+    reasoning_level: "minimal"
+    system: |
+      Generate practical classification tags for a GenAI consultant's knowledge base.
+
+      Return clean JSON with these fields:
+      - content_type: ONE of [Research, Market News, Vendor Capability, Thought Leadership, Case Study, Technical Tutorial, Analysis, Report]
+      - topical_tags: 3-5 specific topics (e.g., "prompt engineering", "RAG systems", "enterprise AI adoption")
+      - domain_tags: 1-3 industries/domains (e.g., "Financial Services", "Healthcare", "Manufacturing")
+      - ai_primitives: Relevant AI technologies if discussed (e.g., "LLM", "Computer Vision", "NLP")
+      - vendor: Primary company/vendor discussed (or null)
+
+      Be specific and practical - these tags help find content for client conversations.
+
+    # Note: reasoning_level="minimal" ensures consistent classification
+    max_tokens: 512  # Increased for comprehensive tagging
+    web_search: false  # Not needed for classification
+
+# Content-type specific overrides leveraging GPT-5's capabilities
+content_types:
+  research:
+    unified_analyzer:
+      reasoning_level: "high"
+      system: |
+        Research paper summary for consulting context. Focus on:
+        - What's the actual breakthrough (if any)? Be skeptical.
+        - Is this production-ready or still lab work?
+        - What would it take to implement at enterprise scale?
+        - Which vendors might productize this?
+        - Timeline to mainstream adoption (realistic, not hype)
+
+        Skip methodology unless genuinely novel. Focus on "can clients use this?"
+      web_search: false
+      # Note: reasoning_level="high" for thorough research analysis
+
+  market_news:
+    unified_analyzer:
+      reasoning_level: "low"
+      system: |
+        Market news brief for morning client calls:
+        - What happened and who's involved?
+        - How much money/users/market share are we talking?
+        - Which clients might ask about this?
+        - Is this hype cycle or actually significant?
+        - Any immediate actions to recommend?
+
+        Keep it punchy - this is for quick briefings.
+      web_search: false
+      # Note: reasoning_level="low" for quick, practical summaries
+
+  vendor_capability:
+    unified_analyzer:
+      reasoning_level: "medium"
+      system: |
+        Vendor analysis for client recommendations:
+        - What they ACTUALLY do (not marketing speak)
+        - Pricing ballpark if mentioned
+        - Real differentiators vs competitors
+        - Integration requirements and gotchas
+        - Which client scenarios this fits
+        - Notable customers or case studies
+        - Red flags or limitations
+
+        Be skeptical - vendors always oversell.
+      web_search: false
+      # Note: reasoning_level="medium" for balanced vendor analysis
+
+  thought_leadership:
+    unified_analyzer:
+      reasoning_level: "medium"
+      system: |
+        Thought leadership digest for client conversations:
+        - The core argument or prediction
+        - Evidence provided (or lack thereof)
+        - What's genuinely new vs recycled
+        - How to use this in client meetings
+        - Counter-arguments worth considering
+
+        Focus on ideas you can use next week, not theory.
+      # Note: reasoning_level="medium" allows creative interpretation
+
+# GPT-5 specific features
+gpt5_features:
+  # Adaptive routing between fast and thinking models
+  adaptive_routing:
+    enabled: true
+    complexity_threshold: 0.7  # Switch to thinking mode above this
+
+  # Health and safety features (46.2% on HealthBench Hard)
+  health_safety:
+    enabled: true
+    safe_completions: true  # Provide safe high-level responses vs declining
+
+  # Advanced tool usage
+  tool_intelligence:
+    enabled: true
+    parallel_calls: true  # Chain dozens of tool calls reliably
+
+  # Multimodal understanding (84.2% on MMMU)
+  multimodal:
+    enabled: true
+    image_analysis: true
+    chart_extraction: true
+
+  # Code analysis (74.9% on SWE-bench)
+  code_analysis:
+    enabled: true
+    bug_detection: true
+    optimization_suggestions: true
+
+# Pricing optimization strategies
+pricing_strategy:
+  # Use caching for repeated prompts (90% discount)
+  enable_prompt_caching: true
+  cache_ttl: 3600  # 1 hour cache
+
+  # Model selection by value
+  routing_rules:
+    - condition: "quality_required >= 9.0"
+      model: "gpt-5"
+      reasoning: "medium"
+    - condition: "quality_required >= 8.0"
+      model: "gpt-5-mini"
+      reasoning: "low"
+    - condition: "task == 'classification'"
+      model: "gpt-5-nano"
+      reasoning: "minimal"
+
+  # Cost tracking
+  budget_alerts:
+    daily_limit: 100  # USD
+    alert_threshold: 0.8  # Alert at 80% of budget
+
+# Quality validation specific to GPT-5
+quality_validation:
+  # GPT-5 can achieve higher quality consistently
+  thresholds:
+    minimum: 8.5
+    target: 9.0
+    exceptional: 9.5
+
+  # Validation criteria leveraging GPT-5 capabilities
+  criteria:
+    - name: "Executive Clarity"
+      weight: 0.35
+      min_score: 9.0
+    - name: "Actionability"
+      weight: 0.30
+      min_score: 9.0
+    - name: "Insight Depth"
+      weight: 0.20
+      min_score: 8.5
+    - name: "Processing Speed"
+      weight: 0.15
+      max_seconds: 20
+
+  # Automatic quality improvement
+  auto_improve:
+    enabled: true
+    max_attempts: 2  # GPT-5 usually gets it right first time
+    use_thinking_mode: true  # Enable for corrections
+
+# Performance benchmarks for GPT-5
+performance_targets:
+  processing_time:
+    p50: 10  # 50th percentile: 10 seconds
+    p90: 15  # 90th percentile: 15 seconds
+    p99: 20  # 99th percentile: 20 seconds
+
+  quality_scores:
+    p50: 9.2
+    p90: 9.0
+    p99: 8.8
+
+  token_efficiency:
+    input_reduction: 0.7  # 70% reduction from original
+    output_reduction: 0.8  # 80% reduction in output
+
+  hallucination_rate:
+    without_thinking: 0.05  # 5% baseline
+    with_thinking: 0.01  # 1% with thinking mode (80% reduction)
+# Classification Configuration
+classification:
+  enabled: true
+  model: "gpt-4.1"  # Using GPT-4.1 with structured outputs
+  use_structured_outputs: true  # Supported by GPT-4.1
+  use_full_content: true  # Send entire document (1M token context)
+  load_existing_tags: true  # Dynamically load from Notion
+  suggest_new_tags: true  # Allow new tag creation when needed
+  cache_duration: 3600  # Cache existing tags for 1 hour
+
+  # Processing settings
+  batch_tag_generation: false  # Process one at a time for quality
+  include_confidence: true  # Include confidence scores
+  include_themes: true  # Extract key themes
+  temperature: 0.2  # Low for consistent classification
+  max_tokens: 1000  # Enough for comprehensive JSON response
+
+# Tag Classifier Model (GPT-4.1)
+tag_classifier:
+  model: "gpt-4.1"  # 1M context window, structured outputs
+  temperature: 0.2  # Low for consistency
+  max_tokens: 1000  # For JSON response
+  use_full_content: true  # Use entire document

@@ -1,0 +1,267 @@
+# GPT-5 Optimized Prompt Configuration
+# Leverages GPT-5's advanced capabilities for premium quality output
+# Released: August 2025 | Context: 272K tokens | Knowledge cutoff: September 2024
+
+# Model Configuration
+models:
+  # GPT-5 for high-value content analysis (summarization, insights)
+  premium_analyzer:
+    model: "gpt-5"  # Full GPT-5 model for highest quality
+    reasoning_level: "medium"  # Options: minimal, low, medium, high
+    temperature: 0.3  # Lower temperature for consistency
+    max_tokens: 4096  # Optimal for concise output
+
+  # GPT-5-mini for standard analysis (92% performance at 25% cost)
+  standard_analyzer:
+    model: "gpt-5-mini"
+    reasoning_level: "low"
+    temperature: 0.4
+    max_tokens: 2048
+
+  # GPT-5-nano for classification (cost optimization)
+  classifier:
+    model: "gpt-5-nano"
+    reasoning_level: "minimal"
+    temperature: 0.1
+    max_tokens: 512
+
+# Optimization settings for GPT-5
+optimization:
+  quality_threshold: 9.0  # GPT-5 can achieve 9.0+ consistently
+  max_processing_time: 20  # GPT-5 is faster than GPT-4
+  max_blocks: 12  # Even more concise with GPT-5's superior summarization
+  enable_thinking_mode: true  # 80% less hallucination with thinking mode
+  enable_caching: true  # 90% discount on cached prompts
+
+# Default prompts optimized for GPT-5's capabilities
+defaults:
+  unified_analyzer:
+    model: "${GPT5_MODEL:-gpt-5}"
+    reasoning_level: "${GPT5_REASONING:-medium}"
+    system: |
+      You are GPT-5, OpenAI's most advanced model with superior reasoning and zero hallucination when in thinking mode.
+
+      CRITICAL REQUIREMENTS:
+      - Maximum 12 Notion blocks (leverage GPT-5's superior summarization)
+      - Quality score must be ≥9.0/10
+      - Zero raw content (Drive links only)
+      - Processing time <20 seconds
+      - Use structured thinking for complex analysis
+
+      OUTPUT FORMAT (Use headers exactly as shown, without block count annotations):
+
+      ## 🎯 EXECUTIVE BRIEF
+      [Ultra-concise decision points using GPT-5's superior context understanding]
+      - Decision Required: [Specific action with deadline]
+      - Impact: [Quantified business/technical impact]
+      - Recommendation: [Clear path forward]
+
+      ## 📊 SMART CLASSIFICATION
+      | Dimension | Value | Confidence |
+      |-----------|-------|------------|
+      | Type | {content_type} | 95%+ |
+      | Domain | {primary_domain} | 95%+ |
+      | Priority | High/Medium/Low | Based on impact |
+
+      ## 💡 STRATEGIC INSIGHTS
+      [Leverage GPT-5's advanced reasoning for breakthrough insights]
+      1. **Opportunity**: [Specific, measurable opportunity]
+         - Action: [Concrete next step]
+         - Timeline: [Specific timeframe]
+
+      2. **Risk Mitigation**: [Critical risk identified]
+         - Prevention: [Specific preventive measure]
+         - Contingency: [Backup plan]
+
+      [Additional insights only if they meet 9.0+ quality threshold]
+
+      ## 🔗 REFERENCES
+      📎 **Source**: [Drive Link]({drive_url})
+      📅 **Date**: {created_date}
+      #️⃣ **Hash**: {hash_prefix}...
+
+      ## ⚡ QUALITY METRICS
+      - Processing: {time}s | Quality: {score}/10
+      - Model: GPT-5 ({reasoning_level} reasoning)
+      - Confidence: {confidence}%
+
+    temperature: 0.3
+    web_search: true  # GPT-5 has better web search integration
+    enable_thinking: true  # 80% less hallucination with thinking mode
+    cache_prompts: true  # 90% cost savings on repeated prompts
+
+  classifier:
+    model: "${GPT5_CLASSIFIER_MODEL:-gpt-5-nano}"
+    reasoning_level: "minimal"
+    system: |
+      You are GPT-5-nano optimized for ultra-fast, accurate classification.
+
+      Classify content with 95%+ confidence in these dimensions:
+      1. Content-Type (Research/Market News/Vendor Capability/etc.)
+      2. Domain-Tags (3-5 primary domains)
+      3. Topical-Tags (5-10 specific topics)
+      4. AI-Primitives (if applicable)
+
+      Output as structured JSON for direct database insertion.
+
+    temperature: 0.1
+    max_tokens: 256
+    web_search: false  # Not needed for classification
+
+# Content-type specific overrides leveraging GPT-5's capabilities
+content_types:
+  research:
+    unified_analyzer:
+      reasoning_level: "high"  # Maximum reasoning for research papers
+      system: |
+        Apply GPT-5's advanced research analysis capabilities:
+        - Methodology validation with 94.6% accuracy (AIME 2025 benchmark)
+        - Statistical significance assessment
+        - Cross-paper citation analysis (leverage 272K context)
+        - Breakthrough identification with confidence scoring
+
+        Focus on actionable research applications, not theoretical discussion.
+      web_search: true
+      temperature: 0.2  # Higher consistency for research
+
+  market_news:
+    unified_analyzer:
+      reasoning_level: "low"  # Fast processing for news
+      system: |
+        Leverage GPT-5's real-time understanding (knowledge through Sept 2024):
+        - Market impact quantification
+        - Competitive positioning shifts
+        - 24-48 hour action items
+        - Risk/opportunity matrix
+
+        Maximum 10 blocks for time-sensitive content.
+      web_search: true
+      temperature: 0.4
+
+  vendor_capability:
+    unified_analyzer:
+      reasoning_level: "medium"
+      system: |
+        Apply GPT-5's technical evaluation capabilities:
+        - Feature differentiation analysis
+        - Integration complexity assessment
+        - TCO implications (3-year projection)
+        - Alternative solution mapping
+
+        Focus on build vs. buy decisions.
+      web_search: true
+      temperature: 0.3
+
+  thought_leadership:
+    unified_analyzer:
+      reasoning_level: "high"
+      system: |
+        Use GPT-5's literary and analytical capabilities:
+        - Extract contrarian viewpoints
+        - Identify paradigm shifts
+        - Map to organizational strategy
+        - Generate counter-arguments
+
+        Maximum 8 blocks for executive consumption.
+      temperature: 0.5  # More creative for thought leadership
+
+# GPT-5 specific features
+gpt5_features:
+  # Adaptive routing between fast and thinking models
+  adaptive_routing:
+    enabled: true
+    complexity_threshold: 0.7  # Switch to thinking mode above this
+
+  # Health and safety features (46.2% on HealthBench Hard)
+  health_safety:
+    enabled: true
+    safe_completions: true  # Provide safe high-level responses vs declining
+
+  # Advanced tool usage
+  tool_intelligence:
+    enabled: true
+    parallel_calls: true  # Chain dozens of tool calls reliably
+
+  # Multimodal understanding (84.2% on MMMU)
+  multimodal:
+    enabled: true
+    image_analysis: true
+    chart_extraction: true
+
+  # Code analysis (74.9% on SWE-bench)
+  code_analysis:
+    enabled: true
+    bug_detection: true
+    optimization_suggestions: true
+
+# Pricing optimization strategies
+pricing_strategy:
+  # Use caching for repeated prompts (90% discount)
+  enable_prompt_caching: true
+  cache_ttl: 3600  # 1 hour cache
+
+  # Model selection by value
+  routing_rules:
+    - condition: "quality_required >= 9.0"
+      model: "gpt-5"
+      reasoning: "medium"
+    - condition: "quality_required >= 8.0"
+      model: "gpt-5-mini"
+      reasoning: "low"
+    - condition: "task == 'classification'"
+      model: "gpt-5-nano"
+      reasoning: "minimal"
+
+  # Cost tracking
+  budget_alerts:
+    daily_limit: 100  # USD
+    alert_threshold: 0.8  # Alert at 80% of budget
+
+# Quality validation specific to GPT-5
+quality_validation:
+  # GPT-5 can achieve higher quality consistently
+  thresholds:
+    minimum: 8.5
+    target: 9.0
+    exceptional: 9.5
+
+  # Validation criteria leveraging GPT-5 capabilities
+  criteria:
+    - name: "Executive Clarity"
+      weight: 0.35
+      min_score: 9.0
+    - name: "Actionability"
+      weight: 0.30
+      min_score: 9.0
+    - name: "Insight Depth"
+      weight: 0.20
+      min_score: 8.5
+    - name: "Processing Speed"
+      weight: 0.15
+      max_seconds: 20
+
+  # Automatic quality improvement
+  auto_improve:
+    enabled: true
+    max_attempts: 2  # GPT-5 usually gets it right first time
+    use_thinking_mode: true  # Enable for corrections
+
+# Performance benchmarks for GPT-5
+performance_targets:
+  processing_time:
+    p50: 10  # 50th percentile: 10 seconds
+    p90: 15  # 90th percentile: 15 seconds
+    p99: 20  # 99th percentile: 20 seconds
+
+  quality_scores:
+    p50: 9.2
+    p90: 9.0
+    p99: 8.8
+
+  token_efficiency:
+    input_reduction: 0.7  # 70% reduction from original
+    output_reduction: 0.8  # 80% reduction in output
+
+  hallucination_rate:
+    without_thinking: 0.05  # 5% baseline
+    with_thinking: 0.01  # 1% with thinking mode (80% reduction)
