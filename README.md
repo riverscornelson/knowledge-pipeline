@@ -312,6 +312,7 @@ We welcome contributions! Please see:
 
 - **GitHub Issues**: [Report bugs or request features](https://github.com/riverscornelson/knowledge-pipeline/issues)
 - **Documentation**: [Complete documentation](docs/README.md)
+- **Power Platform**: [Deployment pipeline design](docs/power-platform-deployment-pipeline.md)
 - **Email**: rivers.cornelson@gmail.com
 - **LinkedIn**: [Rivers Cornelson](https://www.linkedin.com/in/rivers-cornelson/)
 
