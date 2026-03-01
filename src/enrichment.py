@@ -106,6 +106,8 @@ these keys:
 - "topical_tags": 3-6 topical tags describing the subject matter.
 - "domain_tags": 1-3 broad domain tags (e.g. "AI/ML", "Finance",
   "Professional Services", "Private Equity", "Healthcare").
+- "title": A clean, descriptive title for this document (like an article
+  headline). Do not include file extensions or upload artifacts.
 - "created_date": The date this document was originally created or published,
   in ISO 8601 format (YYYY-MM-DD). Infer this from dates in the content such
   as publication dates, report dates, copyright notices, headers/footers, or
@@ -241,6 +243,7 @@ def enrich(
                 domain_tags=data.get("domain_tags", []),
                 client_relevance=data.get("client_relevance", []),
                 created_date=data.get("created_date"),
+                title=data.get("title"),
             )
 
         # Exhausted max iterations without a final response

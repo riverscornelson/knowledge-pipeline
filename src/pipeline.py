@@ -113,6 +113,14 @@ class Pipeline:
                     print(f"  fail (enrich): {name}")
                     continue
 
+                # Update page title with AI-generated title
+                if result.title:
+                    retry_on_transient(
+                        self.notion.update_page_properties,
+                        page_id,
+                        {"Title": {"title": [{"text": {"content": result.title}}]}},
+                    )
+
                 # Override Created Date with AI-inferred date if available
                 if result.created_date:
                     try:
