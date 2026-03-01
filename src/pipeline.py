@@ -62,6 +62,12 @@ class Pipeline:
             print(f"[{idx}/{len(files)}] {name} ({size_str})")
 
             try:
+                # Title-based dedup (before downloading)
+                if self.notion.title_exists(name):
+                    stats["skipped"] += 1
+                    print(f"  skip (exists): {name}")
+                    continue
+
                 # Download and hash for dedup
                 pdf_bytes = retry_on_transient(self.drive.download_pdf, file_id)
                 content_hash = DriveClient.content_hash(pdf_bytes)

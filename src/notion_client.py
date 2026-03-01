@@ -37,6 +37,31 @@ class NotionClient:
             log.debug("hash_exists query failed, assuming not seen")
             return False
 
+    def title_exists(self, title: str) -> bool:
+        """Check if a page with this title already exists in the database."""
+        try:
+            resp = retry_on_transient(
+                self.client.search, query=title, page_size=10
+            )
+            for page in resp.get("results", []):
+                if page.get("object") != "page":
+                    continue
+                parent = page.get("parent", {})
+                if parent.get("database_id", "").replace("-", "") != self.db_id.replace("-", ""):
+                    continue
+                props = page.get("properties", {})
+                for prop in props.values():
+                    if prop.get("type") == "title":
+                        page_title = "".join(
+                            t.get("plain_text", "") for t in prop.get("title", [])
+                        )
+                        if page_title == title:
+                            return True
+            return False
+        except Exception:
+            log.debug("title_exists search failed, assuming not seen")
+            return False
+
     def create_page(self, content: SourceContent) -> str:
         """Create a new page and return its ID."""
         resp = self.client.pages.create(
