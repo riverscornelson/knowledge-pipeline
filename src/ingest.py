@@ -19,15 +19,17 @@ def text_to_pdf(subject: str, body: str) -> bytes:
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
 
+    # Sanitize to latin-1 (Helvetica only supports that range)
+    safe_subject = subject.encode("latin-1", errors="replace").decode("latin-1")
+    safe_body = body.encode("latin-1", errors="replace").decode("latin-1")
+
     # Subject heading
     pdf.set_font("Helvetica", style="B", size=14)
-    pdf.multi_cell(0, 7, subject)
+    pdf.multi_cell(0, 7, safe_subject)
     pdf.ln(4)
 
     # Body text
     pdf.set_font("Helvetica", size=11)
-    # Encode to latin-1 with replacements for unsupported chars
-    safe_body = body.encode("latin-1", errors="replace").decode("latin-1")
     pdf.multi_cell(0, 5, safe_body)
 
     return bytes(pdf.output())
