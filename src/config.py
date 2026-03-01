@@ -10,12 +10,14 @@ load_dotenv()
 class NotionConfig:
     token: str
     sources_db_id: str
+    clients_db_id: str = ""
 
     @classmethod
     def from_env(cls) -> "NotionConfig":
         token = os.environ["NOTION_TOKEN"]
         db_id = os.environ["NOTION_SOURCES_DB"]
-        return cls(token=token, sources_db_id=db_id)
+        clients_db_id = os.getenv("NOTION_CLIENTS_DB", "")
+        return cls(token=token, sources_db_id=db_id, clients_db_id=clients_db_id)
 
 
 @dataclass
@@ -32,6 +34,19 @@ class DriveConfig:
             service_account_path=os.getenv("GOOGLE_APP_CREDENTIALS", ""),
             oauth_client_secret_path=os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", ""),
             oauth_token_path=os.getenv("GOOGLE_OAUTH_TOKEN", "token.json"),
+        )
+
+
+@dataclass
+class GmailConfig:
+    label_source: str = "knowledge-pipeline"
+    label_processed: str = "pipeline-processed"
+
+    @classmethod
+    def from_env(cls) -> "GmailConfig":
+        return cls(
+            label_source=os.getenv("GMAIL_LABEL_SOURCE", "knowledge-pipeline"),
+            label_processed=os.getenv("GMAIL_LABEL_PROCESSED", "pipeline-processed"),
         )
 
 
@@ -55,6 +70,11 @@ class PipelineConfig:
     notion: NotionConfig
     drive: DriveConfig
     openai: OpenAIConfig
+    gmail: GmailConfig = None  # type: ignore[assignment]
+
+    def __post_init__(self) -> None:
+        if self.gmail is None:
+            self.gmail = GmailConfig()
 
     @classmethod
     def from_env(cls) -> "PipelineConfig":
@@ -62,4 +82,5 @@ class PipelineConfig:
             notion=NotionConfig.from_env(),
             drive=DriveConfig.from_env(),
             openai=OpenAIConfig.from_env(),
+            gmail=GmailConfig.from_env(),
         )

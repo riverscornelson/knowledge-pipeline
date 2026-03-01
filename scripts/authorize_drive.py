@@ -11,7 +11,11 @@ from urllib.parse import urlparse, parse_qs
 
 from google_auth_oauthlib.flow import Flow
 
-SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
+# Combined scopes for Drive (full) + Gmail (modify labels)
+SCOPES = [
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/gmail.modify",
+]
 CLIENT_SECRET = "client_secret.json"
 TOKEN_PATH = "token.json"
 VERIFIER_PATH = "/tmp/oauth_code_verifier.json"
@@ -61,7 +65,7 @@ def exchange(redirect_url):
 
     os.remove(VERIFIER_PATH)
     print(f"\nSaved credentials to {TOKEN_PATH}")
-    print("You can now run: python -m src.run")
+    print("You can now run: python -m src.run (pipeline) or python -m src.ingest (Gmail ingest)")
 
 
 if __name__ == "__main__":
