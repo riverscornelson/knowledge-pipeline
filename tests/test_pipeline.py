@@ -9,6 +9,8 @@ from src.config import PipelineConfig, NotionConfig, DriveConfig, OpenAIConfig
 from src.models import ContentStatus, SourceContent, EnrichmentResult
 from src.formatter import format_blocks
 from src.enrichment import enrich
+from src.retry import retry_on_transient
+from src.pipeline import Pipeline
 
 
 # ---------------------------------------------------------------------------
@@ -397,3 +399,72 @@ def test_real_codex_no_tools_fallback():
         "Without Notion tools, client_relevance should be empty"
     )
     print(f"\nFallback result summary: {result.summary}")
+
+
+# ---------------------------------------------------------------------------
+# Retry
+# ---------------------------------------------------------------------------
+
+def test_retry_succeeds_first_try():
+    calls = []
+    def fn():
+        calls.append(1)
+        return "ok"
+    assert retry_on_transient(fn) == "ok"
+    assert len(calls) == 1
+
+
+@patch("src.retry.time.sleep")
+def test_retry_recovers_from_transient(mock_sleep):
+    from openai import RateLimitError
+    call_count = 0
+    def fn():
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            raise RateLimitError(
+                message="rate limit",
+                response=MagicMock(status_code=429, headers={}),
+                body=None,
+            )
+        return "recovered"
+    assert retry_on_transient(fn) == "recovered"
+    assert call_count == 2
+    mock_sleep.assert_called_once_with(2)  # first backoff
+
+
+def test_retry_non_transient_propagates():
+    def fn():
+        raise ValueError("bad input")
+    with pytest.raises(ValueError, match="bad input"):
+        retry_on_transient(fn)
+
+
+@patch("src.retry.time.sleep")
+def test_retry_exhaustion_raises(mock_sleep):
+    from openai import RateLimitError
+    def fn():
+        raise RateLimitError(
+            message="rate limit",
+            response=MagicMock(status_code=429, headers={}),
+            body=None,
+        )
+    with pytest.raises(RateLimitError):
+        retry_on_transient(fn)
+    assert mock_sleep.call_count == 3  # 3 sleeps before final raise
+
+
+# ---------------------------------------------------------------------------
+# Duplicate filename filtering
+# ---------------------------------------------------------------------------
+
+def test_duplicate_filename_detected():
+    assert Pipeline._is_duplicate("report (1).pdf") is True
+    assert Pipeline._is_duplicate("doc (2).pdf") is True
+    assert Pipeline._is_duplicate("file (12).pdf") is True
+
+
+def test_normal_filename_not_filtered():
+    assert Pipeline._is_duplicate("report.pdf") is False
+    assert Pipeline._is_duplicate("my (cool) report.pdf") is False
+    assert Pipeline._is_duplicate("section (1) overview.pdf") is False

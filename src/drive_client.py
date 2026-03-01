@@ -85,7 +85,7 @@ class DriveClient:
         )
         response = self.service.files().list(
             q=query,
-            fields="files(id, name, webViewLink, createdTime)",
+            fields="files(id, name, webViewLink, createdTime, size)",
             pageSize=1000,
         ).execute()
         return response.get("files", [])

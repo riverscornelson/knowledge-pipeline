@@ -103,6 +103,11 @@ these keys:
 - "topical_tags": 3-6 topical tags describing the subject matter.
 - "domain_tags": 1-3 broad domain tags (e.g. "AI/ML", "Finance",
   "Professional Services", "Private Equity", "Healthcare").
+- "created_date": The date this document was originally created or published,
+  in ISO 8601 format (YYYY-MM-DD). Infer this from dates in the content such
+  as publication dates, report dates, copyright notices, headers/footers, or
+  the most prominent date referenced. If you cannot determine a date with
+  reasonable confidence, return null.
 - "client_relevance": A list of strings connecting this document to specific
   Cornelson Advisory clients or engagements found in the Notion workspace.
   Each entry should follow the format:
@@ -232,6 +237,7 @@ def enrich(
                 topical_tags=data.get("topical_tags", []),
                 domain_tags=data.get("domain_tags", []),
                 client_relevance=data.get("client_relevance", []),
+                created_date=data.get("created_date"),
             )
 
         # Exhausted max iterations without a final response

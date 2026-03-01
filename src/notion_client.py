@@ -7,6 +7,7 @@ from notion_client import Client
 
 from .config import NotionConfig
 from .models import SourceContent, ContentStatus
+from .retry import retry_on_transient
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +26,8 @@ class NotionClient:
         removed databases.query — dedup is best-effort).
         """
         try:
-            resp = self.client.request(
+            resp = retry_on_transient(
+                self.client.request,
                 path=f"databases/{self.db_id}/query",
                 method="POST",
                 body={"filter": {"property": "Hash", "rich_text": {"equals": content_hash}}},
