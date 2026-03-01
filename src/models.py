@@ -26,6 +26,7 @@ class SourceContent:
             "Title": {"title": [{"text": {"content": self.title}}]},
             "Status": {"select": {"name": self.status.value}},
             "Hash": {"rich_text": [{"text": {"content": self.hash}}]},
+            "Source File": {"rich_text": [{"text": {"content": self.title}}]},
             "Content-Type": {"select": {"name": "PDF"}},
         }
         if self.drive_url:

@@ -62,6 +62,31 @@ class NotionClient:
             log.debug("title_exists search failed, assuming not seen")
             return False
 
+    def source_file_exists(self, filename: str) -> bool:
+        """Check if a page with this Source File property already exists."""
+        try:
+            resp = retry_on_transient(
+                self.client.search, query=filename, page_size=10
+            )
+            for page in resp.get("results", []):
+                if page.get("object") != "page":
+                    continue
+                parent = page.get("parent", {})
+                if parent.get("database_id", "").replace("-", "") != self.db_id.replace("-", ""):
+                    continue
+                props = page.get("properties", {})
+                sf = props.get("Source File", {})
+                if sf.get("type") == "rich_text":
+                    value = "".join(
+                        t.get("plain_text", "") for t in sf.get("rich_text", [])
+                    )
+                    if value == filename:
+                        return True
+            return False
+        except Exception:
+            log.debug("source_file_exists search failed, assuming not seen")
+            return False
+
     def create_page(self, content: SourceContent) -> str:
         """Create a new page and return its ID."""
         resp = self.client.pages.create(

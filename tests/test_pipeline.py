@@ -40,6 +40,7 @@ def test_source_content_to_notion_properties():
     assert props["Title"]["title"][0]["text"]["content"] == "test.pdf"
     assert props["Status"]["select"]["name"] == "Inbox"
     assert props["Hash"]["rich_text"][0]["text"]["content"] == "abc123"
+    assert props["Source File"]["rich_text"][0]["text"]["content"] == "test.pdf"
     assert props["Drive URL"]["url"] == "https://drive.google.com/file/d/1/view"
 
 

@@ -63,7 +63,7 @@ class Pipeline:
 
             try:
                 # Title-based dedup (before downloading)
-                if self.notion.title_exists(name):
+                if self.notion.source_file_exists(name):
                     stats["skipped"] += 1
                     print(f"  skip (exists): {name}")
                     continue
