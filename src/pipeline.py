@@ -69,8 +69,8 @@ class Pipeline:
                 )
                 page_id = self.notion.create_page(source)
 
-                # Enrich
-                result = enrich(text, self.config.openai)
+                # Enrich (pass notion client for agentic tool-use)
+                result = enrich(text, self.config.openai, notion=self.notion)
                 if not result:
                     self.notion.set_status(page_id, ContentStatus.FAILED)
                     stats["failed"] += 1
@@ -94,6 +94,12 @@ class Pipeline:
                 if result.domain_tags:
                     props["Domain-Tags"] = {
                         "multi_select": [{"name": t} for t in result.domain_tags]
+                    }
+                if result.client_relevance:
+                    props["Client-Relevance"] = {
+                        "rich_text": [
+                            {"text": {"content": "; ".join(result.client_relevance)[:2000]}}
+                        ]
                     }
                 if props:
                     self.notion.update_page_properties(page_id, props)

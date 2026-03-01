@@ -77,4 +77,11 @@ def format_blocks(result: EnrichmentResult) -> List[Dict[str, Any]]:
     if result.domain_tags:
         blocks.append(_paragraph(f"Domain: {', '.join(result.domain_tags)}"))
 
+    # Client Relevance
+    if result.client_relevance:
+        blocks.append(_divider())
+        blocks.append(_heading("Client Relevance"))
+        for item in result.client_relevance:
+            blocks.append(_bullet(item))
+
     return blocks

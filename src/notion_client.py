@@ -52,3 +52,50 @@ class NotionClient:
             )
             if i + 100 < len(blocks):
                 time.sleep(0.3)
+
+    def search_workspace(self, query: str, max_results: int = 5) -> List[Dict[str, str]]:
+        """Search the Notion workspace for pages matching a query.
+
+        Returns a list of dicts with page_id, title, and url.
+        """
+        resp = self.client.search(query=query, page_size=max_results)
+        results: List[Dict[str, str]] = []
+        for page in resp.get("results", []):
+            if page.get("object") != "page":
+                continue
+            page_id = page["id"]
+            url = page.get("url", "")
+            # Extract title from properties
+            title = ""
+            props = page.get("properties", {})
+            for prop in props.values():
+                if prop.get("type") == "title":
+                    title_parts = prop.get("title", [])
+                    title = "".join(t.get("plain_text", "") for t in title_parts)
+                    break
+            results.append({"page_id": page_id, "title": title, "url": url})
+        return results[:max_results]
+
+    def fetch_page_content(self, page_id: str, max_chars: int = 4000) -> str:
+        """Fetch the plain-text content of a Notion page's blocks.
+
+        Concatenates text from all block types, truncated to max_chars.
+        """
+        resp = self.client.blocks.children.list(block_id=page_id)
+        text_parts: List[str] = []
+        total = 0
+        for block in resp.get("results", []):
+            block_type = block.get("type", "")
+            block_data = block.get(block_type, {})
+            rich_texts = block_data.get("rich_text", [])
+            for rt in rich_texts:
+                plain = rt.get("plain_text", "")
+                if plain:
+                    text_parts.append(plain)
+                    total += len(plain)
+                    if total >= max_chars:
+                        break
+            if total >= max_chars:
+                break
+        content = "\n".join(text_parts)
+        return content[:max_chars]

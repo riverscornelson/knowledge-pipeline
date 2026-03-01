@@ -45,3 +45,4 @@ class EnrichmentResult:
     vendor: Optional[str] = None
     topical_tags: List[str] = field(default_factory=list)
     domain_tags: List[str] = field(default_factory=list)
+    client_relevance: List[str] = field(default_factory=list)

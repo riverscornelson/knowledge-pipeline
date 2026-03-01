@@ -34,13 +34,15 @@ class DriveConfig:
 @dataclass
 class OpenAIConfig:
     api_key: str
-    model: str = "gpt-4.1"
+    model: str = "gpt-5.3-codex"
+    max_tool_iterations: int = 50
 
     @classmethod
     def from_env(cls) -> "OpenAIConfig":
         return cls(
             api_key=os.environ["OPENAI_API_KEY"],
-            model=os.getenv("OPENAI_MODEL", "gpt-4.1"),
+            model=os.getenv("OPENAI_MODEL", "gpt-5.3-codex"),
+            max_tool_iterations=int(os.getenv("ENRICHMENT_MAX_ITERATIONS", "5")),
         )
 
 
