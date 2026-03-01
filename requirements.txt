@@ -1,12 +1,6 @@
 google-api-python-client
 google-auth
-google-auth-oauthlib
-google-auth-httplib2
 notion-client
 python-dotenv
 openai
 pdfminer.six
-tenacity
-markdown>=3.4.0
-pyyaml>=6.0
-google-auth-oauthlib
