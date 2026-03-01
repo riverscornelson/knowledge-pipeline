@@ -20,14 +20,18 @@ class NotionConfig:
 
 @dataclass
 class DriveConfig:
-    service_account_path: str
     folder_id: str
+    service_account_path: str = ""
+    oauth_client_secret_path: str = ""
+    oauth_token_path: str = ""
 
     @classmethod
     def from_env(cls) -> "DriveConfig":
         return cls(
-            service_account_path=os.environ["GOOGLE_APP_CREDENTIALS"],
             folder_id=os.environ["DRIVE_FOLDER_ID"],
+            service_account_path=os.getenv("GOOGLE_APP_CREDENTIALS", ""),
+            oauth_client_secret_path=os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", ""),
+            oauth_token_path=os.getenv("GOOGLE_OAUTH_TOKEN", "token.json"),
         )
 
 

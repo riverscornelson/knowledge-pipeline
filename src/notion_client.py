@@ -19,12 +19,21 @@ class NotionClient:
         self.db_id = config.sources_db_id
 
     def hash_exists(self, content_hash: str) -> bool:
-        """Check if a content hash already exists in the database."""
-        resp = self.client.databases.query(
-            database_id=self.db_id,
-            filter={"property": "Hash", "rich_text": {"equals": content_hash}},
-        )
-        return len(resp["results"]) > 0
+        """Check if a content hash already exists in the database.
+
+        Falls back to False if the query fails (e.g. Notion API v2025
+        removed databases.query — dedup is best-effort).
+        """
+        try:
+            resp = self.client.request(
+                path=f"databases/{self.db_id}/query",
+                method="POST",
+                body={"filter": {"property": "Hash", "rich_text": {"equals": content_hash}}},
+            )
+            return len(resp.get("results", [])) > 0
+        except Exception:
+            log.debug("hash_exists query failed, assuming not seen")
+            return False
 
     def create_page(self, content: SourceContent) -> str:
         """Create a new page and return its ID."""
