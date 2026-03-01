@@ -33,6 +33,7 @@ dependencies = [
     "openai>=1.3.0",
     "google-api-python-client>=2.0.0",
     "google-auth>=2.0.0",
+    "google-auth-oauthlib>=1.0.0",
     "pdfminer.six>=20221105",
     "python-dotenv>=1.0.0",
 ]
@@ -41,7 +42,6 @@ dependencies = [
 Homepage = "https://github.com/riverscornelson/knowledge-pipeline"
 Repository = "https://github.com/riverscornelson/knowledge-pipeline"
 Issues = "https://github.com/riverscornelson/knowledge-pipeline/issues"
-Documentation = "https://github.com/riverscornelson/knowledge-pipeline/tree/main/docs"
 LinkedIn = "https://www.linkedin.com/in/rivers-cornelson/"
 
 [project.optional-dependencies]
