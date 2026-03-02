@@ -236,6 +236,58 @@ def test_enrich_with_tool_calls():
     mock_notion.search_workspace.assert_called_once_with("CapitalSpring")
 
 
+def test_enrich_with_list_clients_tool():
+    """Test that list_clients tool is dispatched and results inform client_relevance."""
+    # Round 1: model calls list_clients
+    fc = _mock_function_call("call_lc", "list_clients", {})
+    first_response = _mock_tool_response([fc])
+
+    # Round 2: model returns final JSON using client data
+    second_response = _mock_text_response({
+        "summary": "AI workflow automation trends.",
+        "insights": ["Key insight about PE adoption"],
+        "content_type": "Industry Report",
+        "ai_primitives": ["LLM"],
+        "vendor": None,
+        "topical_tags": ["AI", "PE"],
+        "domain_tags": ["Private Equity"],
+        "client_relevance": [
+            "CapitalSpring — Foundation Engagement: PE AI adoption data directly relevant.",
+            "Acme Services — Workshop: Professional services AI trends applicable.",
+        ],
+    })
+
+    config = OpenAIConfig(api_key="sk-test", model="gpt-5.3-codex")
+    mock_notion = MagicMock()
+    mock_notion.list_clients.return_value = [
+        {
+            "company": "CapitalSpring",
+            "industry": "PE/Investment",
+            "status": "Active Customer",
+            "notes": "PE firm focused on foodservice.",
+            "page_id": "client-001",
+        },
+        {
+            "company": "Acme Services",
+            "industry": "Professional Services",
+            "status": "Prospect",
+            "notes": "Interested in AI workshops.",
+            "page_id": "client-002",
+        },
+    ]
+
+    with patch("src.enrichment.OpenAI") as MockOpenAI:
+        client = MockOpenAI.return_value
+        client.responses.create.side_effect = [first_response, second_response]
+
+        result = enrich("AI in PE report text", config, notion=mock_notion)
+
+    assert result is not None
+    assert len(result.client_relevance) == 2
+    assert "CapitalSpring" in result.client_relevance[0]
+    mock_notion.list_clients.assert_called_once()
+
+
 def test_enrich_max_iterations():
     """Verify None is returned when the model keeps calling tools beyond max_iterations."""
     fc = _mock_function_call("call_loop", "search_notion", {"query": "infinite"})

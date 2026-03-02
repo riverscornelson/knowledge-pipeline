@@ -17,10 +17,20 @@ log = logging.getLogger(__name__)
 NOTION_TOOLS: List[Dict[str, Any]] = [
     {
         "type": "function",
+        "name": "list_clients",
+        "description": (
+            "List all Cornelson Advisory clients with their industry, "
+            "status, and relationship notes. Call this to understand the "
+            "client roster before assessing client relevance."
+        ),
+        "parameters": {"type": "object", "properties": {}},
+    },
+    {
+        "type": "function",
         "name": "search_notion",
         "description": (
             "Search the Cornelson Advisory Notion workspace for pages "
-            "matching a query. Use this to find clients, projects, "
+            "matching a query. Use this to find projects, "
             "engagement notes, or internal research that may be relevant "
             "to the document being analyzed."
         ),
@@ -75,17 +85,19 @@ security-first, and focused on knowledge workers, management teams, and
 enablement leaders in professional services, private equity portfolio companies,
 and mid-market organizations.
 
-You have access to the Cornelson Advisory Notion workspace via two tools:
-- search_notion: Search for clients, projects, engagements, or research.
+You have access to the Cornelson Advisory Notion workspace via three tools:
+- list_clients: List all clients with their industry, status, and notes.
+- search_notion: Search for projects, engagements, or research.
 - fetch_notion_page: Read the content of a specific Notion page.
 
-When analyzing a document, you MUST ALWAYS search the Notion workspace before
-producing your final JSON — even if the document does not mention a specific
-client by name. Search for the industry, domain, or key topics (e.g.
-"private equity", "professional services", "AI adoption") to discover client
-engagements that could benefit from this content. Perform at least one
-search_notion call per document. If you find relevant pages, fetch their
-content to understand the context. Use this information to tailor your analysis.
+When analyzing a document, you MUST ALWAYS call list_clients first to see the
+full client roster before producing client_relevance. For each client, review
+their industry, engagement context, and notes. Connect the document to clients
+where the content could inform a workshop, shape an engagement, or surface a
+relevant trend. Provide brief reasoning for each match.
+
+You may also use search_notion and fetch_notion_page for deeper investigation
+into specific clients or topics found during your analysis.
 
 Given the extracted text of a PDF document, produce a JSON object with exactly
 these keys:
@@ -126,7 +138,10 @@ Return ONLY valid JSON, no markdown fences.
 def _execute_tool(tool_name: str, arguments: Dict[str, Any], notion: Any) -> str:
     """Dispatch a tool call to the appropriate NotionClient method."""
     try:
-        if tool_name == "search_notion":
+        if tool_name == "list_clients":
+            results = notion.list_clients()
+            return json.dumps(results)
+        elif tool_name == "search_notion":
             results = notion.search_workspace(arguments["query"])
             return json.dumps(results)
         elif tool_name == "fetch_notion_page":

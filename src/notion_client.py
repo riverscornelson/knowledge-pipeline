@@ -18,6 +18,7 @@ class NotionClient:
     def __init__(self, config: NotionConfig):
         self.client = Client(auth=config.token)
         self.db_id = config.sources_db_id
+        self.clients_db_id = config.clients_db_id
 
     def hash_exists(self, content_hash: str) -> bool:
         """Check if a content hash already exists in the database.
@@ -86,6 +87,62 @@ class NotionClient:
         except Exception:
             log.debug("source_file_exists search failed, assuming not seen")
             return False
+
+    def list_clients(self) -> List[Dict[str, Any]]:
+        """List all client records from the Clients Database.
+
+        Returns a list of dicts with company, industry, status, notes, page_id.
+        Falls back to empty list if the query fails or clients_db_id is not set.
+        """
+        if not self.clients_db_id:
+            return []
+        try:
+            resp = retry_on_transient(
+                self.client.request,
+                path=f"databases/{self.clients_db_id}/query",
+                method="POST",
+                body={},
+            )
+            clients: List[Dict[str, Any]] = []
+            for page in resp.get("results", []):
+                props = page.get("properties", {})
+                company = "".join(
+                    t.get("plain_text", "")
+                    for t in self._title_texts(props)
+                )
+                industry = self._select_value(props.get("Industry", {}))
+                status = self._select_value(props.get("Status", {}))
+                notes = "".join(
+                    t.get("plain_text", "")
+                    for t in props.get("Notes", {}).get("rich_text", [])
+                )
+                clients.append({
+                    "company": company,
+                    "industry": industry,
+                    "status": status,
+                    "notes": notes,
+                    "page_id": page["id"],
+                })
+            return clients
+        except Exception:
+            log.debug("list_clients query failed, returning empty list")
+            return []
+
+    @staticmethod
+    def _title_texts(props: Dict[str, Any]) -> list:
+        """Extract title rich_text array from properties."""
+        for prop in props.values():
+            if prop.get("type") == "title":
+                return prop.get("title", [])
+        return []
+
+    @staticmethod
+    def _select_value(prop: Dict[str, Any]) -> str:
+        """Extract a select property's name, or empty string."""
+        sel = prop.get("select")
+        if sel and isinstance(sel, dict):
+            return sel.get("name", "")
+        return ""
 
     def create_page(self, content: SourceContent) -> str:
         """Create a new page and return its ID."""
