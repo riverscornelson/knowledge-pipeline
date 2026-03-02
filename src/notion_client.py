@@ -3,6 +3,7 @@ import time
 import logging
 from typing import List, Dict, Any, Optional
 
+import requests as _requests
 from notion_client import Client
 
 from .config import NotionConfig
@@ -11,27 +12,41 @@ from .retry import retry_on_transient
 
 log = logging.getLogger(__name__)
 
+NOTION_API_BASE = "https://api.notion.com/v1"
+NOTION_API_VERSION = "2022-06-28"
+
 
 class NotionClient:
     """Simplified Notion client for the knowledge pipeline."""
 
     def __init__(self, config: NotionConfig):
         self.client = Client(auth=config.token)
+        self._token = config.token
         self.db_id = config.sources_db_id
         self.clients_db_id = config.clients_db_id
 
-    def hash_exists(self, content_hash: str) -> bool:
-        """Check if a content hash already exists in the database.
+    def _query_database(self, db_id: str, body: Dict[str, Any]) -> Dict[str, Any]:
+        """Query a Notion database via direct HTTP (SDK v3 removed databases.query)."""
+        resp = _requests.post(
+            f"{NOTION_API_BASE}/databases/{db_id}/query",
+            headers={
+                "Authorization": f"Bearer {self._token}",
+                "Notion-Version": NOTION_API_VERSION,
+                "Content-Type": "application/json",
+            },
+            json=body,
+            timeout=30,
+        )
+        resp.raise_for_status()
+        return resp.json()
 
-        Falls back to False if the query fails (e.g. Notion API v2025
-        removed databases.query — dedup is best-effort).
-        """
+    def hash_exists(self, content_hash: str) -> bool:
+        """Check if a content hash already exists in the database."""
         try:
             resp = retry_on_transient(
-                self.client.request,
-                path=f"databases/{self.db_id}/query",
-                method="POST",
-                body={"filter": {"property": "Hash", "rich_text": {"equals": content_hash}}},
+                self._query_database,
+                self.db_id,
+                {"filter": {"property": "Hash", "rich_text": {"equals": content_hash}}, "page_size": 1},
             )
             return len(resp.get("results", [])) > 0
         except Exception:
@@ -63,29 +78,61 @@ class NotionClient:
             log.debug("title_exists search failed, assuming not seen")
             return False
 
+    def load_existing_source_files(self) -> set:
+        """Load all Source File values from the database in one pass.
+
+        Returns a set of filenames for fast in-memory dedup.
+        Uses pagination to handle large databases.
+        """
+        source_files: set = set()
+        start_cursor = None
+        try:
+            while True:
+                body: Dict[str, Any] = {
+                    "filter": {
+                        "property": "Source File",
+                        "rich_text": {"is_not_empty": True},
+                    },
+                    "page_size": 100,
+                }
+                if start_cursor:
+                    body["start_cursor"] = start_cursor
+                resp = retry_on_transient(
+                    self._query_database, self.db_id, body
+                )
+                for page in resp.get("results", []):
+                    props = page.get("properties", {})
+                    sf = props.get("Source File", {})
+                    val = "".join(
+                        t.get("plain_text", "")
+                        for t in sf.get("rich_text", [])
+                    )
+                    if val:
+                        source_files.add(val)
+                if not resp.get("has_more"):
+                    break
+                start_cursor = resp.get("next_cursor")
+        except Exception:
+            log.warning("load_existing_source_files failed, returning partial set")
+        return source_files
+
     def source_file_exists(self, filename: str) -> bool:
         """Check if a page with this Source File property already exists."""
         try:
             resp = retry_on_transient(
-                self.client.search, query=filename, page_size=10
+                self._query_database,
+                self.db_id,
+                {
+                    "filter": {
+                        "property": "Source File",
+                        "rich_text": {"equals": filename},
+                    },
+                    "page_size": 1,
+                },
             )
-            for page in resp.get("results", []):
-                if page.get("object") != "page":
-                    continue
-                parent = page.get("parent", {})
-                if parent.get("database_id", "").replace("-", "") != self.db_id.replace("-", ""):
-                    continue
-                props = page.get("properties", {})
-                sf = props.get("Source File", {})
-                if sf.get("type") == "rich_text":
-                    value = "".join(
-                        t.get("plain_text", "") for t in sf.get("rich_text", [])
-                    )
-                    if value == filename:
-                        return True
-            return False
+            return len(resp.get("results", [])) > 0
         except Exception:
-            log.debug("source_file_exists search failed, assuming not seen")
+            log.debug("source_file_exists query failed, assuming not seen")
             return False
 
     def list_clients(self) -> List[Dict[str, Any]]:
@@ -98,10 +145,9 @@ class NotionClient:
             return []
         try:
             resp = retry_on_transient(
-                self.client.request,
-                path=f"databases/{self.clients_db_id}/query",
-                method="POST",
-                body={},
+                self._query_database,
+                self.clients_db_id,
+                {},
             )
             clients: List[Dict[str, Any]] = []
             for page in resp.get("results", []):

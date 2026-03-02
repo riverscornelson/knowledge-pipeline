@@ -26,8 +26,8 @@ class Pipeline:
 
     @staticmethod
     def _is_duplicate(name: str) -> bool:
-        """Return True if filename looks like a Drive upload duplicate, e.g. 'doc (1).pdf'."""
-        return bool(re.search(r"\(\d+\)\.pdf$", name))
+        """Return True if filename looks like a Drive upload duplicate, e.g. 'doc (1).pdf' or 'doc(1).pdf'."""
+        return bool(re.search(r"\s?\(\d+\)\.pdf$", name))
 
     @staticmethod
     def _file_size_mb(f: Dict[str, Any]) -> str:
@@ -55,17 +55,19 @@ class Pipeline:
         stats["total"] = len(files)
         print(f"Found {len(files)} PDFs in Drive folder")
 
+        # Bulk-load existing Source File values for fast dedup
+        existing_files = self.notion.load_existing_source_files()
+        print(f"Loaded {len(existing_files)} existing source files from Notion")
+
         for idx, f in enumerate(files, 1):
             file_id = f["id"]
             name = f["name"]
             size_str = self._file_size_mb(f)
-            print(f"[{idx}/{len(files)}] {name} ({size_str})")
 
             try:
-                # Title-based dedup (before downloading)
-                if self.notion.source_file_exists(name):
+                # Fast in-memory dedup (before downloading)
+                if name in existing_files:
                     stats["skipped"] += 1
-                    print(f"  skip (exists): {name}")
                     continue
 
                 # Download and hash for dedup
@@ -134,22 +136,26 @@ class Pipeline:
                         log.warning("Invalid created_date from enrichment: %s", result.created_date)
 
                 # Update properties with enrichment data
+                # Notion select values cannot contain commas
+                def _clean(val: str) -> str:
+                    return val.replace(",", " -")
+
                 props: dict = {}
                 if result.content_type:
-                    props["Content-Type"] = {"select": {"name": result.content_type}}
+                    props["Content-Type"] = {"select": {"name": _clean(result.content_type)}}
                 if result.ai_primitives:
                     props["AI-Primitive"] = {
-                        "multi_select": [{"name": t} for t in result.ai_primitives]
+                        "multi_select": [{"name": _clean(t)} for t in result.ai_primitives]
                     }
                 if result.vendor:
-                    props["Vendor"] = {"select": {"name": result.vendor}}
+                    props["Vendor"] = {"select": {"name": _clean(result.vendor)}}
                 if result.topical_tags:
                     props["Topical-Tags"] = {
-                        "multi_select": [{"name": t} for t in result.topical_tags]
+                        "multi_select": [{"name": _clean(t)} for t in result.topical_tags]
                     }
                 if result.domain_tags:
                     props["Domain-Tags"] = {
-                        "multi_select": [{"name": t} for t in result.domain_tags]
+                        "multi_select": [{"name": _clean(t)} for t in result.domain_tags]
                     }
                 if result.client_relevance:
                     props["Client-Relevance"] = {
