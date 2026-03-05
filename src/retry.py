@@ -37,6 +37,14 @@ def _is_transient(exc: Exception) -> bool:
     except ImportError:
         pass
 
+    # requests library timeouts and connection errors
+    try:
+        from requests.exceptions import ReadTimeout, ConnectionError as ReqConnectionError
+        if isinstance(exc, (ReadTimeout, ReqConnectionError)):
+            return True
+    except ImportError:
+        pass
+
     return False
 
 

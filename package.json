@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@ruvector/rvf-node": "^0.1.7"
+  }
+}
