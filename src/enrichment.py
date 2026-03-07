@@ -143,12 +143,38 @@ these keys:
 - "content_type": One of: "Research Paper", "Industry Report",
   "Technical Documentation", "Business Strategy", "News Article",
   "Legal Document", "Tutorial", "Other".
-- "ai_primitives": List of AI-related concepts mentioned (e.g. "LLM", "RAG",
-  "Fine-tuning", "Embeddings", "Agents", "MCP"). Empty list if none.
+- "ai_primitives": List from this controlled list ONLY:
+  "LLM", "RAG", "Fine-tuning", "Embeddings", "Agents", "MCP",
+  "Computer Vision", "NLP", "Speech", "Multimodal", "Reasoning",
+  "Code Generation", "Function Calling", "Prompt Engineering",
+  "RLHF", "Diffusion Models", "Transformers", "Knowledge Graphs",
+  "Vector Search", "Guardrails", "Evaluation", "Distillation",
+  "Quantization", "Retrieval", "Summarization", "Classification",
+  "OCR", "Chatbot", "Copilot", "Search", "Recommendations".
+  Empty list if none. Do NOT invent new primitives outside this list.
 - "vendor": The primary company or vendor discussed, or null if none.
-- "topical_tags": 3-6 topical tags describing the subject matter.
-- "domain_tags": 1-3 broad domain tags (e.g. "AI/ML", "Finance",
-  "Professional Services", "Private Equity", "Healthcare").
+- "topical_tags": 3-6 tags from this controlled list ONLY:
+  "AI Strategy", "AI Adoption", "AI Governance", "AI Ethics",
+  "AI Regulation", "AI Safety", "AI Agents", "AI Assistants",
+  "AI Search", "AI Infrastructure", "AI Benchmarks", "AI Startups",
+  "Enterprise AI", "Generative AI", "Conversational AI", "Multimodal AI",
+  "Prompt Engineering", "Workflow Automation", "Change Management",
+  "Digital Transformation", "Workforce Development", "Productivity",
+  "Knowledge Management", "Data Strategy", "Cybersecurity",
+  "Product Management", "Software Development", "Open Source",
+  "Vendor Landscape", "Model Evaluation", "Cost Optimization",
+  "Leadership", "Consulting", "Training & Enablement",
+  "Use Case Design", "ROI & Measurement", "Industry Trends",
+  "Research & Analysis", "Content Creation", "Customer Experience",
+  "Supply Chain", "Healthcare", "Legal", "Finance", "Education",
+  "Private Equity", "Professional Services".
+  Do NOT invent new tags outside this list.
+- "domain_tags": 1-3 broad domain tags from this list ONLY:
+  "AI/ML", "Finance", "Healthcare", "Legal", "Education",
+  "Professional Services", "Private Equity", "Technology",
+  "Manufacturing", "Energy", "Retail", "Media & Entertainment",
+  "Government", "Real Estate", "Telecommunications".
+  Do NOT invent new domain tags outside this list.
 - "title": A clean, descriptive title for this document (like an article
   headline). Do not include file extensions or upload artifacts.
 - "created_date": The date this document was originally created or published,
