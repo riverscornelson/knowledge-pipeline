@@ -125,10 +125,13 @@ their industry, engagement context, and notes. Connect the document to clients
 where the content could inform a workshop, shape an engagement, or surface a
 relevant trend. Provide brief reasoning for each match.
 
+Related content from the knowledge base is automatically provided with each
+document. Use it to contextualize your analysis — identify patterns across
+documents, note how this document builds on or differs from prior research,
+and surface connections the reader might miss.
+
 You may also use search_notion, search_rvf, and fetch_notion_page for deeper
 investigation into specific clients or topics found during your analysis.
-Prefer search_rvf when looking for thematically related content across the
-knowledge base.
 
 Given the extracted text of a PDF document, produce a JSON object with exactly
 these keys:
@@ -192,6 +195,50 @@ Return ONLY valid JSON, no markdown fences.
 """
 
 
+def _prefetch_rvf_context(
+    text: str,
+    rvf_search: Callable[..., List[Dict[str, Any]]],
+) -> str:
+    """Run multiple RVF queries to build prior-knowledge context.
+
+    Uses the first ~500 chars as a broad query, then extracts a more
+    focused query from the middle of the document for diversity.
+    Returns formatted context string, or empty string on failure.
+    """
+    queries = [
+        text[:500],  # opening/abstract
+        text[len(text) // 3 : len(text) // 3 + 500],  # mid-document
+    ]
+    seen_titles: set = set()
+    hits: List[Dict[str, Any]] = []
+    for q in queries:
+        try:
+            results = rvf_search(q.strip(), k=5)
+            for r in results:
+                title = r.get("title", "")
+                if title and title not in seen_titles:
+                    seen_titles.add(title)
+                    hits.append(r)
+        except Exception as e:
+            log.warning("RVF prefetch query failed: %s", e)
+
+    if not hits:
+        return ""
+
+    lines = ["## Related content from the Cornelson Advisory knowledge base:\n"]
+    for h in hits[:8]:
+        title = h.get("title", "Untitled")
+        db = h.get("database", "")
+        preview = h.get("text", "")[:300]
+        url = h.get("url", "")
+        lines.append(f"- **{title}**{f' ({db})' if db else ''}")
+        if preview:
+            lines.append(f"  {preview}")
+        if url:
+            lines.append(f"  {url}")
+    return "\n".join(lines)
+
+
 def _execute_tool(
     tool_name: str,
     arguments: Dict[str, Any],
@@ -249,10 +296,27 @@ def enrich(
 
     client = OpenAI(api_key=config.api_key)
 
+    # Pre-fetch related knowledge base content for context
+    rvf_context = ""
+    if rvf_search is not None:
+        rvf_context = _prefetch_rvf_context(text, rvf_search)
+        if rvf_context:
+            log.info("Injected %d chars of RVF context", len(rvf_context))
+
     # Build initial input for the Responses API
     # Note: include "json" in the user message to satisfy json_object format requirement
+    user_content = f"Analyze this document and return your response as json:\n\n{text}"
+    if rvf_context:
+        user_content += (
+            "\n\n---\n\n"
+            "Use the following related content from the knowledge base to inform "
+            "your analysis. Reference connections to prior research, identify "
+            "patterns across documents, and note how this document builds on or "
+            "differs from existing knowledge:\n\n"
+            f"{rvf_context}"
+        )
     input_items: List[Dict[str, Any]] = [
-        {"role": "user", "content": f"Analyze this document and return your response as json:\n\n{text}"},
+        {"role": "user", "content": user_content},
     ]
 
     # Only include tools if notion client is available
