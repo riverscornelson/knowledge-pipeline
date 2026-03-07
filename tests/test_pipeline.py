@@ -288,6 +288,77 @@ def test_enrich_with_list_clients_tool():
     mock_notion.list_clients.assert_called_once()
 
 
+def test_enrich_with_search_rvf_tool():
+    """Test that search_rvf tool is dispatched to the rvf_search callback."""
+    # Round 1: model calls search_rvf
+    fc = _mock_function_call("call_rvf", "search_rvf", {"query": "enterprise AI adoption"})
+    first_response = _mock_tool_response([fc])
+
+    # Round 2: model returns final JSON
+    second_response = _mock_text_response({
+        "summary": "Enterprise AI trends report.",
+        "insights": ["RVF found related prior research"],
+        "content_type": "Industry Report",
+        "ai_primitives": ["LLM"],
+        "vendor": None,
+        "topical_tags": ["AI", "Enterprise"],
+        "domain_tags": ["AI/ML"],
+        "client_relevance": [],
+    })
+
+    config = OpenAIConfig(api_key="sk-test", model="gpt-5.3-codex")
+    mock_notion = MagicMock()
+    mock_notion.list_clients.return_value = []
+
+    mock_rvf = MagicMock(return_value=[
+        {"title": "Prior AI Report", "text": "Related content...", "score": 0.85}
+    ])
+
+    with patch("src.enrichment.OpenAI") as MockOpenAI:
+        client = MockOpenAI.return_value
+        client.responses.create.side_effect = [first_response, second_response]
+
+        result = enrich(
+            "AI adoption text", config,
+            notion=mock_notion, rvf_search=mock_rvf,
+        )
+
+    assert result is not None
+    assert result.summary == "Enterprise AI trends report."
+    mock_rvf.assert_called_once_with("enterprise AI adoption", k=5)
+
+
+def test_enrich_search_rvf_without_callback():
+    """Test that search_rvf returns error when no rvf_search callback is provided."""
+    # Round 1: model calls search_rvf (but no callback)
+    fc = _mock_function_call("call_rvf", "search_rvf", {"query": "test"})
+    first_response = _mock_tool_response([fc])
+
+    # Round 2: model returns final JSON
+    second_response = _mock_text_response({
+        "summary": "Fallback.",
+        "insights": ["Insight"],
+        "content_type": "Other",
+        "ai_primitives": [],
+        "vendor": None,
+        "topical_tags": [],
+        "domain_tags": [],
+        "client_relevance": [],
+    })
+
+    config = OpenAIConfig(api_key="sk-test", model="gpt-5.3-codex")
+    mock_notion = MagicMock()
+
+    with patch("src.enrichment.OpenAI") as MockOpenAI:
+        client = MockOpenAI.return_value
+        client.responses.create.side_effect = [first_response, second_response]
+
+        result = enrich("Text", config, notion=mock_notion, rvf_search=None)
+
+    assert result is not None
+    assert result.summary == "Fallback."
+
+
 def test_enrich_max_iterations():
     """Verify None is returned when the model keeps calling tools beyond max_iterations."""
     fc = _mock_function_call("call_loop", "search_notion", {"query": "infinite"})

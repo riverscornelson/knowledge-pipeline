@@ -30,17 +30,25 @@ class DriveClient:
         self.folder_id = config.folder_id
 
     def list_pdfs(self) -> List[Dict[str, Any]]:
-        """List all PDF files in the configured Drive folder."""
+        """List all PDF files in the configured Drive folder (handles pagination)."""
         query = (
             f"'{self.folder_id}' in parents and trashed=false "
             f"and mimeType='application/pdf'"
         )
-        response = self.service.files().list(
-            q=query,
-            fields="files(id, name, webViewLink, createdTime, size)",
-            pageSize=1000,
-        ).execute()
-        return response.get("files", [])
+        all_files: List[Dict[str, Any]] = []
+        page_token: Optional[str] = None
+        while True:
+            response = self.service.files().list(
+                q=query,
+                fields="nextPageToken, files(id, name, webViewLink, createdTime, size)",
+                pageSize=1000,
+                pageToken=page_token,
+            ).execute()
+            all_files.extend(response.get("files", []))
+            page_token = response.get("nextPageToken")
+            if not page_token:
+                break
+        return all_files
 
     def download_pdf(self, file_id: str) -> bytes:
         """Download a file's content from Drive."""

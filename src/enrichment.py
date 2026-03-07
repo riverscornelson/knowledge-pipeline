@@ -1,7 +1,7 @@
 """AI enrichment: agentic OpenAI loop with Notion tool-use via Responses API."""
 import json
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from openai import OpenAI
 
@@ -64,6 +64,32 @@ NOTION_TOOLS: List[Dict[str, Any]] = [
             "required": ["page_id"],
         },
     },
+    {
+        "type": "function",
+        "name": "search_rvf",
+        "description": (
+            "Semantic vector search over the Cornelson Advisory knowledge base. "
+            "Unlike search_notion (keyword-based), this finds content by meaning "
+            "using 384-dim embeddings. Returns the most semantically similar "
+            "chunks with their source page title, database, URL, and text. "
+            "Use this to find related analysis, prior research, or thematically "
+            "similar content that may not share exact keywords."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Natural language query (e.g. 'enterprise AI adoption in PE').",
+                },
+                "k": {
+                    "type": "integer",
+                    "description": "Number of results to return (default 5, max 10).",
+                },
+            },
+            "required": ["query"],
+        },
+    },
 ]
 
 # ---------------------------------------------------------------------------
@@ -85,10 +111,13 @@ security-first, and focused on knowledge workers, management teams, and
 enablement leaders in professional services, private equity portfolio companies,
 and mid-market organizations.
 
-You have access to the Cornelson Advisory Notion workspace via three tools:
+You have access to the Cornelson Advisory Notion workspace via four tools:
 - list_clients: List all clients with their industry, status, and notes.
-- search_notion: Search for projects, engagements, or research.
+- search_notion: Keyword search for projects, engagements, or research.
 - fetch_notion_page: Read the content of a specific Notion page.
+- search_rvf: Semantic vector search over the full knowledge base. Use this
+  to find thematically similar prior analysis, related research, or content
+  that shares meaning but not necessarily keywords.
 
 When analyzing a document, you MUST ALWAYS call list_clients first to see the
 full client roster before producing client_relevance. For each client, review
@@ -96,8 +125,10 @@ their industry, engagement context, and notes. Connect the document to clients
 where the content could inform a workshop, shape an engagement, or surface a
 relevant trend. Provide brief reasoning for each match.
 
-You may also use search_notion and fetch_notion_page for deeper investigation
-into specific clients or topics found during your analysis.
+You may also use search_notion, search_rvf, and fetch_notion_page for deeper
+investigation into specific clients or topics found during your analysis.
+Prefer search_rvf when looking for thematically related content across the
+knowledge base.
 
 Given the extracted text of a PDF document, produce a JSON object with exactly
 these keys:
@@ -135,8 +166,13 @@ Return ONLY valid JSON, no markdown fences.
 """
 
 
-def _execute_tool(tool_name: str, arguments: Dict[str, Any], notion: Any) -> str:
-    """Dispatch a tool call to the appropriate NotionClient method."""
+def _execute_tool(
+    tool_name: str,
+    arguments: Dict[str, Any],
+    notion: Any,
+    rvf_search: Optional[Callable[..., List[Dict[str, Any]]]] = None,
+) -> str:
+    """Dispatch a tool call to the appropriate handler."""
     try:
         if tool_name == "list_clients":
             results = notion.list_clients()
@@ -147,6 +183,12 @@ def _execute_tool(tool_name: str, arguments: Dict[str, Any], notion: Any) -> str
         elif tool_name == "fetch_notion_page":
             content = notion.fetch_page_content(arguments["page_id"])
             return json.dumps({"content": content})
+        elif tool_name == "search_rvf":
+            if rvf_search is None:
+                return json.dumps({"error": "RVF knowledge base not available"})
+            k = min(arguments.get("k", 5), 10)
+            results = rvf_search(arguments["query"], k=k)
+            return json.dumps(results)
         else:
             return json.dumps({"error": f"Unknown tool: {tool_name}"})
     except Exception as e:
@@ -158,12 +200,15 @@ def enrich(
     text: str,
     config: OpenAIConfig,
     notion: Any = None,
+    rvf_search: Optional[Callable[..., List[Dict[str, Any]]]] = None,
     max_iterations: Optional[int] = None,
 ) -> Optional[EnrichmentResult]:
     """Run an agentic OpenAI Responses API loop to enrich extracted PDF text.
 
     When notion is provided, the model can call search_notion and
     fetch_notion_page tools to query the Cornelson Advisory workspace.
+    When rvf_search is provided, the model can also call search_rvf for
+    semantic vector search over the knowledge base.
     When notion is None, falls back to a single-shot call (no tools).
 
     Returns an EnrichmentResult or None on failure.
@@ -221,7 +266,9 @@ def enrich(
                         })
                         # Execute and append result
                         args = json.loads(item.arguments)
-                        result_str = _execute_tool(item.name, args, notion)
+                        result_str = _execute_tool(
+                            item.name, args, notion, rvf_search=rvf_search
+                        )
                         input_items.append({
                             "type": "function_call_output",
                             "call_id": item.call_id,

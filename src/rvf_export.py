@@ -524,3 +524,108 @@ def rvf_status(rvf_path: Optional[Path] = None) -> Dict[str, Any]:
     """Get status of the RVF store."""
     rvf_path = rvf_path or DEFAULT_RVF_PATH
     return _run_rvf_script("status", [str(rvf_path)])
+
+
+# ---------------------------------------------------------------------------
+# High-level search helper (for enrichment tool-use)
+# ---------------------------------------------------------------------------
+
+
+def sync_rvf(
+    notion_token: str,
+    db_id: str,
+    openai_api_key: str,
+    rvf_path: Optional[Path] = None,
+    filter_body: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Incrementally sync Notion Sources database to the RVF store.
+
+    Exports all enriched pages, chunks them, computes IDs, and only embeds
+    chunks whose IDs are not already in the existing cache. Then re-ingests
+    the full set into the RVF store.
+
+    Returns dict with 'new' (new chunks added) and 'total' (total vectors).
+    """
+    rvf_path = rvf_path or DEFAULT_RVF_PATH
+
+    # Load existing chunk cache for delta detection
+    cache_path = rvf_path.with_suffix(".chunks.json")
+    existing_ids: set = set()
+    existing_chunks: List[Dict[str, Any]] = []
+    if cache_path.exists():
+        with open(cache_path) as f:
+            existing_chunks = json.load(f)
+        existing_ids = {c["id"] for c in existing_chunks}
+        log.info("Loaded %d existing chunks from cache", len(existing_ids))
+
+    # Export enriched pages from Notion
+    if filter_body is None:
+        filter_body = {
+            "property": "Status",
+            "select": {"equals": "Enriched"},
+        }
+    pages = export_database(notion_token, db_id, "Sources", filter_body)
+
+    # Chunk all pages
+    all_chunks: List[Chunk] = []
+    for page in pages:
+        all_chunks.extend(chunk_page(page))
+
+    # Find new chunks by ID
+    new_chunks = [c for c in all_chunks if c.id not in existing_ids]
+    log.info(
+        "Sync: %d total chunks, %d new (delta)",
+        len(all_chunks),
+        len(new_chunks),
+    )
+
+    if not new_chunks:
+        return {"new": 0, "total": len(existing_ids)}
+
+    # Embed only new chunks
+    new_embedded = embed_chunks(new_chunks, openai_api_key)
+
+    # Merge with existing and re-ingest
+    all_embedded = existing_chunks + new_embedded
+    result = ingest_to_rvf(all_embedded, rvf_path)
+    result["new"] = len(new_embedded)
+    result["total"] = result.get("totalVectors", len(all_embedded))
+    return result
+
+
+def make_rvf_search(
+    api_key: str, rvf_path: Optional[Path] = None
+) -> Optional["callable"]:
+    """Return a search function if the RVF store exists, else None.
+
+    The returned callable has signature: (query: str, k: int = 5) -> list[dict]
+    Each result dict contains: title, database, url, text, score.
+    """
+    rvf_path = rvf_path or DEFAULT_RVF_PATH
+    if not rvf_path.exists():
+        log.info("RVF store not found at %s — search_rvf disabled", rvf_path)
+        return None
+
+    # Load the text index for enriching query results
+    index_path = rvf_path.with_suffix(".index.json")
+    text_index: Dict[str, Any] = {}
+    if index_path.exists():
+        with open(index_path) as f:
+            text_index = json.load(f)
+
+    def _search(query: str, k: int = 5) -> List[Dict[str, Any]]:
+        raw_results = query_rvf(query, api_key, rvf_path=rvf_path, k=k)
+        enriched: List[Dict[str, Any]] = []
+        for r in raw_results:
+            rid = str(r.get("id", ""))
+            entry = text_index.get(rid, {})
+            enriched.append({
+                "title": entry.get("title", ""),
+                "database": entry.get("database", ""),
+                "url": entry.get("url", ""),
+                "text": entry.get("text", "")[:500],
+                "score": r.get("distance", 0),
+            })
+        return enriched
+
+    return _search

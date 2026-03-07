@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@ruvector/rvf-mcp-server": "^0.1.3",
     "@ruvector/rvf-node": "^0.1.7"
   }
 }

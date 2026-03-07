@@ -12,6 +12,7 @@ from .formatter import format_blocks
 from .models import ContentStatus, SourceContent
 from .notion_client import NotionClient
 from .retry import retry_on_transient
+from .rvf_export import make_rvf_search, sync_rvf
 
 log = logging.getLogger(__name__)
 
@@ -23,6 +24,7 @@ class Pipeline:
         self.config = config
         self.drive = DriveClient(config.drive)
         self.notion = NotionClient(config.notion)
+        self.rvf_search = make_rvf_search(config.openai.api_key)
 
     @staticmethod
     def _is_duplicate(name: str) -> bool:
@@ -70,6 +72,8 @@ class Pipeline:
                     stats["skipped"] += 1
                     continue
 
+                print(f"[{idx}/{stats['total']}] {name} ({size_str})")
+
                 # Download and hash for dedup
                 pdf_bytes = retry_on_transient(self.drive.download_pdf, file_id)
                 content_hash = DriveClient.content_hash(pdf_bytes)
@@ -105,8 +109,12 @@ class Pipeline:
                 )
                 page_id = retry_on_transient(self.notion.create_page, source)
 
-                # Enrich (pass notion client for agentic tool-use)
-                result = enrich(text, self.config.openai, notion=self.notion)
+                # Enrich (pass notion client + rvf search for agentic tool-use)
+                result = enrich(
+                    text, self.config.openai,
+                    notion=self.notion,
+                    rvf_search=self.rvf_search,
+                )
                 if not result:
                     retry_on_transient(
                         self.notion.set_status, page_id, ContentStatus.FAILED
@@ -183,6 +191,21 @@ class Pipeline:
                 stats["failed"] += 1
                 log.exception("Error processing %s", name)
                 print(f"  error: {name} — {e}")
+
+        # Sync processed pages to RVF knowledge base
+        if stats["processed"] > 0:
+            try:
+                sync_result = sync_rvf(
+                    self.notion._token,
+                    self.notion.db_id,
+                    self.config.openai.api_key,
+                )
+                print(
+                    f"RVF sync: {sync_result.get('new', 0)} new chunks added, "
+                    f"{sync_result.get('total', 0)} total vectors"
+                )
+            except Exception as e:
+                log.warning("RVF sync failed (non-fatal): %s", e)
 
         elapsed = (time.monotonic() - start_time) / 60
         print(
