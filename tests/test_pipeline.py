@@ -102,6 +102,66 @@ def test_format_blocks_includes_client_relevance():
     assert len(bullets) >= 2
 
 
+def test_format_blocks_includes_new_sections():
+    result = EnrichmentResult(
+        summary="Test summary.",
+        insights=["Insight"],
+        content_type="Other",
+        key_quotes=["On AI: 'This is transformative.'"],
+        outline=["- Introduction", "- Main argument", "- Conclusion"],
+        connections=["Builds on Prior Report's findings on adoption."],
+    )
+    blocks = format_blocks(result)
+    headings = [
+        b[b["type"]]["rich_text"][0]["text"]["content"]
+        for b in blocks
+        if b["type"] == "heading_2"
+    ]
+    assert "Key Quotes" in headings
+    assert "Outline" in headings
+    assert "Related Knowledge" in headings
+    # Key Quotes should come before Key Insights
+    assert headings.index("Key Quotes") < headings.index("Key Insights")
+    # Verify quote block type exists
+    quote_blocks = [b for b in blocks if b["type"] == "quote"]
+    assert len(quote_blocks) == 1
+
+
+def test_format_blocks_omits_empty_new_sections():
+    result = EnrichmentResult(
+        summary="Test summary.",
+        insights=["Insight"],
+        content_type="Other",
+        key_quotes=[],
+        outline=[],
+        connections=[],
+    )
+    blocks = format_blocks(result)
+    headings = [
+        b[b["type"]]["rich_text"][0]["text"]["content"]
+        for b in blocks
+        if b["type"] == "heading_2"
+    ]
+    assert "Key Quotes" not in headings
+    assert "Outline" not in headings
+    assert "Related Knowledge" not in headings
+
+
+def test_format_blocks_quote_chunking():
+    long_quote = "A" * 5000
+    result = EnrichmentResult(
+        summary="Test.",
+        insights=["Insight"],
+        content_type="Other",
+        key_quotes=[long_quote],
+    )
+    blocks = format_blocks(result)
+    quote_blocks = [b for b in blocks if b["type"] == "quote"]
+    assert len(quote_blocks) == 1
+    for rt in quote_blocks[0]["quote"]["rich_text"]:
+        assert len(rt["text"]["content"]) <= 2000
+
+
 def test_format_blocks_no_client_relevance_when_empty():
     result = EnrichmentResult(
         summary="Test summary.",
@@ -170,6 +230,9 @@ def test_enrich_parses_response():
         "vendor": "Acme",
         "topical_tags": ["testing"],
         "domain_tags": ["AI/ML"],
+        "key_quotes": ["On testing: 'This is a direct quote.'"],
+        "outline": ["- Introduction", "  - Background", "- Conclusion"],
+        "connections": ["Builds on Prior AI Report analysis of adoption."],
     })
 
     with patch("src.enrichment.OpenAI") as MockOpenAI:
@@ -183,6 +246,31 @@ def test_enrich_parses_response():
     assert result.vendor == "Acme"
     assert "LLM" in result.ai_primitives
     assert result.client_relevance == []
+    assert result.key_quotes == ["On testing: 'This is a direct quote.'"]
+    assert len(result.outline) == 3
+    assert len(result.connections) == 1
+
+
+def test_enrich_new_fields_default_empty():
+    """Missing key_quotes, outline, connections should default to empty lists."""
+    config = OpenAIConfig(api_key="sk-test", model="gpt-5.3-codex")
+
+    mock_response = _mock_text_response({
+        "summary": "Summary.",
+        "insights": ["Insight"],
+        "content_type": "Other",
+    })
+
+    with patch("src.enrichment.OpenAI") as MockOpenAI:
+        client = MockOpenAI.return_value
+        client.responses.create.return_value = mock_response
+
+        result = enrich("Some text", config)
+
+    assert result is not None
+    assert result.key_quotes == []
+    assert result.outline == []
+    assert result.connections == []
 
 
 def test_enrich_returns_none_on_error():
@@ -325,7 +413,9 @@ def test_enrich_with_search_rvf_tool():
 
     assert result is not None
     assert result.summary == "Enterprise AI trends report."
-    mock_rvf.assert_called_once_with("enterprise AI adoption", k=5)
+    # rvf_search is called by prefetch (2 calls) + tool dispatch (1 call)
+    assert mock_rvf.call_count == 3
+    mock_rvf.assert_any_call("enterprise AI adoption", k=5)
 
 
 def test_enrich_search_rvf_without_callback():
@@ -592,3 +682,37 @@ def test_normal_filename_not_filtered():
     assert Pipeline._is_duplicate("report.pdf") is False
     assert Pipeline._is_duplicate("my (cool) report.pdf") is False
     assert Pipeline._is_duplicate("section (1) overview.pdf") is False
+
+
+# ---------------------------------------------------------------------------
+# Re-enrichment helpers
+# ---------------------------------------------------------------------------
+
+def test_drive_file_id_extraction():
+    assert Pipeline._drive_file_id(
+        "https://drive.google.com/file/d/1ABC_def-123/view?usp=sharing"
+    ) == "1ABC_def-123"
+    assert Pipeline._drive_file_id(
+        "https://drive.google.com/file/d/xyz/view"
+    ) == "xyz"
+    assert Pipeline._drive_file_id(None) is None
+    assert Pipeline._drive_file_id("https://example.com/no-match") is None
+
+
+def test_clear_blocks():
+    mock_client = MagicMock()
+    mock_client.blocks.children.list.return_value = {
+        "results": [
+            {"id": "block-1"},
+            {"id": "block-2"},
+            {"id": "block-3"},
+        ]
+    }
+    from src.notion_client import NotionClient
+    notion = NotionClient.__new__(NotionClient)
+    notion.client = mock_client
+    notion.clear_blocks("page-123")
+    assert mock_client.blocks.delete.call_count == 3
+    mock_client.blocks.delete.assert_any_call(block_id="block-1")
+    mock_client.blocks.delete.assert_any_call(block_id="block-2")
+    mock_client.blocks.delete.assert_any_call(block_id="block-3")

@@ -47,5 +47,8 @@ class EnrichmentResult:
     topical_tags: List[str] = field(default_factory=list)
     domain_tags: List[str] = field(default_factory=list)
     client_relevance: List[str] = field(default_factory=list)
+    key_quotes: List[str] = field(default_factory=list)
+    outline: List[str] = field(default_factory=list)
+    connections: List[str] = field(default_factory=list)
     created_date: Optional[str] = None
     title: Optional[str] = None

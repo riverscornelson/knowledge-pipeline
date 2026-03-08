@@ -208,6 +208,12 @@ class NotionClient:
             page_id, {"Status": {"select": {"name": status.value}}}
         )
 
+    def clear_blocks(self, page_id: str) -> None:
+        """Delete all child blocks from a page."""
+        resp = self.client.blocks.children.list(block_id=page_id)
+        for block in resp.get("results", []):
+            self.client.blocks.delete(block_id=block["id"])
+
     def add_blocks(self, page_id: str, blocks: List[Dict[str, Any]]):
         """Append content blocks to a page (respects 100-block API limit)."""
         for i in range(0, len(blocks), 100):

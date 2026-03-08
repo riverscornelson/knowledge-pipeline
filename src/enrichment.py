@@ -178,6 +178,18 @@ these keys:
   "Manufacturing", "Energy", "Retail", "Media & Entertainment",
   "Government", "Real Estate", "Telecommunications".
   Do NOT invent new domain tags outside this list.
+- "key_quotes": 5-10 direct, verbatim quotes from the document that capture
+  the most important points. Each quote should be prefixed with brief context,
+  e.g. "On adoption barriers: 'exact quote here'". These MUST be actual text
+  from the document, not paraphrased. Include enough surrounding words for
+  the quote to make sense on its own.
+- "outline": A structured outline of the article's core argument as a flat
+  list of 8-15 strings. Use "- " for top-level points and "  - " for
+  sub-points. Cover the full arc: setup, key arguments, evidence, conclusion.
+- "connections": 2-5 connections to related content from the knowledge base
+  context provided below. Each should name the related article and explain
+  how this document builds on, contradicts, or complements it. If no related
+  content was provided, return an empty list.
 - "title": A clean, descriptive title for this document (like an article
   headline). Do not include file extensions or upload artifacts.
 - "created_date": The date this document was originally created or published,
@@ -394,6 +406,9 @@ def enrich(
                 topical_tags=data.get("topical_tags", []),
                 domain_tags=data.get("domain_tags", []),
                 client_relevance=data.get("client_relevance", []),
+                key_quotes=data.get("key_quotes", []),
+                outline=data.get("outline", []),
+                connections=data.get("connections", []),
                 created_date=data.get("created_date"),
                 title=data.get("title"),
             )

@@ -6,7 +6,7 @@ from .config import PipelineConfig
 from .pipeline import Pipeline
 
 
-def main():
+def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -18,7 +18,12 @@ def main():
         sys.exit(1)
 
     pipeline = Pipeline(config)
-    pipeline.run()
+
+    if "--re-enrich" in sys.argv:
+        dry_run = "--dry-run" in sys.argv
+        pipeline.re_enrich(dry_run=dry_run)
+    else:
+        pipeline.run()
 
 
 if __name__ == "__main__":

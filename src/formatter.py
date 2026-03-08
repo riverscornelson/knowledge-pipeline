@@ -30,6 +30,10 @@ def _bullet(text: str) -> Dict[str, Any]:
     }
 
 
+def _quote(text: str) -> Dict[str, Any]:
+    return {"type": "quote", "quote": {"rich_text": _rich_text(text)}}
+
+
 def _divider() -> Dict[str, Any]:
     return {"type": "divider", "divider": {}}
 
@@ -51,12 +55,33 @@ def format_blocks(result: EnrichmentResult) -> List[Dict[str, Any]]:
     if chunk:
         blocks.append(_paragraph(" ".join(chunk)))
 
+    # Key Quotes
+    if result.key_quotes:
+        blocks.append(_divider())
+        blocks.append(_heading("Key Quotes"))
+        for q in result.key_quotes:
+            blocks.append(_quote(q))
+
+    # Outline
+    if result.outline:
+        blocks.append(_divider())
+        blocks.append(_heading("Outline"))
+        for item in result.outline:
+            blocks.append(_bullet(item))
+
     blocks.append(_divider())
 
     # Key Insights
     blocks.append(_heading("Key Insights"))
     for insight in result.insights:
         blocks.append(_bullet(insight))
+
+    # Related Knowledge
+    if result.connections:
+        blocks.append(_divider())
+        blocks.append(_heading("Related Knowledge"))
+        for conn in result.connections:
+            blocks.append(_bullet(conn))
 
     blocks.append(_divider())
 
